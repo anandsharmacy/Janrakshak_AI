@@ -33,7 +33,7 @@ function parseIncidentTime(timeStr?: string): number {
     if (unit.startsWith('day')) return now - val * 24 * 3600 * 1000;
   }
 
-  if (/^yesterday/i.test(str)) {
+  if (/^yesterday$/i.test(str)) {
     return now - 24 * 3600 * 1000;
   }
 
@@ -42,17 +42,19 @@ function parseIncidentTime(timeStr?: string): number {
     return parsed.getTime();
   }
 
-  const timeMatch = str.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
+  const timeMatch = str.match(/^(yesterday\s+)?(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
   if (timeMatch) {
-    let hours = parseInt(timeMatch[1], 10);
-    const minutes = parseInt(timeMatch[2], 10);
-    const ampm = timeMatch[3];
+    let hours = parseInt(timeMatch[2], 10);
+    const minutes = parseInt(timeMatch[3], 10);
+    const ampm = timeMatch[4];
     if (ampm) {
       if (ampm.toUpperCase() === 'PM' && hours < 12) hours += 12;
       if (ampm.toUpperCase() === 'AM' && hours === 12) hours = 0;
     }
     const d = new Date();
     d.setHours(hours, minutes, 0, 0);
+    // A clock time still ahead of now can only be from the previous day.
+    if (timeMatch[1] || d.getTime() > now) d.setDate(d.getDate() - 1);
     return d.getTime();
   }
 
@@ -76,14 +78,12 @@ function getTimeRangeCutoffMs(timeFilter: string): number {
 
 export default function DistrictMap({ role }: { role?: Role }) {
   const currentRole = role ?? profileService.getCurrentRole() ?? 'district';
-  const { routes, vehicles } = useDemoData();
-  const [incidents, setIncidents] = useState(() => getIncidents());
+  const { routes, vehicles, incidents: demoIncidents } = useDemoData();
+  const [storedIncidents, setIncidents] = useState(() => getIncidents());
   const [activeLayers, setActiveLayers] = useState(new Set(['ROADS', 'INCIDENTS', 'LOGISTICS']));
   const [severities, setSeverities] = useState<Set<Severity>>(new Set());
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
   const [timeFilter, setTimeFilter] = useState('Last 24 hours');
-  const [showSim, setShowSim] = useState(false);
-  const [simRoute, setSimRoute] = useState('NH-27');
 
   useEffect(() => subscribeToIncidents(stored => setIncidents(stored)), []);
 
@@ -102,6 +102,9 @@ export default function DistrictMap({ role }: { role?: Role }) {
       return next;
     });
   };
+
+  // Same source as the Incidents page: demo incidents (while demo data is on) plus stored reports.
+  const incidents = useMemo(() => [...demoIncidents, ...storedIncidents], [demoIncidents, storedIncidents]);
 
   const mapIncidents = useMemo(() => {
     const cutoff = Date.now() - getTimeRangeCutoffMs(timeFilter);
@@ -156,48 +159,7 @@ export default function DistrictMap({ role }: { role?: Role }) {
           <h1 className="font-semibold text-2xl" style={{ color: '#17212B' }}>{currentRole === 'control' ? 'Regional Map' : 'District Map'}</h1>
           <p className="text-sm mt-0.5" style={{ color: '#5A6670' }}>Geospatial intelligence — routes, incidents, logistics</p>
         </div>
-        {currentRole !== 'control' && (
-          <button
-            onClick={() => setShowSim(!showSim)}
-            className="text-xs font-medium px-3 py-2 rounded border transition-colors"
-            style={{ background: showSim ? '#17324D' : 'rgba(250,247,240,0.82)', color: showSim ? 'white' : '#17324D', borderColor: '#17324D' }}>
-            ◎ Simulate Route Closure
-          </button>
-        )}
       </div>
-
-      {/* Simulation panel */}
-      {currentRole !== 'control' && showSim && (
-        <div className="rounded-xl border p-4" style={{ background: '#FEF8E6', borderColor: '#F5DFA8' }}>
-          <div className="flex items-center gap-2 mb-3">
-            <span style={{ color: '#D7A73A' }}>✦</span>
-            <h3 className="font-semibold text-sm" style={{ color: '#17212B' }}>Route Closure Simulation — DEMO</h3>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-3">
-            <div>
-              <label className="text-xs font-medium block mb-1" style={{ color: '#5A6670' }}>Select Route</label>
-              <select value={simRoute} onChange={e => setSimRoute(e.target.value)}
-                className="text-sm px-3 py-1.5 rounded border w-full"
-                style={{ borderColor: 'rgba(180,162,136,0.55)', background: 'rgba(250,247,240,0.82)' }}>
-                {routes.map(r => <option key={r.id}>{r.id}</option>)}
-              </select>
-            </div>
-            {[
-              { label: 'Affected Districts', value: '3' },
-              { label: 'Logistics Movements', value: '17' },
-              { label: 'Add. Delay', value: '+1h 24m' },
-            ].map(item => (
-              <div key={item.label} className="rounded-lg p-3 border" style={{ background: 'rgba(250,247,240,0.82)', borderColor: 'rgba(180,162,136,0.55)' }}>
-                <div className="text-xl font-bold" style={{ color: '#17212B' }}>{item.value}</div>
-                <div className="text-xs" style={{ color: '#5A6670' }}>{item.label}</div>
-              </div>
-            ))}
-          </div>
-          <div className="text-xs rounded p-2" style={{ background: '#FEE9E9', color: '#BE2424' }}>
-            ◆ Recommended: Deploy 2 field teams · Alternative routes: NH-37 (via Jorhat), NH-40 (via Shillong)
-          </div>
-        </div>
-      )}
 
       <div className="flex-1 flex gap-4 min-h-0">
         {/* Left controls */}
