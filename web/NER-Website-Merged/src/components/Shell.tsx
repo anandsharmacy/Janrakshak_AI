@@ -39,10 +39,12 @@ const CR_NAV = [
   { key: 'routes',     label: 'Routes',         icon: '→' },
   { key: 'alerts',     label: 'Alerts',         icon: '◬' },
   { key: 'analytics',  label: 'Analytics',      icon: '▨' },
+  { key: 'cr-approvals', label: 'Account Approvals', icon: '✓' },
 ];
 
 const TITLES: Record<string, string> = {
   'cr-command': 'Command Center',
+  'cr-approvals': 'Account Approvals',
   dashboard: 'Dashboard', map: 'District Map', incidents: 'Incidents',
   routes: 'Routes', logistics: 'Logistics',
   tasks: 'Tasks', ai: 'AI Insights', alerts: 'Alerts',

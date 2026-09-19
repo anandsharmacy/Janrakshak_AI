@@ -25,6 +25,7 @@ import AIInsights from '@/pages/AIInsights';
 import Alerts from '@/pages/Alerts';
 import Reports from '@/pages/Reports';
 import Analytics from '@/pages/Analytics';
+import AccountApprovals from '@/pages/control/AccountApprovals';
 
 // Loaded on demand: only PMO users need the national map code.
 const PmoDashboard = lazy(() => import('@/pmo/PmoDashboard'));
@@ -311,6 +312,7 @@ function DashboardApp({ initialRole, source, onLogout }: { initialRole: Role; so
         case 'fo-alerts': return <FOAlerts />;
         case 'fo-reports': return <FOReports />;
         case 'cr-command': return <CommandCenter setPage={setPage} />;
+        case 'cr-approvals': return <AccountApprovals />;
         default: return <Dashboard setPage={setPage} />;
       }
     } catch (err) {
