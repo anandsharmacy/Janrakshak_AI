@@ -4,8 +4,11 @@ import { getSessionSource } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import { Card, PageHeader, SURFACE, SURFACE_2, BORDER } from '../fo/ui';
 
-/* District Officer sign-ups stay inactive until a Control Officer approves them.
-   The list and the decision both go through the existing database functions, which check the caller's role. */
+/* Sign-ups stay inactive until approved: District Officers by a Control Officer, Field Officers by a District Officer of their district.
+   The list and the decision both go through the existing database functions, which check the caller's role and district. */
+
+type Target = 'district_officer' | 'field_officer';
+const LABEL: Record<Target, string> = { district_officer: 'District Officer', field_officer: 'Field Officer' };
 
 interface PendingRow {
   user_id: string; full_name: string | null; email: string | null;
@@ -14,7 +17,8 @@ interface PendingRow {
 
 const when = (iso: string) => new Date(iso).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 
-export default function AccountApprovals() {
+export default function AccountApprovals({ target = 'district_officer' }: { target?: Target }) {
+  const label = LABEL[target];
   const live = !!supabase && getSessionSource() === 'supabase';
   const [rows, setRows] = useState<PendingRow[]>([]);
   const [loading, setLoading] = useState(live);
@@ -30,11 +34,11 @@ export default function AccountApprovals() {
     const { data, error: rpcError } = await supabase.rpc('get_pending_approvals');
     if (rpcError) setError('Could not load account requests. Please try again.');
     else {
-      setRows(((data ?? []) as PendingRow[]).filter(r => r.requested_role === 'district_officer'));
+      setRows(((data ?? []) as PendingRow[]).filter(r => r.requested_role === target));
       setError(null);
     }
     setLoading(false);
-  }, []);
+  }, [target]);
 
   useEffect(() => { if (live) void load(); }, [live, load]);
 
@@ -52,7 +56,7 @@ export default function AccountApprovals() {
         : 'The decision could not be saved. Please try again.');
     } else {
       setError(null);
-      setNotice(`${approve ? 'Approved' : 'Rejected'} the District Officer account for ${name}.`);
+      setNotice(`${approve ? 'Approved' : 'Rejected'} the ${label} account for ${name}.`);
     }
     inFlight.current = false;
     setBusy(false);
@@ -62,7 +66,7 @@ export default function AccountApprovals() {
 
   return (
     <div className="space-y-6 max-w-screen-2xl">
-      <PageHeader title="Account Approvals" sub="District Officer accounts stay inactive until you approve them"
+      <PageHeader title="Account Approvals" sub={`${label} accounts stay inactive until you approve them`}
         right={live && (
           <button onClick={() => void load()} disabled={loading} className="text-xs font-medium px-3 py-2 rounded border disabled:opacity-60"
             style={{ borderColor: BORDER, color: '#2F6F7E' }}>{loading ? 'Refreshing…' : 'Refresh'}</button>
@@ -88,7 +92,7 @@ export default function AccountApprovals() {
                     <div className="text-xs font-medium" style={{ color: '#17212B' }}>{r.full_name || '—'}</div>
                     <div className="text-xs mt-0.5" style={{ color: '#8A9098' }}>{r.email}</div>
                   </td>
-                  <td className="px-4 py-2.5 text-xs" style={{ color: '#5A6670' }}>District Officer</td>
+                  <td className="px-4 py-2.5 text-xs" style={{ color: '#5A6670' }}>{label}</td>
                   <td className="px-4 py-2.5 text-xs" style={{ color: '#5A6670' }}>{r.district_name || '—'}</td>
                   <td className="px-4 py-2.5 text-xs" style={{ color: '#8A9098' }}>{when(r.requested_at)}</td>
                   <td className="px-4 py-2.5"><StatusBadge status="Pending" /></td>
@@ -104,7 +108,7 @@ export default function AccountApprovals() {
               ))}
               {rows.length === 0 && (
                 <tr><td colSpan={6} className="px-4 py-10 text-center text-sm" style={{ color: '#8A9098' }}>
-                  {!live ? 'Sign in with a live account to review District Officer requests.' : loading ? 'Loading requests…' : 'No pending District Officer requests.'}
+                  {!live ? `Sign in with a live account to review ${label} requests.` : loading ? 'Loading requests…' : `No pending ${label} requests.`}
                 </td></tr>
               )}
             </tbody>
@@ -117,12 +121,12 @@ export default function AccountApprovals() {
           <div role="alertdialog" aria-labelledby="approval-dialog-title" className="w-full max-w-md rounded-2xl border p-5 shadow-2xl"
             style={{ background: '#FFFDF9', borderColor: 'rgba(180,162,136,0.5)' }} onClick={event => event.stopPropagation()}>
             <h2 id="approval-dialog-title" className="font-semibold text-lg mb-2" style={{ color: '#17212B' }}>
-              {confirm.approve ? 'Approve District Officer account?' : 'Reject District Officer request?'}
+              {confirm.approve ? `Approve ${label} account?` : `Reject ${label} request?`}
             </h2>
             <p className="text-sm" style={{ color: '#5A6670' }}>
               {confirm.approve
-                ? <>This gives <strong>{confirm.row.full_name || confirm.row.email}</strong> access as District Officer{confirm.row.district_name ? <> for <strong>{confirm.row.district_name}</strong></> : null}.</>
-                : <>This declines the request from <strong>{confirm.row.full_name || confirm.row.email}</strong>. They will not be able to sign in as a District Officer.</>}
+                ? <>This gives <strong>{confirm.row.full_name || confirm.row.email}</strong> access as {label}{confirm.row.district_name ? <> for <strong>{confirm.row.district_name}</strong></> : null}.</>
+                : <>This declines the request from <strong>{confirm.row.full_name || confirm.row.email}</strong>. They will not be able to sign in as a {label}.</>}
             </p>
             <p className="text-xs mt-2" style={{ color: '#8A9098' }}>The decision is recorded with your name and the time.</p>
             <div className="flex justify-end gap-2 mt-4">

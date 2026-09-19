@@ -20,6 +20,7 @@ const NAV = [
   { key: 'alerts',    label: 'Alerts',        icon: '◬', badge: 3 },
   { key: 'reports',   label: 'Reports',       icon: '⊡' },
   { key: 'analytics', label: 'Analytics',     icon: '▨' },
+  { key: 'do-approvals', label: 'Account Approvals', icon: '✓' },
 ];
 
 const FO_NAV = [
@@ -44,7 +45,7 @@ const CR_NAV = [
 
 const TITLES: Record<string, string> = {
   'cr-command': 'Command Center',
-  'cr-approvals': 'Account Approvals',
+  'cr-approvals': 'Account Approvals', 'do-approvals': 'Account Approvals',
   dashboard: 'Dashboard', map: 'District Map', incidents: 'Incidents',
   routes: 'Routes', logistics: 'Logistics',
   tasks: 'Tasks', ai: 'AI Insights', alerts: 'Alerts',

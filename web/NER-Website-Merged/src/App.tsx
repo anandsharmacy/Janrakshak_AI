@@ -312,7 +312,8 @@ function DashboardApp({ initialRole, source, onLogout }: { initialRole: Role; so
         case 'fo-alerts': return <FOAlerts />;
         case 'fo-reports': return <FOReports />;
         case 'cr-command': return <CommandCenter setPage={setPage} />;
-        case 'cr-approvals': return <AccountApprovals />;
+        case 'cr-approvals': return <AccountApprovals target="district_officer" />;
+        case 'do-approvals': return <AccountApprovals target="field_officer" />;
         default: return <Dashboard setPage={setPage} />;
       }
     } catch (err) {
