@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { EyeIcon, EyeOffIcon, MapPinIcon, BuildingIcon, RadarIcon, ChevronDownIcon } from "./Icons";
-import { NER_STATE_DISTRICTS, NER_STATES } from "../data/nerStateDistricts";
+import { REGIONS, districtsOf, isValidLocation, statesOf } from "../data/indiaLocations";
 import { profileService } from "@/lib/profileService";
 
 type Role = "field-officer" | "district-officer" | "control-room" | null;
@@ -35,16 +35,17 @@ export default function CreateAccountTab() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedRole, setSelectedRole] = useState<Role>(null);
+  const [selectedRegion, setSelectedRegion] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
-  const [department, setDepartment] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
-  const isOfficer = selectedRole === "field-officer" || selectedRole === "district-officer";
+  // Field and District Officers pick Region -> State -> District; Control Room stops at State.
+  const needsDistrict = selectedRole === "field-officer" || selectedRole === "district-officer";
   const canSubmit = selectedRole !== null && fullName.trim() !== "" && email.trim() !== "" &&
-    (selectedRole === "control-room" || (selectedState !== "" && selectedDistrict !== ""));
+    isValidLocation(selectedRegion, selectedState, needsDistrict ? selectedDistrict : undefined);
 
   if (submitted) {
     return (
@@ -63,17 +64,18 @@ export default function CreateAccountTab() {
         e.preventDefault();
         if (!canSubmit || !selectedRole) return;
         const roleLabel = selectedRole === "field-officer" ? "Field Officer" : selectedRole === "district-officer" ? "District Officer" : "Control Officer";
-        const regionValue = isOfficer ? `${selectedDistrict}, ${selectedState}` : "North Eastern Region";
+        const regionValue = needsDistrict ? `${selectedDistrict}, ${selectedState}` : `${selectedState}, ${selectedRegion} Region`;
         const roleShort = selectedRole === "field-officer" ? "FO" : selectedRole === "district-officer" ? "DO" : "CO";
         const randomId = Math.floor(1000 + Math.random() * 9000);
         const profile = {
           profileName: fullName.trim(),
           profileInitials: fullName.trim().split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase(),
           officerId: `NER-${roleShort}-${randomId}`,
-          department: department.trim() || (selectedRole === "field-officer" ? "Field Operations & Incident Response" : selectedRole === "district-officer" ? "District Disaster & Logistics Management" : "Regional Command & Coordination"),
+          // Not collected on the form; profiles still show a role-based default.
+          department: selectedRole === "field-officer" ? "Field Operations & Incident Response" : selectedRole === "district-officer" ? "District Disaster & Logistics Management" : "Regional Command & Coordination",
           region: regionValue,
-          state: isOfficer ? selectedState : undefined,
-          district: isOfficer ? selectedDistrict : undefined,
+          state: selectedState,
+          district: needsDistrict ? selectedDistrict : undefined,
           phone: "",
           email: email.trim(),
           label: roleLabel,
@@ -106,18 +108,6 @@ export default function CreateAccountTab() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="officer@gov.in or employee ID"
-          className="glass-field accent-green"
-        />
-      </Field>
-
-      {/* Password */}
-      <Field label="Department" htmlFor="department">
-        <input
-          id="department"
-          type="text"
-          value={department}
-          onChange={(e) => setDepartment(e.target.value)}
-          placeholder="Department or division"
           className="glass-field accent-green"
         />
       </Field>
@@ -186,10 +176,8 @@ export default function CreateAccountTab() {
                   checked={active}
                   onChange={() => {
                     setSelectedRole(id);
-                    if (id === "control-room") {
-                      setSelectedState("");
-                      setSelectedDistrict("");
-                    }
+                    // Control Room has no District; Region and State stay valid for every role.
+                    if (id === "control-room") setSelectedDistrict("");
                   }}
                   className="sr-only"
                 />
@@ -239,67 +227,45 @@ export default function CreateAccountTab() {
         })}
       </fieldset>
 
-      {isOfficer && (
+      {selectedRole !== null && (
         <>
-          {/* State */}
-          <Field label="State" htmlFor="state">
-            <div className="relative">
-              <select
-                id="state"
-                value={selectedState}
-                onChange={(e) => {
-                  setSelectedState(e.target.value);
-                  setSelectedDistrict("");
-                }}
-                className="glass-field accent-green has-toggle appearance-none"
-              >
-                <option value="" disabled>
-                  Select State
-                </option>
-                {NER_STATES.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-              <span
-                className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                style={{ color: "#5B6472" }}
-              >
-                <ChevronDownIcon />
-              </span>
-            </div>
-          </Field>
+          <SelectField
+            id="region"
+            label="Region"
+            value={selectedRegion}
+            options={REGIONS}
+            placeholder="Select Region"
+            onChange={(region) => {
+              setSelectedRegion(region);
+              setSelectedState("");
+              setSelectedDistrict("");
+            }}
+          />
 
-          {/* District */}
-          <Field label="District" htmlFor="district">
-            <div className="relative">
-              <select
-                id="district"
-                value={selectedDistrict}
-                onChange={(e) => setSelectedDistrict(e.target.value)}
-                disabled={!selectedState}
-                className="glass-field accent-green has-toggle appearance-none"
-                style={!selectedState ? { opacity: 0.6, cursor: "not-allowed" } : undefined}
-              >
-                <option value="" disabled>
-                  {selectedState ? "Select District" : "Select State First"}
-                </option>
-                {selectedState &&
-                  (NER_STATE_DISTRICTS[selectedState] || []).map((d) => (
-                    <option key={d} value={d}>
-                      {d}
-                    </option>
-                  ))}
-              </select>
-              <span
-                className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                style={{ color: "#5B6472" }}
-              >
-                <ChevronDownIcon />
-              </span>
-            </div>
-          </Field>
+          <SelectField
+            id="state"
+            label="State"
+            value={selectedState}
+            options={statesOf(selectedRegion)}
+            placeholder={selectedRegion ? "Select State" : "Select Region First"}
+            disabled={!selectedRegion}
+            onChange={(state) => {
+              setSelectedState(state);
+              setSelectedDistrict("");
+            }}
+          />
+
+          {needsDistrict && (
+            <SelectField
+              id="district"
+              label="District"
+              value={selectedDistrict}
+              options={districtsOf(selectedRegion, selectedState)}
+              placeholder={selectedState ? "Select District" : "Select State First"}
+              disabled={!selectedState}
+              onChange={setSelectedDistrict}
+            />
+          )}
         </>
       )}
 
@@ -357,6 +323,55 @@ function Field({
       </label>
       {children}
     </div>
+  );
+}
+
+function SelectField({
+  id,
+  label,
+  value,
+  options,
+  placeholder,
+  disabled = false,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  options: string[];
+  placeholder: string;
+  disabled?: boolean;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <Field label={label} htmlFor={id}>
+      <div className="relative">
+        <select
+          id={id}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          disabled={disabled}
+          aria-required="true"
+          className="glass-field accent-green has-toggle appearance-none"
+          style={disabled ? { opacity: 0.6, cursor: "not-allowed" } : undefined}
+        >
+          <option value="" disabled>
+            {placeholder}
+          </option>
+          {options.map((o) => (
+            <option key={o} value={o}>
+              {o}
+            </option>
+          ))}
+        </select>
+        <span
+          className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+          style={{ color: "#5B6472" }}
+        >
+          <ChevronDownIcon />
+        </span>
+      </div>
+    </Field>
   );
 }
 
