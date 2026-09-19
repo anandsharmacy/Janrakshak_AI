@@ -1,6 +1,6 @@
-import { feature } from 'topojson-client';
+import { feature, mesh } from 'topojson-client';
 import type { GeometryCollection, Topology } from 'topojson-specification';
-import type { Feature, FeatureCollection, MultiPolygon, Polygon } from 'geojson';
+import type { Feature, FeatureCollection, MultiLineString, MultiPolygon, Polygon } from 'geojson';
 import { nameKey, statesOf } from '@/data/indiaLocations';
 
 /**
@@ -15,7 +15,12 @@ export const INDIA_TOPOJSON_URL: string = import.meta.env.VITE_INDIA_TOPOJSON_UR
 export interface GeoProps { st_nm: string; district?: string }
 type Boundaries = FeatureCollection<Polygon | MultiPolygon, GeoProps>;
 export type BoundaryFeature = Feature<Polygon | MultiPolygon, GeoProps>;
-export interface IndiaGeo { districts: Boundaries; states: Boundaries }
+export interface IndiaGeo {
+  districts: Boundaries;
+  states: Boundaries;
+  /** India's outer border only (arcs used by a single state), drawn on its own so it can be emphasised. */
+  outline: MultiLineString;
+}
 
 let cached: Promise<IndiaGeo> | null = null;
 
@@ -28,6 +33,7 @@ export function loadIndiaGeo(): Promise<IndiaGeo> {
     .then(topo => ({
       districts: feature(topo, topo.objects.districts as GeometryCollection<GeoProps>) as Boundaries,
       states: feature(topo, topo.objects.states as GeometryCollection<GeoProps>) as Boundaries,
+      outline: mesh(topo, topo.objects.states as GeometryCollection<GeoProps>, (a, b) => a === b),
     }));
   cached.catch(() => { cached = null; }); // allow a retry after a failure
   return cached;

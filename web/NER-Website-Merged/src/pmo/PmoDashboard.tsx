@@ -42,7 +42,7 @@ export default function PmoDashboard({ onLogout }: { onLogout: () => void }) {
     setFilters(f => ({ ...f, types: f.types.includes(id) ? f.types.filter(t => t !== id) : [...f.types, id] }));
 
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="pmo-root h-full overflow-y-auto">
       <header className="sticky top-0 z-[1500] flex flex-wrap items-center justify-between gap-3 px-4 py-2.5"
         style={{ background: '#17324D', borderBottom: '1px solid #0F2538' }}>
         <div className="flex items-center gap-3">

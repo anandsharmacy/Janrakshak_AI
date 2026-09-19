@@ -171,11 +171,16 @@ export default function IndiaMap({ incidents, filters, onSelectState, onSelectDi
       interactive: false,
       style: feature => stateStyle(feature as BoundaryFeature, live.current.filters),
     }).addTo(map);
+    // India's outer border: a white casing under a red line so it stays visible over any basemap.
+    const casing = L.geoJSON(geo.outline, { interactive: false, style: { color: '#FFFFFF', weight: 5.5, opacity: 0.85, fill: false } }).addTo(map);
+    const outline = L.geoJSON(geo.outline, { interactive: false, style: { color: BORDER_RED, weight: 2.6, opacity: 1, fill: false } }).addTo(map);
     districtLayerRef.current = districts;
     stateLayerRef.current = states;
     return () => {
       districts.remove();
       states.remove();
+      casing.remove();
+      outline.remove();
       districtLayerRef.current = stateLayerRef.current = null;
     };
   }, [geo]);
@@ -306,20 +311,27 @@ export default function IndiaMap({ incidents, filters, onSelectState, onSelectDi
   );
 }
 
+const BORDER_RED = '#D32F2F';
+const BORDER_RED_DARK = '#8E1B1F';
+
+// The fill is transparent so the map underneath stays visible. It must stay `fill: true` (opacity 0,
+// not fill: false), because Leaflet only lets a shape receive clicks when it has a fill.
 function districtStyle(f: BoundaryFeature, filters: PmoFilters): L.PathOptions {
   const { st_nm, district } = f.properties;
   const inState = !!filters.state && st_nm === filters.state;
   const inRegion = !filters.state && !!filters.region && regionOfState(st_nm) === filters.region;
   const selected = inState && !!filters.district && nameKey(district ?? '') === nameKey(filters.district);
   return {
-    color: selected ? '#17324D' : '#9AAAB8',
-    weight: selected ? 2 : 0.35,
-    fillColor: selected ? '#F0D488' : inState || inRegion ? '#DCE9EC' : '#F7F3EA',
-    fillOpacity: 1,
+    color: selected ? BORDER_RED_DARK : '#5F7182',
+    weight: selected ? 2 : 0.45,
+    opacity: selected ? 1 : 0.7,
+    fill: true,
+    fillColor: selected ? '#F0B429' : '#2F6F7E',
+    fillOpacity: selected ? 0.4 : inState || inRegion ? 0.14 : 0,
   };
 }
 
 function stateStyle(f: BoundaryFeature, filters: PmoFilters): L.PathOptions {
   const chosen = !!filters.state && f.properties.st_nm === filters.state;
-  return { color: '#17324D', weight: chosen ? 2.4 : 1.1, opacity: chosen ? 1 : 0.8, fill: false };
+  return { color: chosen ? BORDER_RED_DARK : BORDER_RED, weight: chosen ? 2.8 : 1.3, opacity: 1, fill: false };
 }
