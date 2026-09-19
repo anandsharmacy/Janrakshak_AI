@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { profileService, type ProfileMeta } from '@/lib/profileService';
 import { useTheme, type ThemeMode } from '@/lib/theme';
-import { LANGUAGES, useLanguage, type LanguageCode } from '@/lib/i18n';
+import { useLanguage } from '@/lib/i18n';
 
 export type { ProfileMeta };
 
@@ -503,42 +503,6 @@ function AppearanceSection() {
   );
 }
 
-// ─── language section ─────────────────────────────────────────────────────────
-
-function LanguageSection() {
-  const { t } = useLanguage();
-  const { language, setLanguage } = useLanguage();
-  const [saved, setSaved] = useState(false);
-
-  const apply = (code: LanguageCode) => {
-    setLanguage(code);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
-  };
-
-  const current = LANGUAGES.find(l => l.code === language);
-
-  return (
-    <div className="p-4 space-y-3">
-      <div className="space-y-1.5">
-        {LANGUAGES.map(l => (
-          <button key={l.code} onClick={() => apply(l.code)}
-            className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg border transition-all text-sm text-left"
-            style={{
-              borderColor: language === l.code ? TEAL : BORDER,
-              background: language === l.code ? 'rgba(47,111,126,0.07)' : 'rgba(255,255,255,0.5)',
-              color: language === l.code ? NAVY : '#5A6670',
-            }}>
-            {l.native}
-            {language === l.code && <span style={{ color: TEAL }}>✓</span>}
-          </button>
-        ))}
-      </div>
-      {saved && <SuccessBanner msg={`Language set to ${current?.native ?? language}.`} />}
-    </div>
-  );
-}
-
 // ─── profile info rows ────────────────────────────────────────────────────────
 
 function Row({ icon, label, value }: { icon: string; label: string; value: string }) {
@@ -580,7 +544,6 @@ export default function ProfilePanel({ open, onClose, meta, onSave }: { open: bo
     { key: 'edit', icon: '✎', title: t('Edit Profile'), content: <EditProfileSection meta={meta} onSave={onSave} /> },
     { key: 'notif', icon: '◬', title: t('Notifications'), content: <NotificationsSection /> },
     { key: 'appearance', icon: '◐', title: t('Theme & Appearance'), content: <AppearanceSection /> },
-    { key: 'language', icon: '⚑', title: t('Language'), content: <LanguageSection /> },
     { key: 'security', icon: '⛨', title: t('Security & Password'), content: <SecuritySection /> },
   ];
 
