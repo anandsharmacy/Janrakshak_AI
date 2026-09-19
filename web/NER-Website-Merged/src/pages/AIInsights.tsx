@@ -1,10 +1,11 @@
-import { aiInsights } from '@/data/demo';
+import { useDemoData } from '@/data/useDemoData';
 import { MlNotice, MlRouteSummary, MlTopAlertsPanel } from '@/components/MlRisk';
 import { fetchRoutesSummary, useMlQuery } from '@/lib/ml';
 import { profileService } from '@/lib/profileService';
 import { SeverityBadge } from '@/components/StatusBadge';
 
 export default function AIInsights() {
+  const { aiInsights } = useDemoData();
   const routes = useMlQuery(fetchRoutesSummary);
   // The database enforces this too; the button only appears where it can succeed.
   const role = profileService.getCurrentRole();

@@ -3,7 +3,7 @@ import MapViz from '@/components/MapViz';
 import { SeverityBadge, StatusBadge } from '@/components/StatusBadge';
 import { getIncidents, subscribeToIncidents } from '@/lib/incidentStore';
 import { getTasks, subscribeToTasks } from '@/lib/taskStore';
-import { routes, vehicles, aiInsights } from '@/data/demo';
+import { useDemoData } from '@/data/useDemoData';
 import type { Alert } from '@/data/demo';
 import { profileService, type ProfileMeta } from '@/lib/profileService';
 
@@ -45,6 +45,7 @@ function buildAlerts(incidentList: ReturnType<typeof getIncidents>, taskList: Re
 }
 
 export default function Dashboard({ setPage }: { setPage: (p: string) => void }) {
+  const { routes, vehicles, aiInsights } = useDemoData();
   const [incidents, setIncidents] = useState<ReturnType<typeof getIncidents>>(() => getIncidents());
   const [tasks, setTasks] = useState<ReturnType<typeof getTasks>>(() => getTasks());
   const [profile, setProfile] = useState<ProfileMeta>(() => {

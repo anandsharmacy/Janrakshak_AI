@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { StatusBadge } from '@/components/StatusBadge';
 import MapViz from '@/components/MapViz';
-import { routes } from '@/data/demo';
-import { DEMO_RIDERS, groupRidersByState, riderKpis } from '@/data/demoRiders';
+import { useDemoData } from '@/data/useDemoData';
+import { groupRidersByState, riderKpis } from '@/data/demoRiders';
 import { useLiveRiders } from '@/lib/riderTracking';
+import { useDemoMode } from '@/lib/demoMode';
 
 export default function Logistics() {
-  const riders = useLiveRiders(DEMO_RIDERS);
+  const { demo } = useDemoMode();
+  const { routes, riders: demoRiders } = useDemoData();
+  const riders = useLiveRiders(demoRiders);
   const [selectedRiderId, setSelectedRiderId] = useState<string | null>(null);
 
   const counts = riderKpis(riders);
@@ -47,7 +50,7 @@ export default function Logistics() {
                   Show all
                 </button>
               )}
-              <StatusBadge status="DEMO DATA" />
+              {demo && <StatusBadge status="DEMO DATA" />}
             </div>
           </div>
           <MapViz incidents={[]} routes={routes} riders={riders} selectedRiderId={selectedRiderId} onSelectRider={setSelectedRiderId}
@@ -95,7 +98,7 @@ export default function Logistics() {
       <div className="rounded-xl border shadow-sm overflow-hidden" style={{ background: 'rgba(250,247,240,0.82)', borderColor: 'rgba(180,162,136,0.55)' }}>
         <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: 'rgba(180,162,136,0.55)', background: 'rgba(238,228,210,0.88)' }}>
           <h2 className="font-semibold text-base" style={{ color: '#17212B' }}>Logistics Table</h2>
-          <StatusBadge status="DEMO DATA" />
+          {demo && <StatusBadge status="DEMO DATA" />}
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -108,6 +111,13 @@ export default function Logistics() {
               </tr>
             </thead>
             <tbody>
+              {riders.length === 0 && (
+                <tr>
+                  <td colSpan={9} className="px-4 py-8 text-center text-xs" style={{ color: '#8A9098' }}>
+                    No riders to show. Turn on Demo Data in the header to preview sample riders.
+                  </td>
+                </tr>
+              )}
               {riders.map((r, i) => {
                 const selected = r.id === selectedRiderId;
                 return (

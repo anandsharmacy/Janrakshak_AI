@@ -8,6 +8,7 @@ import { profileService } from '@/lib/profileService';
 import { getIncidents, subscribeToIncidents } from '@/lib/incidentStore';
 import { getTasks, subscribeToTasks } from '@/lib/taskStore';
 import { useLanguage } from '@/lib/i18n';
+import { useDemoMode } from '@/lib/demoMode';
 
 const NAV = [
   { key: 'dashboard', label: 'Dashboard',     icon: '⊞' },
@@ -88,6 +89,7 @@ const ROLE_SWITCHER: { key: Role; label: string; short: string }[] = [
 
 export default function Shell({ role, page, setPage, onSwitchRole, onLogout, sessionSource = 'supabase', children }: ShellProps) {
   const { t } = useLanguage();
+  const { demo, setDemo } = useDemoMode();
   const baseMeta = ROLE_META[role] ?? ROLE_META.district;
   const offlineDemo = sessionSource === 'demo-offline';
   const mlStatus = useMlQuery(fetchMlStatus);
@@ -442,6 +444,30 @@ export default function Shell({ role, page, setPage, onSwitchRole, onLogout, ses
               </div>
             )}
           </div>}
+
+          {/* Demo data switch — sample incidents, routes, convoys, riders and AI insights */}
+          <button
+            type="button"
+            role="switch"
+            aria-checked={demo}
+            onClick={() => setDemo(!demo)}
+            title={demo ? t('Demo data is on — click to hide sample data') : t('Demo data is off — click to show sample data')}
+            className="inline-flex items-center gap-2 px-2.5 py-1 rounded border transition-colors"
+            style={{
+              background: demo ? 'rgba(215,167,58,0.16)' : 'rgba(245,236,220,0.5)',
+              borderColor: demo ? 'rgba(196,134,26,0.55)' : 'rgba(180,162,136,0.5)',
+              color: demo ? '#7A5A12' : '#5A6670',
+              fontSize: 10,
+              letterSpacing: '0.06em',
+            }}>
+            <span className="uppercase font-semibold">{t('Demo data')}</span>
+            <span aria-hidden className="relative inline-block rounded-full transition-colors"
+              style={{ width: 26, height: 14, background: demo ? '#C4861A' : '#B9B2A4' }}>
+              <span className="absolute rounded-full bg-white transition-all"
+                style={{ top: 2, left: demo ? 14 : 2, width: 10, height: 10 }} />
+            </span>
+            <span className="uppercase font-semibold" style={{ minWidth: 16 }}>{demo ? t('ON') : t('OFF')}</span>
+          </button>
 
           {/* Time */}
           <div className="hidden md:block uppercase tracking-widest"

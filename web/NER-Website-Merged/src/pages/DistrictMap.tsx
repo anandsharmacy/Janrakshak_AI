@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import MapViz from '@/components/MapViz';
 import { SeverityBadge, AccessibilityBadge } from '@/components/StatusBadge';
-import { routes, vehicles } from '@/data/demo';
+import { useDemoData } from '@/data/useDemoData';
 import type { Severity, RouteStatus } from '@/data/demo';
 import { CORRIDORS } from '@/data/geo';
 import { getIncidents, subscribeToIncidents } from '@/lib/incidentStore';
@@ -76,6 +76,7 @@ function getTimeRangeCutoffMs(timeFilter: string): number {
 
 export default function DistrictMap({ role }: { role?: Role }) {
   const currentRole = role ?? profileService.getCurrentRole() ?? 'district';
+  const { routes, vehicles } = useDemoData();
   const [incidents, setIncidents] = useState(() => getIncidents());
   const [activeLayers, setActiveLayers] = useState(new Set(['ROADS', 'INCIDENTS', 'LOGISTICS']));
   const [severities, setSeverities] = useState<Set<Severity>>(new Set());
@@ -134,7 +135,7 @@ export default function DistrictMap({ role }: { role?: Role }) {
         status: status as RouteStatus,
       };
     });
-  }, [mapIncidents]);
+  }, [mapIncidents, routes]);
 
   const mapVehicles = useMemo(() => {
     if (mapIncidents.length === 0) {
@@ -142,7 +143,7 @@ export default function DistrictMap({ role }: { role?: Role }) {
     }
     const activeRouteIds = new Set(mapIncidents.map(inc => inc.route));
     return vehicles.filter(v => activeRouteIds.has(v.route));
-  }, [mapIncidents]);
+  }, [mapIncidents, vehicles]);
 
   const riskTypes = Object.keys(riskLayerTypes).filter(layer => activeLayers.has(layer)).map(layer => riskLayerTypes[layer]);
 

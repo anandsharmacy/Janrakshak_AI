@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import MapViz from '@/components/MapViz';
 import { SeverityBadge, StatusBadge } from '@/components/StatusBadge';
-import { incidents as initialIncidents } from '@/data/demo';
+import { useDemoData } from '@/data/useDemoData';
 import type { Incident, IncidentStatus } from '@/data/demo';
 import { getIncidents, subscribeToIncidents, updateIncident } from '@/lib/incidentStore';
 import { createTaskFromIncident } from '@/lib/taskStore';
@@ -218,9 +218,15 @@ export default function Incidents() {
   const [severityFilter, setSeverityFilter] = useState('All Severity');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [selected, setSelected] = useState<string | null>(null);
-  const [incList, setIncList] = useState<Incident[]>(() => [...initialIncidents, ...getIncidents()]);
+  const { incidents: demoIncidents } = useDemoData();
+  const [incList, setIncList] = useState<Incident[]>(() => [...demoIncidents, ...getIncidents()]);
 
-  useEffect(() => subscribeToIncidents(stored => setIncList([...initialIncidents, ...stored])), []);
+  // Re-seed when demo data is switched on or off, then follow the stored incidents.
+  useEffect(() => {
+    const sync = (stored: Incident[]) => setIncList([...demoIncidents, ...stored]);
+    sync(getIncidents());
+    return subscribeToIncidents(sync);
+  }, [demoIncidents]);
 
   const current = tabs.find(t => t.key === tab)!;
   const filtered = incList.filter(current.filter).filter(incident =>

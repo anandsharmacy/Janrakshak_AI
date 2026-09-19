@@ -96,8 +96,7 @@ export interface Alert {
   acknowledged: boolean;
 }
 
-export const incidents: Incident[] = [];
-/*
+export const DEMO_INCIDENTS: Incident[] = [
   {
     id: 'INC-2026-041', type: 'Flood', location: 'Barpeta, Assam', route: 'NH-27',
     severity: 'CRITICAL', reportedBy: 'FO-102', reportedTime: '10:32 AM', verification: 'Pending',
@@ -147,10 +146,9 @@ export const incidents: Incident[] = [];
     description: 'Minor collision. Traffic cleared within 45 minutes.',
     gpsCoords: '25.5788° N, 91.8933° E', riskScore: 28, affectedLogistics: 1, estimatedDisruption: 'Resolved',
   },
-]; */
+];
 
-export const routes: Route[] = [];
-/*
+export const DEMO_ROUTES: Route[] = [
   { id: 'NH-27', name: 'East-West Corridor (Assam)', distance: '110 km', accessibilityScore: 82, riskScore: 87, status: 'Blocked', weather: 'Heavy Rain', eta: '6h 20m', delay: '+3h 40m', floodRisk: 'CRITICAL', landslideRisk: 'MODERATE', lastUpdated: '10:45 AM', incidents: 2 },
   { id: 'NH-2', name: 'Kohima–Imphal Corridor', distance: '145 km', accessibilityScore: 48, riskScore: 72, status: 'Restricted', weather: 'Moderate Rain', eta: '4h 50m', delay: '+1h 15m', floodRisk: 'MODERATE', landslideRisk: 'HIGH', lastUpdated: '10:30 AM', incidents: 1 },
   { id: 'NH-306', name: 'Aizawl–Lunglei Highway', distance: '95 km', accessibilityScore: 55, riskScore: 68, status: 'Restricted', weather: 'Cloudy', eta: '3h 10m', delay: '+45m', floodRisk: 'LOW', landslideRisk: 'HIGH', lastUpdated: '09:50 AM', incidents: 1 },
@@ -158,17 +156,16 @@ export const routes: Route[] = [];
   { id: 'NH-13', name: 'Tawang Highway', distance: '340 km', accessibilityScore: 78, riskScore: 91, status: 'Closed', weather: 'Fog + Rain', eta: 'Unavailable', delay: 'Indefinite', floodRisk: 'MODERATE', landslideRisk: 'CRITICAL', lastUpdated: '08:00 AM', incidents: 1 },
   { id: 'NH-40', name: 'Guwahati–Shillong Highway', distance: '100 km', accessibilityScore: 22, riskScore: 28, status: 'Open', weather: 'Partly Cloudy', eta: '2h 45m', delay: 'None', floodRisk: 'LOW', landslideRisk: 'LOW', lastUpdated: '10:50 AM', incidents: 0 },
   { id: 'NH-10', name: 'Siliguri–Gangtok Highway', distance: '115 km', accessibilityScore: 18, riskScore: 22, status: 'Open', weather: 'Clear', eta: '3h 20m', delay: '+15m', floodRisk: 'LOW', landslideRisk: 'LOW', lastUpdated: '10:55 AM', incidents: 0 },
-]; */
+];
 
-export const vehicles: Vehicle[] = [];
-/*
+export const DEMO_VEHICLES: Vehicle[] = [
   { id: 'LG-102', cargo: 'Medical Supplies', origin: 'Guwahati', destination: 'Kohima', currentLocation: 'Near Dimapur', route: 'NH-2', eta: '4:40 PM', delay: '+1h 15m', risk: 'HIGH', status: 'Delayed' },
   { id: 'LG-115', cargo: 'Food Grains', origin: 'Silchar', destination: 'Aizawl', currentLocation: 'Cachar District', route: 'NH-306', eta: '6:20 PM', delay: '+45m', risk: 'MODERATE', status: 'Delayed' },
   { id: 'LG-089', cargo: 'Relief Materials', origin: 'Tezpur', destination: 'Itanagar', currentLocation: 'Sonitpur', route: 'NH-13', eta: 'Suspended', delay: 'Indefinite', risk: 'CRITICAL', status: 'Stopped' },
   { id: 'LG-134', cargo: 'Construction Materials', origin: 'Guwahati', destination: 'Shillong', currentLocation: 'En route', route: 'NH-40', eta: '2:15 PM', delay: 'None', risk: 'LOW', status: 'On Time' },
   { id: 'LG-098', cargo: 'Fuel Supplies', origin: 'Siliguri', destination: 'Gangtok', currentLocation: 'Rangpo', route: 'NH-10', eta: '3:50 PM', delay: '+20m', risk: 'LOW', status: 'On Time' },
   { id: 'LG-121', cargo: 'Telecom Equipment', origin: 'Imphal', destination: 'Kohima', currentLocation: 'Senapati', route: 'NH-2', eta: '5:30 PM', delay: '+1h 30m', risk: 'HIGH', status: 'At Risk' },
-]; */
+];
 
 export const fieldOfficers: FieldOfficer[] = [];
 /*
@@ -204,28 +201,38 @@ export const alerts: Alert[] = [];
   { id: 'ALT-006', severity: 'MODERATE', category: 'Route Closure', title: 'NH-13 closed indefinitely', location: 'Tawang, Arunachal Pradesh', time: '08:05 AM', description: 'NH-13 has been officially closed pending structural inspection of bridge and road assessment.', source: 'NHAI', acknowledged: true },
 ]; */
 
-export const aiInsights = {
+export interface AiInsights {
+  riskPredictions: { route: string; probability: number; window: string; confidence: number; factors: string[] }[];
+  logisticsPredictions: { route: string; convoys: number; probability: number; estimatedDelay: string; cause: string }[];
+  routeRecommendations: { from: string; to: string; reason: string; savings: string; additionalDistance: string }[];
+  resourceRecommendations: string[];
+}
+
+export const NO_AI_INSIGHTS: AiInsights = {
   riskPredictions: [],
-  /*
+  logisticsPredictions: [],
+  routeRecommendations: [],
+  resourceRecommendations: [],
+};
+
+export const DEMO_AI_INSIGHTS: AiInsights = {
+  riskPredictions: [
     { route: 'NH-27', probability: 94, window: 'Next 3 hours', confidence: 89, factors: ['Active flooding', 'IMD flash flood warning', 'High water level', 'Historical risk zone'] },
     { route: 'NH-13', probability: 78, window: 'Next 6 hours', confidence: 72, factors: ['Bridge structural damage', 'Heavy rainfall forecast', 'Remote location', 'Limited access'] },
     { route: 'NH-306', probability: 64, window: 'Next 12 hours', confidence: 68, factors: ['Saturated soil', 'Steep gradient', 'Previous landslide history', 'Rainfall forecast'] },
-  ], */
-  logisticsPredictions: [],
-  /*
+  ],
+  logisticsPredictions: [
     { route: 'NH-2', convoys: 2, probability: 82, estimatedDelay: '+1h 30m', cause: 'Landslide debris clearance' },
     { route: 'NH-27', convoys: 3, probability: 97, estimatedDelay: 'Indefinite', cause: 'Active flooding, road closure' },
     { route: 'NH-306', convoys: 1, probability: 58, estimatedDelay: '+45m', cause: 'Road blockage clearance' },
-  ], */
-  routeRecommendations: [],
-  /*
+  ],
+  routeRecommendations: [
     { from: 'NH-27', to: 'NH-37 via Jorhat', reason: 'Avoid active flood zone', savings: 'Risk reduction: 94% → 18%', additionalDistance: '+35 km' },
     { from: 'NH-13', to: 'Air transport via Tezpur', reason: 'Road closed indefinitely', savings: 'Ensures delivery of critical supplies', additionalDistance: 'N/A' },
-  ], */
-  resourceRecommendations: [],
-  /*
+  ],
+  resourceRecommendations: [
     'Deploy 2 additional field teams to Barpeta — NH-27 situation deteriorating rapidly.',
     'Pre-position NDRF team at Kohima for potential NH-2 emergency response.',
     '1 logistics coordinator needed at Dimapur to manage convoy rerouting.',
-  ], */
+  ],
 };

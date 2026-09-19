@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { SeverityBadge, StatusBadge, AccessibilityBadge } from '@/components/StatusBadge';
-import { routes } from '@/data/demo';
+import { useDemoData } from '@/data/useDemoData';
 import { MlRoutesBoard } from '@/components/MlRisk';
 import type { Route } from '@/data/demo';
 
@@ -113,6 +113,7 @@ function RouteDetail({ route, onClose }: { route: Route; onClose: () => void }) 
 }
 
 export default function Routes() {
+  const { routes } = useDemoData();
   const [selected, setSelected] = useState<string | null>(null);
   const selectedRoute = routes.find(r => r.id === selected);
 
