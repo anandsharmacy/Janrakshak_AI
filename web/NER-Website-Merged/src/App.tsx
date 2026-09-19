@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import LoginTab from './auth/LoginTab';
 import CreateAccountTab from './auth/CreateAccountTab';
 import IdentityPanel from './auth/IdentityPanel';
@@ -6,7 +6,7 @@ import FormShell from './auth/FormShell';
 import TransitionOverlay from './auth/TransitionOverlay';
 import GlassFilters from './auth/GlassFilters';
 import Shell from '@/components/Shell';
-import type { Role } from '@/roles';
+import type { Role, SessionRole } from '@/roles';
 import { profileService } from '@/lib/profileService';
 import { restoreSession, signIn, signOut, type SessionSource } from '@/lib/auth';
 import Dashboard from '@/pages/Dashboard';
@@ -26,7 +26,10 @@ import Alerts from '@/pages/Alerts';
 import Reports from '@/pages/Reports';
 import Analytics from '@/pages/Analytics';
 
-type Screen = 'splash' | 'login' | 'create';
+// Loaded on demand: only PMO users need the national map code.
+const PmoDashboard = lazy(() => import('@/pmo/PmoDashboard'));
+
+type Screen = 'splash' | 'login' | 'create' | 'pmo';
 type Dir = 'forward' | 'back';
 type Transition = { to: Screen; dir: Dir; stage: 'cover' | 'reveal' };
 
@@ -68,19 +71,20 @@ function roleFromPath(pathname: string): Role | null {
   return null;
 }
 
-function dashboardPath(role: Role) {
+function dashboardPath(role: SessionRole) {
   return `/dashboard/${role}`;
 }
 
 function screenFromPath(pathname: string): Screen {
   if (pathname === '/login') return 'login';
   if (pathname === '/create-account') return 'create';
+  if (pathname === '/pmo') return 'pmo';
   // Dashboard routes are handled by the session state, not screen state
   return 'splash';
 }
 
 export default function App() {
-  const [session, setSession] = useState<Role | null>(null);
+  const [session, setSession] = useState<SessionRole | null>(null);
   const [source, setSource] = useState<SessionSource>('supabase');
   const [sessionReady, setSessionReady] = useState(false);
   const [screen, setScreen] = useState<Screen>(() => screenFromPath(window.location.pathname));
@@ -96,8 +100,16 @@ export default function App() {
         if (cancelled) return;
         setSession(restored?.role ?? null);
         if (restored) setSource(restored.source);
-        if (!restored && window.location.pathname.startsWith('/dashboard/')) {
-          window.history.replaceState({}, '', '/');
+        const path = window.location.pathname;
+        if (!restored && path.startsWith('/dashboard/')) {
+          // A signed-out visit to the PMO URL lands on the PMO sign-in, everything else on the splash.
+          window.history.replaceState({}, '', path === '/dashboard/pmo' ? '/pmo' : '/');
+          if (path === '/dashboard/pmo') setScreen('pmo');
+        } else if (restored && path === '/dashboard/pmo' && restored.role !== 'pmo') {
+          // The database role decides; the URL never grants PMO.
+          window.history.replaceState({}, '', dashboardPath(restored.role));
+        } else if (restored?.role === 'pmo' && path !== '/dashboard/pmo') {
+          window.history.replaceState({}, '', dashboardPath('pmo'));
         }
       })
       .catch((error) => {
@@ -124,7 +136,7 @@ export default function App() {
 
   const navigate = (to: Screen, dir: Dir) => {
     if (trans) return;
-    const path = to === 'login' ? '/login' : to === 'create' ? '/create-account' : '/';
+    const path = to === 'login' ? '/login' : to === 'create' ? '/create-account' : to === 'pmo' ? '/pmo' : '/';
     window.history.pushState({}, '', path);
     if (prefersReduced) {
       setScreen(to);
@@ -153,9 +165,9 @@ export default function App() {
   }, [trans]);
 
   // Returns an error message for the login form, or null on success.
-  const login = async (identity: string, password: string): Promise<string | null> => {
+  const login = async (identity: string, password: string, requirePmo = false): Promise<string | null> => {
     try {
-      const result = await signIn(identity, password);
+      const result = await signIn(identity, password, { requirePmo });
       if (!result.ok) return result.message;
       setSource(result.source);
       setSession(result.role);
@@ -189,7 +201,16 @@ export default function App() {
     );
   }
 
-  if (session) {
+  // PMO needs a real database session (never the offline demo); the database re-checks the role on every call.
+  if (session === 'pmo' && source === 'supabase') {
+    return (
+      <Suspense fallback={<div className="flex items-center justify-center h-screen text-sm" style={{ color: '#5A6670' }}>Loading PMO dashboard…</div>}>
+        <PmoDashboard onLogout={logout} />
+      </Suspense>
+    );
+  }
+
+  if (session && session !== 'pmo') {
     return <DashboardApp initialRole={session} source={source} onLogout={logout} />;
   }
 
@@ -214,7 +235,12 @@ export default function App() {
             <CreateAccountTab />
           </FormShell>
         )}
-        {screen === 'splash' && <IdentityPanel onLogin={() => navigate('login', 'forward')} onCreate={() => navigate('create', 'forward')} />}
+        {screen === 'pmo' && (
+          <FormShell onBack={() => navigate('splash', 'back')} title="PMO sign-in">
+            <LoginTab onLogin={(identity, password) => login(identity, password, true)} />
+          </FormShell>
+        )}
+        {screen === 'splash' && <IdentityPanel onLogin={() => navigate('login', 'forward')} onCreate={() => navigate('create', 'forward')} onPmo={() => navigate('pmo', 'forward')} />}
       </div>
       {trans && <TransitionOverlay stage={trans.stage} dir={trans.dir} />}
       <GlassFilters />

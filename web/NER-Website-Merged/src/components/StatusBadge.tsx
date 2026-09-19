@@ -32,6 +32,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; bo
   Pending: { label: 'Pending', bg: '#F0EEE6', text: '#7A6D2A', border: '#D8D0A8' },
   Verified: { label: 'Verified', bg: '#EAF4EE', text: '#2D6B4F', border: '#A8D4B8' },
   Rejected: { label: 'Rejected', bg: '#FEE9E9', text: '#BE2424', border: '#F5B8B8' },
+  Approved: { label: 'Approved', bg: '#EAF4EE', text: '#2D6B4F', border: '#A8D4B8' },
   Active: { label: 'Active', bg: '#EAF4EE', text: '#2D6B4F', border: '#A8D4B8' },
   Inactive: { label: 'Inactive', bg: '#F0EFED', text: '#8A9098', border: 'rgba(180,162,136,0.55)' },
   Diverted: { label: 'Diverted', bg: '#FEF8E6', text: '#C4861A', border: '#F5DFA8' },

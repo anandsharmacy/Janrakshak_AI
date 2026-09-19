@@ -2,6 +2,9 @@ import { useState } from "react";
 import { EyeIcon, EyeOffIcon, MapPinIcon, BuildingIcon, RadarIcon, ChevronDownIcon } from "./Icons";
 import { REGIONS, districtsOf, isValidLocation, statesOf } from "../data/indiaLocations";
 import { profileService } from "@/lib/profileService";
+import { supabase } from "@/lib/supabase";
+
+const MIN_REASON_LENGTH = 10;
 
 type Role = "field-officer" | "district-officer" | "control-room" | null;
 
@@ -40,18 +43,71 @@ export default function CreateAccountTab() {
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [reason, setReason] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [requestSent, setRequestSent] = useState(false);
 
   // Field and District Officers pick Region -> State -> District; Control Room stops at State.
   const needsDistrict = selectedRole === "field-officer" || selectedRole === "district-officer";
   const canSubmit = selectedRole !== null && fullName.trim() !== "" && email.trim() !== "" &&
-    isValidLocation(selectedRegion, selectedState, needsDistrict ? selectedDistrict : undefined);
+    isValidLocation(selectedRegion, selectedState, needsDistrict ? selectedDistrict : undefined) &&
+    (selectedRole !== "control-room" || reason.trim().length >= MIN_REASON_LENGTH);
+
+  // Control Room accounts are real Supabase accounts that stay inactive until the PMO approves them.
+  const requestControlRoomAccess = async () => {
+    setError(null);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setError("Enter a valid official email address.");
+      return;
+    }
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+    if (!supabase) {
+      setError("Control Room requests need the secure service, which is not configured for this build.");
+      return;
+    }
+    setSubmitting(true);
+    const { error: signUpError } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: {
+        data: {
+          full_name: fullName.trim(),
+          requested_role: "control_room",
+          region: selectedRegion,
+          state: selectedState,
+          request_reason: reason.trim(),
+        },
+      },
+    });
+    // Do not keep a signed-in session for an account that is still waiting for approval.
+    await supabase.auth.signOut({ scope: "local" }).catch(() => undefined);
+    setSubmitting(false);
+    if (signUpError) {
+      setError(signUpError.message);
+      return;
+    }
+    setRequestSent(true);
+    setSubmitted(true);
+  };
 
   if (submitted) {
     return (
       <div className="flex flex-col items-center gap-3 text-center" style={{ fontFamily: "'Noto Sans', sans-serif" }}>
         <p className="text-sm font-semibold" style={{ color: "#1E6B45" }}>
-          Account created successfully. You can now log in.
+          {requestSent
+            ? "Request submitted. A PMO officer must approve your Control Room account before you can sign in."
+            : "Account created successfully. You can now log in."}
         </p>
       </div>
     );
@@ -62,7 +118,11 @@ export default function CreateAccountTab() {
       className="flex flex-col gap-5"
       onSubmit={(e) => {
         e.preventDefault();
-        if (!canSubmit || !selectedRole) return;
+        if (!canSubmit || !selectedRole || submitting) return;
+        if (selectedRole === "control-room") {
+          void requestControlRoomAccess();
+          return;
+        }
         const roleLabel = selectedRole === "field-officer" ? "Field Officer" : selectedRole === "district-officer" ? "District Officer" : "Control Officer";
         const regionValue = needsDistrict ? `${selectedDistrict}, ${selectedState}` : `${selectedState}, ${selectedRegion} Region`;
         const roleShort = selectedRole === "field-officer" ? "FO" : selectedRole === "district-officer" ? "DO" : "CO";
@@ -119,6 +179,8 @@ export default function CreateAccountTab() {
             id="new-password"
             type={showPassword ? "text" : "password"}
             autoComplete="new-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="Minimum 8 characters"
             className="glass-field accent-green has-toggle"
           />
@@ -133,6 +195,8 @@ export default function CreateAccountTab() {
             id="confirm-password"
             type={showConfirm ? "text" : "password"}
             autoComplete="new-password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Re-enter password"
             className="glass-field accent-green has-toggle"
           />
@@ -269,10 +333,26 @@ export default function CreateAccountTab() {
         </>
       )}
 
+      {selectedRole === "control-room" && (
+        <Field label="Reason for Control Room access" htmlFor="request-reason">
+          <textarea
+            id="request-reason"
+            rows={3}
+            maxLength={1000}
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder={`Why is this account needed? (at least ${MIN_REASON_LENGTH} characters)`}
+            aria-required="true"
+            className="glass-field accent-green"
+            style={{ height: "auto", padding: "8px 12px", resize: "vertical" }}
+          />
+        </Field>
+      )}
+
       {/* Submit */}
       <button
         type="submit"
-        disabled={!canSubmit}
+        disabled={!canSubmit || submitting}
         className="w-full py-2.5 text-sm font-semibold transition-colors mt-1"
         style={{
           backgroundColor: canSubmit ? "#0E2A47" : "rgba(91,100,114,0.25)",
@@ -290,14 +370,23 @@ export default function CreateAccountTab() {
           if (canSubmit) e.currentTarget.style.backgroundColor = "#0E2A47";
         }}
       >
-        Create Account
+        {submitting ? "Submitting request..." : selectedRole === "control-room" ? "Request Access" : "Create Account"}
       </button>
+
+      {error && (
+        <p role="alert" className="text-xs rounded px-3 py-2"
+          style={{ background: "rgba(179,38,30,0.08)", color: "#B3261E", border: "1px solid rgba(179,38,30,0.25)" }}>
+          {error}
+        </p>
+      )}
 
       <p
         className="text-xs text-center leading-relaxed"
         style={{ color: "#5B6472", fontFamily: "'Noto Sans', sans-serif" }}
       >
-        Your account will be ready to use immediately after creation.
+        {selectedRole === "control-room"
+          ? "Control Room accounts are activated once a PMO officer approves the request."
+          : "Your account will be ready to use immediately after creation."}
       </p>
     </form>
   );

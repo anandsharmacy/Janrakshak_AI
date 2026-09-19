@@ -1,4 +1,4 @@
-import type { Role } from '@/roles';
+import type { Role, SessionRole } from '@/roles';
 import { profileService, type ProfileMeta } from '@/lib/profileService';
 import { supabase } from '@/lib/supabase';
 
@@ -13,7 +13,7 @@ import { supabase } from '@/lib/supabase';
 export type SessionSource = 'supabase' | 'demo-offline';
 
 export type SignInResult =
-  | { ok: true; role: Role; source: SessionSource }
+  | { ok: true; role: SessionRole; source: SessionSource }
   | { ok: false; message: string };
 
 const SOURCE_KEY = 'ner-session-source';
@@ -28,11 +28,16 @@ const OFFICER_ID_EMAILS: Record<string, string> = {
   'ner-rd-1184': 'p.lyngdoh@ner.gov.in',
 };
 
-const DB_ROLES: Record<string, Role> = {
+const DB_ROLES: Record<string, SessionRole> = {
   field_officer: 'field',
   district_officer: 'district',
   control_room: 'control',
+  pmo: 'pmo',
 };
+
+// Only these can come from the offline demo login; a tampered stored role must never open the PMO UI.
+const isOperationalRole = (value: unknown): value is Role =>
+  value === 'field' || value === 'district' || value === 'control';
 
 const ROLE_LABELS: Record<Role, string> = {
   control: 'Control Officer',
@@ -71,7 +76,7 @@ function initials(name: string): string {
 }
 
 /** Role and profile from the database for the signed-in user. */
-async function loadAccount(): Promise<{ role: Role } | { error: string }> {
+async function loadAccount(): Promise<{ role: SessionRole } | { error: string }> {
   if (!supabase) return { error: 'The sign-in service is not configured for this build.' };
   const { data: userData } = await supabase.auth.getUser();
   const user = userData.user;
@@ -91,6 +96,9 @@ async function loadAccount(): Promise<{ role: Role } | { error: string }> {
   if (!role || prof?.is_active === false) {
     return { error: 'Your account has no active operational role. Contact your district administrator.' };
   }
+
+  // PMO users have their own dashboard and profile view; nothing to adopt into the operational profile.
+  if (role === 'pmo') return { role };
 
   const name = prof?.full_name || user.email || 'Officer';
   // The avatar isn't in the `profiles` table yet, so carry over whatever was
@@ -120,12 +128,18 @@ function demoSignIn(identity: string): SignInResult {
   return { ok: true, role, source: 'demo-offline' };
 }
 
-export async function signIn(identity: string, password: string): Promise<SignInResult> {
+/**
+ * `requirePmo` is the PMO entry point: it never falls back to the offline demo (which must not reach
+ * PMO data) and it refuses any account whose database role is not `pmo`.
+ */
+export async function signIn(identity: string, password: string, opts: { requirePmo?: boolean } = {}): Promise<SignInResult> {
   const id = identity.trim();
   if (!id || !password) return { ok: false, message: 'Enter your email and password to continue.' };
-  if (!supabase) return demoSignIn(id);
+  if (!supabase) {
+    return opts.requirePmo ? { ok: false, message: 'PMO sign-in needs the secure service, which is not configured for this build.' } : demoSignIn(id);
+  }
 
-  const email = id.includes('@') ? id : OFFICER_ID_EMAILS[id.toLowerCase()];
+  const email = id.includes('@') ? id : opts.requirePmo ? undefined : OFFICER_ID_EMAILS[id.toLowerCase()];
   if (!email) return { ok: false, message: 'Sign in with your official email address or officer ID.' };
 
   let error: { name?: string; status?: number; message?: string } | null = null;
@@ -135,7 +149,8 @@ export async function signIn(identity: string, password: string): Promise<SignIn
     error = { name: 'AuthRetryableFetchError', message: String(e) };
   }
   if (error) {
-    return isUnreachable(error) ? demoSignIn(id) : { ok: false, message: 'The email or password is incorrect.' };
+    if (!isUnreachable(error)) return { ok: false, message: 'The email or password is incorrect.' };
+    return opts.requirePmo ? { ok: false, message: 'The secure service could not be reached. PMO sign-in is not available offline.' } : demoSignIn(id);
   }
 
   const account = await loadAccount();
@@ -143,15 +158,19 @@ export async function signIn(identity: string, password: string): Promise<SignIn
     await supabase.auth.signOut().catch(() => undefined);
     return { ok: false, message: account.error };
   }
+  if (opts.requirePmo && account.role !== 'pmo') {
+    await supabase.auth.signOut().catch(() => undefined);
+    return { ok: false, message: 'This account is not authorised for the PMO dashboard.' };
+  }
   setSource('supabase');
   return { ok: true, role: account.role, source: 'supabase' };
 }
 
 /** Restores the session on page load; null means "show the login screen". */
-export async function restoreSession(): Promise<{ role: Role; source: SessionSource } | null> {
+export async function restoreSession(): Promise<{ role: SessionRole; source: SessionSource } | null> {
   const source = getSessionSource();
   const stored = profileService.getCurrentRole();
-  if (source === 'demo-offline' && stored) return { role: stored, source };
+  if (source === 'demo-offline' && isOperationalRole(stored)) return { role: stored, source };
   if (source !== 'supabase' || !supabase) {
     profileService.clearSession();
     setSource(null);
@@ -172,7 +191,7 @@ export async function restoreSession(): Promise<{ role: Role; source: SessionSou
     return { role: account.role, source };
   } catch {
     // Backend briefly unreachable: keep the stored role; the database still guards the data.
-    return stored ? { role: stored, source } : null;
+    return isOperationalRole(stored) ? { role: stored, source } : null;
   }
 }
 

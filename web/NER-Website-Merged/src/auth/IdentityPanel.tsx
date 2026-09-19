@@ -6,9 +6,11 @@ import { ChakraMark } from "./Icons";
 export default function IdentityPanel({
   onLogin,
   onCreate,
+  onPmo,
 }: {
   onLogin: () => void;
   onCreate: () => void;
+  onPmo: () => void;
 }) {
   return (
     <div
@@ -124,7 +126,7 @@ export default function IdentityPanel({
       </div>
 
       {/* Bottom: credibility line */}
-      <div className="relative z-10 flex items-center justify-center gap-2.5 px-6 pb-8">
+      <div className="relative z-10 flex items-center justify-center gap-2.5 px-6 pb-3">
         <span style={{ color: "#0E2A47" }}>
           <ChakraMark size={16} />
         </span>
@@ -138,6 +140,23 @@ export default function IdentityPanel({
           Ministry of Development of North Eastern Region · Government of India
         </span>
       </div>
+
+      {/* Footer links */}
+      <nav aria-label="Footer" className="relative z-10 flex items-center justify-center pb-6">
+        <button
+          onClick={onPmo}
+          className="text-xs font-semibold cursor-pointer underline underline-offset-2"
+          style={{
+            fontFamily: "'Public Sans', sans-serif",
+            color: "#0E2A47",
+            background: "none",
+            border: "none",
+            letterSpacing: "0.08em",
+          }}
+        >
+          PMO
+        </button>
+      </nav>
     </div>
   );
 }
