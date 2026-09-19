@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import type { Role } from '@/roles';
 import ProfilePanel, { type ProfileMeta } from '@/components/ProfilePanel';
-import { MlStatePill } from '@/components/MlRisk';
 import { fetchMlStatus, useMlQuery } from '@/lib/ml';
 import type { SessionSource } from '@/lib/auth';
 import { profileService } from '@/lib/profileService';
@@ -484,27 +483,6 @@ export default function Shell({ role, page, setPage, onSwitchRole, onLogout, ses
             </button>
           )}
 
-          {/*
-            Online status — exactly matches the image's "● ONLINE (1.2)" pill
-            at top-right corner.
-          */}
-          <button type="button" onClick={() => setPage(role === 'field' ? 'fo-dashboard' : role === 'control' ? 'cr-command' : 'ai')}
-            className="hidden lg:inline-flex" title="Open ML risk">
-            <MlStatePill meta={mlStatus.data} signedOut={mlStatus.signedOut} />
-          </button>
-
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded border"
-            style={{
-              background: offlineDemo ? 'rgba(240,239,237,0.8)' : 'rgba(234,242,236,0.7)',
-              borderColor: offlineDemo ? 'rgba(180,162,136,0.55)' : 'rgba(100,180,140,0.4)',
-              color: offlineDemo ? '#5A6670' : '#2D6B4F',
-              fontSize: 10,
-              letterSpacing: '0.06em',
-            }}>
-            <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: offlineDemo ? '#8A9098' : '#5DBB8A' }} />
-            {offlineDemo ? t('OFFLINE DEMO') : t('ONLINE')}
-          </div>
-
           {/* Profile */}
           <button
             onClick={() => setProfileOpen(true)}
@@ -531,13 +509,6 @@ export default function Shell({ role, page, setPage, onSwitchRole, onLogout, ses
 
         {/* Page content — transparent so the gradient shows as ambient bg */}
         <main className="flex-1 overflow-y-auto p-6" style={{ background: 'transparent' }}>
-          {offlineDemo && (
-            <div role="status" className="mb-4 rounded-lg border px-4 py-2.5 text-xs flex flex-wrap items-center gap-2"
-              style={{ background: 'rgba(240,239,237,0.9)', borderColor: 'rgba(180,162,136,0.6)', color: '#3E4A55' }}>
-              <strong style={{ color: '#17212B' }}>{t('Offline demo — live data unavailable.')}</strong>
-              <span>{t('The sign-in service could not be reached, so this session shows demo data only. ML risk and live updates need a real sign-in.')}</span>
-            </div>
-          )}
           <div key={page} className="ui-page">
             {children}
           </div>

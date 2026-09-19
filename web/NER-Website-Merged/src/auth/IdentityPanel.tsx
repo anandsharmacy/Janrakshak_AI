@@ -76,8 +76,7 @@ export default function IdentityPanel({
               color: "rgba(14,42,71,0.72)",
             }}
           >
-            Terrain-aware routing, connectivity risk mapping, and fleet
-            coordination across the North Eastern Region.
+            Nationwide disaster intelligence, risk-aware routing, connectivity mapping, and emergency coordination
           </p>
         </div>
 
@@ -138,7 +137,7 @@ export default function IdentityPanel({
               color: "rgba(14,42,71,0.64)",
             }}
           >
-            Ministry of Development of North Eastern Region · Government of India
+            Ministry of Home Affairs · Government of India
           </span>
         </span>
 
