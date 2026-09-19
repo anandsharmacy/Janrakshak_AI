@@ -59,6 +59,8 @@ MapOptions mapOptions({
       initialZoom: zoom,
       initialCameraFit: fit,
       backgroundColor: AppColors.bgDark,
+      // Vector tiles are stored up to kPmtilesMaxZoom and overzoomed after that; five extra levels is plenty.
+      maxZoom: OfflineTiles.provider != null ? kPmtilesMaxZoom + 5.0 : null,
       onTap: onTap,
       onMapReady: onMapReady,
       onPositionChanged: onPositionChanged,

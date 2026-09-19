@@ -1,7 +1,7 @@
 # JanRakshak AI 🛡️📦
 
 > **Nationwide Disaster-Resilient & Hazard-Aware Logistics Management Platform**  
-> *Evolved from the NER Logistics Platform (MDoNER SIH26002)*
+
 
 ---
 
@@ -57,7 +57,7 @@ The platform consists of several loosely-coupled microservices and application f
   - Live interactive maps showing active riders, shipments, hazard overlays, and heatmaps.
   - Real-time incident dispatching and emergency response coordination.
 
-### 3. 🧠 Machine Learning Engine (`sih-ml`)
+### 3. 🧠 Machine Learning Engine
 - **Tech Stack**: Python 3.10+, LightGBM, GeoPandas, XArray, Scikit-Learn, PyArrow, Docker.
 - **Key Features**:
   - Segment-level risk scoring along transport corridors based on weather, rainfall, terrain, and past historical disruption data.
