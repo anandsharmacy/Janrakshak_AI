@@ -19,3 +19,4 @@ deploy/bundles/
 deploy/featurestore/
 deploy/scores/
 reports/stage11/*.npy
+deploy/dist/

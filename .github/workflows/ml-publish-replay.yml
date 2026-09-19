@@ -1,0 +1,87 @@
+name: Publish ML replay day
+
+# Manual only. Publishes one already-scored day into Supabase as a labelled REPLAY (never "live").
+# Needs: repository secret SIH_PUBLISH_DSN (Supabase session-pooler DSN for the ml_publisher role)
+# and a private release holding ml-replay-assets.tar.gz (built by ml/scripts/make_replay_assets.sh).
+# See ML_GO_LIVE_PLAN.md, Phase 1.
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: Scored day to publish (must be inside the asset tarball)
+        default: "2025-07-28"
+        required: true
+      load_segments:
+        description: Also (re)load the 309,042 segment centroids and coverage (first run, or after a store rebuild)
+        type: boolean
+        default: false
+      asset_tag:
+        description: Release tag that holds ml-replay-assets.tar.gz
+        default: ml-replay-assets
+        required: true
+
+permissions:
+  contents: read
+
+# Two publishes must never overlap.
+concurrency:
+  group: ml-publish
+  cancel-in-progress: false
+
+env:
+  PYTHONPATH: ml/src
+  SIH_BUNDLE: ml/deploy/bundles/current
+  SIH_STORE: ml/deploy/featurestore
+  SIH_SCORES: ml/deploy/scores
+  SIH_PUBLISH_DSN: ${{ secrets.SIH_PUBLISH_DSN }}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: ml/deploy/requirements-publish.txt
+
+      - name: Install publisher dependencies
+        run: pip install -r ml/deploy/requirements-publish.txt
+
+      - name: Check the date and the secret
+        env:
+          DATE: ${{ inputs.date }}
+        run: |
+          [[ "$DATE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { echo "date must be YYYY-MM-DD"; exit 2; }
+          [[ -n "$SIH_PUBLISH_DSN" ]] || { echo "repository secret SIH_PUBLISH_DSN is not set"; exit 2; }
+
+      - name: Download and unpack the replay assets
+        id: assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.asset_tag }}
+        run: |
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern ml-replay-assets.tar.gz --dir "$RUNNER_TEMP"
+          tar -xzf "$RUNNER_TEMP/ml-replay-assets.tar.gz" -C ml
+          ls ml/deploy/bundles ml/deploy/scores
+
+      - name: Load segments and coverage
+        id: segments
+        if: ${{ inputs.load_segments }}
+        run: python -m sih_ml.serve.publish segments --centroids ml/data/interim/segment_centroids.parquet
+
+      - name: Publish the replay day
+        id: publish
+        env:
+          DATE: ${{ inputs.date }}
+        run: python -m sih_ml.serve.publish run --date "$DATE" --mode replay
+
+      - name: Report the failure to the PMO dashboard
+        if: ${{ failure() }}
+        env:
+          STAGE: ${{ steps.publish.outcome == 'failure' && 'publish' || steps.segments.outcome == 'failure' && 'segments' || steps.assets.outcome == 'failure' && 'assets' || 'other' }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python ml/scripts/report_failure.py --stage "$STAGE" --run-url "$RUN_URL"
