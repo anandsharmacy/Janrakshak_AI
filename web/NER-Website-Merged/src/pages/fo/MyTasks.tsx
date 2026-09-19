@@ -3,7 +3,7 @@ import { SeverityBadge, StatusBadge } from '@/components/StatusBadge';
 import type { Severity } from '@/data/demo';
 import { Card, PageHeader, BORDER, SURFACE, SURFACE_2, TEAL } from './ui';
 import { profileService } from '@/lib/profileService';
-import { getTasks, subscribeToTasks, updateTask } from '@/lib/taskStore';
+import { getTasks, subscribeToTasks, syncTasksFromServer, updateTask } from '@/lib/taskStore';
 
 type Life = 'Assigned' | 'Accepted' | 'In Progress' | 'Completed' | 'Verified';
 
@@ -11,6 +11,8 @@ interface FOTask {
   id: string; title: string; location: string; priority: Severity;
   assigned: string; due: string; status: Life;
 }
+
+const isMine = (task: ReturnType<typeof getTasks>[number]) => task.assignedOfficer === 'FO-1024' || !!task.assignedToMe;
 
 const TABS = ['All', 'Pending', 'In Progress', 'Completed', 'Overdue'] as const;
 const NEXT: Record<Life, Life | null> = { Assigned: 'Accepted', Accepted: 'In Progress', 'In Progress': 'Completed', Completed: 'Verified', Verified: null };
@@ -30,7 +32,7 @@ function toFieldTask(task: ReturnType<typeof getTasks>[number]): FOTask {
 
 export default function MyTasks() {
   const [tab, setTab] = useState<typeof TABS[number]>('All');
-  const [tasks, setTasks] = useState<FOTask[]>(() => getTasks().filter(task => task.assignedOfficer === 'FO-1024').map(toFieldTask));
+  const [tasks, setTasks] = useState<FOTask[]>(() => getTasks().filter(isMine).map(toFieldTask));
   const [busy, setBusy] = useState<string | null>(null);
   const [profile, setProfile] = useState(() => {
     try {
@@ -65,7 +67,8 @@ export default function MyTasks() {
     return unsubscribe;
   }, []);
 
-  useEffect(() => subscribeToTasks(stored => setTasks(stored.filter(task => task.assignedOfficer === 'FO-1024').map(toFieldTask))), []);
+  useEffect(() => subscribeToTasks(stored => setTasks(stored.filter(isMine).map(toFieldTask))), []);
+  useEffect(() => { void syncTasksFromServer(); }, []);
 
   const advance = (id: string) => {
     const t = tasks.find(x => x.id === id);

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { SeverityBadge, StatusBadge } from '@/components/StatusBadge';
-import { getTasks, subscribeToTasks } from '@/lib/taskStore';
+import CreateTaskModal from '@/components/CreateTaskModal';
+import { getTasks, subscribeToTasks, syncTasksFromServer } from '@/lib/taskStore';
 
 const tabKeys = ['All', 'New', 'In Progress', 'Completed', 'Escalated'];
 
@@ -8,8 +9,16 @@ export default function Tasks() {
   const [tab, setTab] = useState('All');
   const [tasks, setTasks] = useState<ReturnType<typeof getTasks>>(() => getTasks());
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [created, setCreated] = useState(false);
 
   useEffect(() => subscribeToTasks(stored => setTasks(stored)), []);
+  useEffect(() => { void syncTasksFromServer(); }, []);
+  useEffect(() => {
+    if (!created) return;
+    const timer = setTimeout(() => setCreated(false), 4000);
+    return () => clearTimeout(timer);
+  }, [created]);
 
   const filtered = tasks.filter(t => tab === 'All' || t.status === tab);
   const selectedTask = tasks.find(task => task.id === selectedTaskId) ?? null;
@@ -21,11 +30,16 @@ export default function Tasks() {
           <h1 className="font-semibold text-2xl" style={{ color: '#17212B' }}>Tasks</h1>
           <p className="text-sm mt-0.5" style={{ color: '#5A6670' }}>Field task management and assignment</p>
         </div>
-        <button className="text-xs font-medium px-3 py-2 rounded border"
+        <button onClick={() => setCreating(true)} className="text-xs font-medium px-3 py-2 rounded border"
           style={{ background: '#17324D', color: 'white', borderColor: '#17324D' }}>
           + Create Task
         </button>
       </div>
+
+      {created && (
+        <div role="status" className="text-xs rounded p-2" style={{ background: '#EAF4EE', color: '#2D6B4F' }}>Task created successfully.</div>
+      )}
+      {creating && <CreateTaskModal onClose={() => setCreating(false)} onCreated={() => { setCreating(false); setCreated(true); }} />}
 
       {/* Summary */}
       <div className="grid grid-cols-5 gap-3">
