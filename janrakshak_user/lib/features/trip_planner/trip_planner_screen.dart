@@ -133,7 +133,6 @@ class TripPlannerScreen extends ConsumerWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: FlutterMap(
-            key: ValueKey('${tripId}_${all.length}'),
             options: mapOptions(fit: CameraFit.coordinates(coordinates: all, padding: const EdgeInsets.all(40))),
             children: [
               darkTiles,

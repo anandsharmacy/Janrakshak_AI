@@ -10,20 +10,36 @@ import '../theme/app_theme.dart';
 
 const indiaCenter = LatLng(22.5, 80.0);
 
-/// Base map. With PMTILES_URL set: our own vector tiles (downloaded tiles are served from disk first, so it keeps working
-/// offline). Otherwise keyless OSM raster tiles, colour-inverted to match AppColors.bgDark (display only, no downloads).
-// ponytail: tile.openstreetmap.org is for light use only; set PMTILES_URL (see README) before a public launch.
-final Widget darkTiles = OfflineTiles.theme != null && OfflineTiles.provider != null
-    ? VectorTileLayer(
-        tileProviders: TileProviders({'openmaptiles': OfflineTiles.provider!}),
-        theme: OfflineTiles.theme!,
-        maximumZoom: 18,
-      )
-    : TileLayer(
-        urlTemplate: kOsmUrl,
-        userAgentPackageName: 'com.janrakshak.janrakshak_user',
-        tileBuilder: darkModeTileBuilder,
-      );
+const kCartoDarkUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
+
+/// Base map layer builder.
+/// Returns a high-performance dark raster TileLayer as basemap.
+/// If PMTiles vector provider is initialized, overlays VectorTileLayer on top while retaining
+/// the raster tile basemap for areas outside the local PMTiles extent.
+Widget buildDarkTiles() {
+  final baseRaster = TileLayer(
+    urlTemplate: kCartoDarkUrl,
+    subdomains: const ['a', 'b', 'c', 'd'],
+    maxZoom: 19,
+    userAgentPackageName: 'com.janrakshak.janrakshak_user',
+  );
+
+  if (OfflineTiles.theme != null && OfflineTiles.provider != null) {
+    return Stack(
+      children: [
+        baseRaster,
+        VectorTileLayer(
+          tileProviders: TileProviders({'openmaptiles': OfflineTiles.provider!}),
+          theme: OfflineTiles.theme!,
+          maximumZoom: 18,
+        ),
+      ],
+    );
+  }
+  return baseRaster;
+}
+
+Widget get darkTiles => buildDarkTiles();
 
 final mapAttribution = SimpleAttributionWidget(
   source: Text(offlineMapsEnabled ? kAttribution : 'OpenStreetMap contributors'),
@@ -43,11 +59,11 @@ MapOptions mapOptions({
       initialZoom: zoom,
       initialCameraFit: fit,
       backgroundColor: AppColors.bgDark,
-      // Vector tiles are stored up to kPmtilesMaxZoom and overzoomed after that; five extra levels is plenty.
-      maxZoom: OfflineTiles.provider != null ? kPmtilesMaxZoom + 5.0 : null,
       onTap: onTap,
       onMapReady: onMapReady,
       onPositionChanged: onPositionChanged,
+      // Vector tiles are stored up to kPmtilesMaxZoom and overzoomed after that; five extra levels is plenty.
+      maxZoom: OfflineTiles.provider != null ? kPmtilesMaxZoom + 5.0 : null,
       interactionOptions: const InteractionOptions(flags: InteractiveFlag.all & ~InteractiveFlag.rotate),
     );
 
