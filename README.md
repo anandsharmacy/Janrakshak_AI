@@ -1,7 +1,7 @@
 # JanRakshak AI 🛡️📦
 
 > **Nationwide Disaster-Resilient & Hazard-Aware Logistics Management Platform**  
-> *Evolved from the NER Logistics Platform (MDoNER SIH26002)*
+> *Evolved from the NER Logistics Platform ()*
 
 ---
 
