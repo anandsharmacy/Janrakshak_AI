@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
-# Uploads the built PMTiles file to the project's public `basemap` bucket (the bucket already exists; only the service
+# Uploads the built PMTiles file (default out/india.pmtiles) to the project's public `basemap` bucket (the bucket already exists; only the service
 # role can write to it). Usage:
 #   Put the service_role key (Dashboard > Project Settings > API) in tools/basemap/.env.local as
 #   SUPABASE_SERVICE_ROLE_KEY=...   (that file is git-ignored; never put the key in this script or commit it),
 #   or export it in your shell.
 #   tools/basemap/upload.sh [file]         # default: out/north-eastern-zone.pmtiles
 # A 413 means the file is over the project's upload limit (50 MB on the free plan): build with a lower MAXZOOM
-# (12 = ~30 MB, 13 = ~58 MB) and give the app the same value via --dart-define=PMTILES_MAX_ZOOM=.
+# (whole India: 9 = 34 MiB, 10 = 85 MiB, 12 = 530 MiB) and give the app the same value via --dart-define=PMTILES_MAX_ZOOM=.
 set -euo pipefail
 cd "$(dirname "$0")"
 [ -f .env.local ] && set -a && . ./.env.local && set +a
 : "${SUPABASE_SERVICE_ROLE_KEY:?put SUPABASE_SERVICE_ROLE_KEY in tools/basemap/.env.local or export it}"
-FILE=${1:-out/north-eastern-zone.pmtiles}
+FILE=${1:-out/india.pmtiles}
 NAME=$(basename "$FILE")
 BASE=${SUPABASE_URL:-https://sjcqwxthimfuxmrodsbs.supabase.co}
 PUBLIC="$BASE/storage/v1/object/public/basemap/$NAME"

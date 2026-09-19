@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # Builds the offline basemap: OpenStreetMap extract (Geofabrik) -> Planetiler (OpenMapTiles schema) -> one PMTiles file.
-# Usage: tools/basemap/build.sh            (North East India, ~110 MB extract; MAXZOOM=12 -> ~30 MB file)
-#        EXTRACT=asia/india/eastern-zone-latest tools/basemap/build.sh   (any other Geofabrik extract)
+# Usage: tools/basemap/build.sh            (ALL of India, 1.7 GB extract, ~6 min; MAXZOOM=9 -> 34 MiB file)
+#        EXTRACT=asia/india/north-eastern-zone-latest tools/basemap/build.sh   (any other Geofabrik extract)
 # Needs Java 21+. First run also downloads ~1.3 GB of Natural Earth / water-polygon data (cached in data/sources).
 set -euo pipefail
 cd "$(dirname "$0")"
-EXTRACT=${EXTRACT:-asia/india/north-eastern-zone-latest}
+EXTRACT=${EXTRACT:-asia/india-latest}
 NAME=$(basename "${EXTRACT%-latest}")
-HEAP=${HEAP:-6g}
+HEAP=${HEAP:-10g}
 # Only the layers assets/basemap/style.json draws; POIs, house numbers and parks just make the file (and every offline download) bigger.
-MAXZOOM=${MAXZOOM:-12}
+MAXZOOM=${MAXZOOM:-9}
 LAYERS=${LAYERS:-aeroway,boundary,building,landcover,landuse,place,transportation,transportation_name,water,water_name,waterway}
 mkdir -p data/sources data/tmp out
 

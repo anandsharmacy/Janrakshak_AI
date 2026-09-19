@@ -115,9 +115,9 @@ void main() {
     const guwahatiToDelhi = [LatLng(26.14, 91.74), LatLng(28.61, 77.21)]; // sparse points, ~1,500 km
     final full = planCorridor(guwahatiToDelhi);
     expect(full.maxZoom, kPmtilesMaxZoom);
-    expect(full.count, inInclusiveRange(500, 10000)); // even ~1,500 km is only about a thousand tiles at zoom 12
-    final capped = planCorridor(guwahatiToDelhi, maxTiles: 600);
-    expect(capped.count, lessThanOrEqualTo(600));
+    expect(full.count, inInclusiveRange(50, 1000)); // even ~1,500 km is only ~190 tiles (~3 MB) at zoom 9
+    final capped = planCorridor(guwahatiToDelhi, maxTiles: 150);
+    expect(capped.count, lessThanOrEqualTo(150));
     expect(capped.maxZoom, lessThan(kPmtilesMaxZoom)); // over budget -> shallower map instead of a huge download
     final short = planCorridor(const [LatLng(24.83, 92.78), LatLng(24.86, 92.81)]);
     expect(short.maxZoom, kPmtilesMaxZoom);
