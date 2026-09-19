@@ -3,7 +3,7 @@ import MapViz from '@/components/MapViz';
 import { SeverityBadge } from '@/components/StatusBadge';
 import type { Severity } from '@/data/demo';
 import { PLACES, formatCoords, parseCoords, type LatLng } from '@/data/geo';
-import { addIncident, type IncidentEvidence } from '@/lib/incidentStore';
+import { submitIncident, type IncidentEvidence } from '@/lib/incidentStore';
 import { Card, PageHeader, BORDER, SURFACE_2, NAVY, TEAL, GOLD } from './ui';
 
 const STEPS = ['Incident Type', 'Location', 'Evidence', 'Details', 'Review', 'Submit'];
@@ -151,11 +151,12 @@ export default function ReportIncident({ setPage, presetType }: { setPage?: (p: 
     }
   };
 
-  const doSubmit = () => {
+  const doSubmit = async () => {
     setSubmit('submitting');
+    setEvidenceError(null);
     try {
-      const incident = addIncident({
-        type: (type ?? 'Other') as Parameters<typeof addIncident>[0]['type'],
+      const incident = await submitIncident({
+        type: (type ?? 'Other') as Parameters<typeof submitIncident>[0]['type'],
         location: locName,
         route,
         severity,
@@ -167,8 +168,8 @@ export default function ReportIncident({ setPage, presetType }: { setPage?: (p: 
       setIncidentId(incident.id);
       setSubmit('done');
       setStep(5);
-    } catch {
-      setEvidenceError('Incident could not be saved. Please remove large files and try again.');
+    } catch (error) {
+      setEvidenceError(error instanceof Error ? error.message : 'Incident could not be saved. Please try again.');
       setSubmit('idle');
     }
   };
@@ -408,6 +409,7 @@ export default function ReportIncident({ setPage, presetType }: { setPage?: (p: 
                   style={{ background: NAVY, color: 'white', minHeight: 44 }}>
                   {submit === 'submitting' ? 'Submitting…' : 'Submit Incident'}
                 </button>
+                {evidenceError && <p role="alert" className="text-xs" style={{ color: '#BE2424' }}>{evidenceError}</p>}
               </div>
             ) : (
               <div className="max-w-md mx-auto">

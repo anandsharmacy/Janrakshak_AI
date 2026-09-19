@@ -8,6 +8,12 @@ const MIN_REASON_LENGTH = 10;
 
 type Role = "field-officer" | "district-officer" | "control-room" | null;
 
+const APPROVER = {
+  "field-officer": "A District Officer of your district (or the Control Room)",
+  "district-officer": "The Control Room",
+  "control-room": "A PMO officer",
+};
+
 const ROLES: {
   id: Role;
   label: string;
@@ -57,8 +63,9 @@ export default function CreateAccountTab() {
     isValidLocation(selectedRegion, selectedState, needsDistrict ? selectedDistrict : undefined) &&
     (selectedRole !== "control-room" || reason.trim().length >= MIN_REASON_LENGTH);
 
-  // Control Room accounts are real Supabase accounts that stay inactive until the PMO approves them.
-  const requestControlRoomAccess = async () => {
+  // Officer accounts are real Supabase accounts that stay inactive until the next role up approves them
+  // (field -> district officer, district -> control room, control room -> PMO).
+  const requestAccess = async () => {
     setError(null);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       setError("Enter a valid official email address.");
@@ -73,8 +80,7 @@ export default function CreateAccountTab() {
       return;
     }
     if (!supabase) {
-      setError("Control Room requests need the secure service, which is not configured for this build.");
-      return;
+      setError("Control Room requests need the secure service, which is not configured for this build.");      return;
     }
     setSubmitting(true);
     const { error: signUpError } = await supabase.auth.signUp({
@@ -83,9 +89,10 @@ export default function CreateAccountTab() {
       options: {
         data: {
           full_name: fullName.trim(),
-          requested_role: "control_room",
+          requested_role: selectedRole?.replace("-", "_"),
           region: selectedRegion,
           state: selectedState,
+          district: needsDistrict ? selectedDistrict : undefined,
           request_reason: reason.trim(),
         },
       },
@@ -106,7 +113,7 @@ export default function CreateAccountTab() {
       <div className="flex flex-col items-center gap-3 text-center" style={{ fontFamily: "'Noto Sans', sans-serif" }}>
         <p className="text-sm font-semibold" style={{ color: "#1E6B45" }}>
           {requestSent
-            ? "Request submitted. A PMO officer must approve your Control Room account before you can sign in."
+            ? `Request submitted. ${APPROVER[selectedRole ?? "control-room"]} must approve your account before you can sign in.`
             : "Account created successfully. You can now log in."}
         </p>
       </div>
@@ -119,8 +126,9 @@ export default function CreateAccountTab() {
       onSubmit={(e) => {
         e.preventDefault();
         if (!canSubmit || !selectedRole || submitting) return;
-        if (selectedRole === "control-room") {
-          void requestControlRoomAccess();
+        // Without a backend only the offline demo can register Field/District officers (local browser only).
+        if (selectedRole === "control-room" || supabase) {
+          void requestAccess();
           return;
         }
         const roleLabel = selectedRole === "field-officer" ? "Field Officer" : selectedRole === "district-officer" ? "District Officer" : "Control Officer";
