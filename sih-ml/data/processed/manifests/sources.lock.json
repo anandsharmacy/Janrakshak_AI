@@ -1,0 +1,72 @@
+{
+  "roads_gpkg": {
+    "path": "/Users/anand/Desktop/SIH/data/data2/training_data/road_network/corridor_roads.gpkg",
+    "exists": true,
+    "bytes": 164356096,
+    "mtime": "2026-09-10T13:18:20.347188+00:00",
+    "sha256": "df93bfa987bb6914354cb6600647cedfe6b3fec36595824fdaaf4284557c0cb4"
+  },
+  "roads_csv": {
+    "path": "/Users/anand/Desktop/SIH/data/data2/training_data/road_network/corridor_roads.csv",
+    "exists": true,
+    "bytes": 18225422,
+    "mtime": "2026-09-10T13:18:20.195965+00:00",
+    "sha256": "a9f45d2b6aa3ab81a54738e32d1f755ea0d2bd0ad2d180ceac375f7ee11460c0"
+  },
+  "static_features": {
+    "path": "/Users/anand/Desktop/SIH/data/data2/training_data/segment_features/segment_static_features.csv",
+    "exists": true,
+    "bytes": 45558120,
+    "mtime": "2026-09-10T22:08:49.671594+00:00",
+    "sha256": "d9abebee1a062d2c788b543383b3fb4f9cea29e30979d5abfc990332fea098ac"
+  },
+  "hydro_features": {
+    "path": "/Users/anand/Desktop/SIH/data/data2/training_data/segment_features/segment_hydrology_features.csv",
+    "exists": true,
+    "bytes": 15615394,
+    "mtime": "2026-09-10T14:21:02.508687+00:00",
+    "sha256": "1a020c5f5b616a17389d6c53310b00cdbf278e91464572f5a59e7845392c8220"
+  },
+  "chirps_csv": {
+    "path": "/Users/anand/Desktop/SIH/data/data2/training_data/rainfall_chirps/corridor_chirps_daily.csv.gz",
+    "exists": true,
+    "bytes": 4815647,
+    "mtime": "2026-09-10T13:18:19.891897+00:00",
+    "sha256": "1a3bba50314e1dd15756d77d13b3e6e28dc01b8721710d4d7aedfe7c992b3dd1"
+  },
+  "glc_bbox": {
+    "path": "/Users/anand/Desktop/SIH/data/data2/training_data/landslide_inventory_coolr/glc_chickens_neck_bbox.csv",
+    "exists": true,
+    "bytes": 161136,
+    "mtime": "2026-09-10T00:21:38.881514+00:00",
+    "sha256": "a216a61566ff84297818811c86fbd5fcf545957fbba56be5b2052a61c972ee99"
+  },
+  "corridor_landslides": {
+    "path": "/Users/anand/Desktop/SIH/data/data2/training_data/disruption_labels_events/corridor_landslides.csv",
+    "exists": true,
+    "bytes": 6324,
+    "mtime": "2026-09-10T14:17:55.529338+00:00",
+    "sha256": "1e518990e77005c35f74e2a32fd46c476f122a72d0f4c79c2afda4b394ba52df"
+  },
+  "disruption_events": {
+    "path": "/Users/anand/Desktop/SIH/data/data2/training_data/disruption_labels_events/corridor_disruption_events.csv",
+    "exists": true,
+    "bytes": 113238,
+    "mtime": "2026-09-10T13:18:20.170322+00:00",
+    "sha256": "f338b8cab6a46b851b2ff106a3f42c3879f918ec1da38d0e4d8f0bd434ac9a82"
+  },
+  "flood_extents": {
+    "path": "/Users/anand/Desktop/SIH/data/data2/training_data/disruption_labels_events/corridor_flood_extents.gpkg",
+    "exists": true,
+    "bytes": 155648,
+    "mtime": "2026-09-10T14:20:08.053446+00:00",
+    "sha256": "c0075d95343296c73ba84b808411a8a6cd037b0f2d37981162ba539ab61c5b8f"
+  },
+  "road_segment_labels": {
+    "path": "/Users/anand/Desktop/SIH/data/data2/training_data/disruption_labels_events/road_segment_disruption_labels.csv",
+    "exists": true,
+    "bytes": 301,
+    "mtime": "2026-09-10T14:17:55.531576+00:00",
+    "sha256": "422e91806e1b4a24b0179065413092d0247cff7de5ff7e899dd52f33a159b94a"
+  }
+}

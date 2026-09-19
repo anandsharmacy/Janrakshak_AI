@@ -1,0 +1,196 @@
+# Stage 10 — continuous improvement loop.
+#
+# Inherits the Stage 9 chain (remediate -> optimize -> hpo -> train -> baseline), so
+# the champion it reconstructs is final_v2 (config 5aed65f3f8729060) exactly. Every
+# experiment below is ONE change to the champion, measured on dev spatial CV only.
+# The locked split is never read by this stage.
+base_config: "conf/remediate_config.yaml"
+
+seed: 42
+# Versions are derived, not configured: a campaign that changes the champion names the
+# result <champion>_v(n+1) and records its lineage in models/registry.json.
+
+paths:
+  reports: "reports/stage10"
+  models: "models"
+  registry: "models/registry.json"
+  ledger: "reports/stage10/EXPERIMENT_LEDGER.jsonl"
+
+improve:
+  champion:
+    version: "final_v2"
+    config_sha256_16: "5aed65f3f8729060"
+    # Reconstruction must reproduce these Stage 9 numbers exactly before anything is
+    # measured against it — otherwise the loop would be comparing against a model
+    # that is not the one in the registry.
+    stage9_selection: "reports/stage9/model_selection.csv"
+    stage9_prereg: "reports/stage9/PREREGISTRATION_V2.json"
+
+  folds: [0, 1, 2, 3, 4]
+  seeds: [42, 1337, 2024]          # Stage 9's seeds — the paired comparison
+  aa_seeds: [7, 99, 31337]         # A/A: the champion against itself
+  alpha: 0.10
+  min_folds_improved: 4
+  noise_floor_quantile: 0.90
+  # Simplifications are non-inferiority tests: removal is accepted if it costs less
+  # than min(A/A floor, this cap). The cap stops a wide noise floor from licensing the
+  # removal of a component that costs real accuracy.
+  ni_margin_cap: 0.01
+  n_permutations: 20000
+  max_accepts_per_campaign: 3      # greedy composition stops after this many
+
+  calibration_bins: [0.0, 2.5, 10.0, 20.0, 90.0]   # coarse, chosen on dev in Stage 9
+  cost_fn_over_fp: 10              # Stage 7 measured 10 as dominating the placeholder 20
+
+  guardrails:
+    steep_slope_deg: 10.0
+    max_steep_roc_drop: 0.01        # steep terrain is where roads close
+    max_worst_terrain_cal_ratio: 1.5   # the deployment gate's own threshold
+    max_cal_ratio_increase: 0.25
+    max_monotonicity_violations: 0     # gate 12
+    max_corridor_sec: 300              # gate: daily batch window
+    max_model_mb: 50                   # gate: artifact size
+    # region guardrail: worst fold may not lose more than the A/A worst-fold floor
+
+  # --------------------------------------------------------------------------
+  # Error patterns (re-measured on the champion every campaign) and the layer a fix
+  # must come from. `experiments` lists the backlog items that target each.
+  bottlenecks:
+    data_integrity:
+      pattern: "rows whose rainfall cutoff is beyond the CHIRPS record carry fabricated dry rainfall"
+      layer: "data"
+      experiments: ["D1_rainfall_coverage"]
+    region:
+      pattern: "skill learned in one valley does not transfer to the next (Stage 9 D)"
+      layer: "data (rainfall resolution) > features > training"
+      experiments: ["X3_rain_local_percentile", "X4_seed_bag_3"]
+    steep:
+      pattern: "weak discrimination within steep terrain, where roads actually close"
+      layer: "data (rainfall resolution)"
+      experiments: ["X3_rain_local_percentile"]
+    memorisation:
+      pattern: "static terrain columns act as a per-segment fingerprint (Stage 7 §2)"
+      layer: "training (regularisation)"
+      experiments: ["X2_static_coarse_bins", "S2_no_gaussian"]
+    missed_positives:
+      pattern: "missed positives are the low-rain ones (Stage 5 §3)"
+      layer: "labels (dates, triggers) > data (rainfall resolution) > loss"
+      experiments: ["X1_focal_g1.5"]
+    calibration:
+      pattern: "probabilities do not transfer across regions (Stage 9: 2.65x on the locked split)"
+      layer: "post-processing on LOCAL history — not fixable from dev"
+      experiments: []
+
+  # --------------------------------------------------------------------------
+  # The backlog. round 0 = correctness fixes (applied before anything is compared
+  # against the champion); round 1 = everything else, each against the same champion.
+  experiments:
+    - id: "D1_rainfall_coverage"
+      round: 0
+      kind: "correctness"
+      layer: "data"
+      bottleneck: "data_integrity"
+      change: {coverage_mask: true}
+      hypothesis: >-
+        4,463 dev rows (all negatives, >50% monsoon-dated) are dated 2026, beyond the
+        CHIRPS record ending 2025-12-31; the Stage 2 builder snapped their rainfall to
+        the dry-season window ending that day. They are fabricated easy negatives.
+        Removing them corrects the target; the accuracy effect is measured, not assumed.
+      evidence: "Stage 10 data audit; features/rainfall.py win_sum snap-to-earlier-date"
+
+    - id: "X1_focal_g1.5"
+      round: 1
+      kind: "superiority"
+      layer: "training (loss)"
+      bottleneck: "missed_positives"
+      change: {add_step: "loss/focal_g1.5"}
+      hypothesis: >-
+        Focal loss down-weights easy rows. Stage 7 measured the largest single-arm gain
+        (+0.031, 16/20 fold-seed pairs under replication) but 4/5 folds on seed 0, and
+        recommended it as the first re-test once the target changed. The target has
+        changed twice since (de-leaked, scoped).
+      evidence: "reports/stage7/OPTIMIZATION_FINDINGS.md §3, §7"
+
+    - id: "X2_static_coarse_bins"
+      round: 1
+      kind: "superiority"
+      layer: "training (regularisation)"
+      bottleneck: "memorisation"
+      change: {lgbm: {static_max_bin: 16}}
+      hypothesis: >-
+        Stage 7's winning augmentation works by blurring static columns so trees
+        cannot split on a segment's exact terrain values. Coarsening those columns to
+        16 bins is a deterministic version of the same mechanism. If it adds nothing on
+        top of the noise, the mechanism is already saturated.
+      evidence: "reports/stage7/OPTIMIZATION_FINDINGS.md §2 (terrain-only noise = 89% of the effect)"
+
+    - id: "X3_rain_local_percentile"
+      round: 1
+      kind: "superiority"
+      layer: "features"
+      bottleneck: "region"
+      change: {add_features: "rain_local_percentile"}
+      hypothesis: >-
+        Region transfer is the dominant failure (steep ROC 0.75 dev vs 0.63 held-out).
+        Absolute rainfall means different things in different climates; expressing the
+        3/7/30-day totals as percentiles of the row's own CHIRPS cell climatology gives
+        the model a quantity that should travel between regions.
+      evidence: "REMEDIATION.md §D; landslide-threshold practice of climate normalisation"
+
+    - id: "X4_seed_bag_3"
+      round: 1
+      kind: "superiority"
+      layer: "inference (ensemble)"
+      bottleneck: "region"
+      change: {bag: 3}
+      hypothesis: >-
+        The recipe is stochastic (noise augmentation, SMOTE, bagging, ES split) and its
+        seed-to-seed spread is as large as the effects being measured (Stage 9 per-seed
+        AP 0.392 / 0.417 / 0.398). Averaging 3 boosters trained under different seeds
+        should reduce that variance. Costs 3x inference — within the gate by ~100x.
+      evidence: "reports/stage7/OPTIMIZATION_FINDINGS.md §7; reports/stage9/model_selection.csv"
+
+    - id: "S1_no_smote"
+      round: 1
+      kind: "simplification"
+      layer: "data (augmentation)"
+      bottleneck: "memorisation"
+      change: {remove_step: "aug/smote_k5_f0.5"}
+      hypothesis: >-
+        The recipe was selected on the leaked, unscoped v1 target and carried into v2
+        unchanged. Its components have never been re-measured individually on the
+        clean target. If SMOTE no longer earns its place, remove it.
+      evidence: "REMEDIATION.md §B (target changed); Stage 7 smote +0.0173 on the old target"
+
+    - id: "S2_no_gaussian"
+      round: 1
+      kind: "simplification"
+      layer: "data (augmentation)"
+      bottleneck: "memorisation"
+      change: {remove_step: "aug/gaussian_all_s0.1"}
+      hypothesis: >-
+        Same question for the Gaussian noise. Expected to be CONFIRMED (i.e. removal
+        rejected) because the anti-fingerprint mechanism should not depend on target
+        scope — stated before the run so the result can contradict it.
+      evidence: "Stage 7 gaussian_all_s0.1 +0.0282 on the old target"
+
+    - id: "S3_uniform_weights"
+      round: 1
+      kind: "simplification"
+      layer: "data (label weighting)"
+      bottleneck: "missed_positives"
+      change: {add_step: "data/weight_uniform"}
+      hypothesis: >-
+        Stage 2's label-confidence weights earned nothing measurable in Stage 7
+        (uniform +0.0050). Discarding them removes a hand-built heuristic from the
+        training path.
+      evidence: "reports/stage7/OPTIMIZATION_FINDINGS.md §4"
+
+  efficiency:
+    tree_fractions: [0.1, 0.25, 0.5, 0.75, 1.0]
+    threads: [1, 2, 4, 8]
+    batches: [1000, 10000, 100000, 309042]
+    deployment_segments: 309042
+    latency_rows: 20000
+    repeats: 5
+  operating_coverage: [0.005, 0.01, 0.02, 0.05, 0.10]

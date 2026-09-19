@@ -1,0 +1,10 @@
+{
+  "description": "This web application offers a cohesive dashboard for district officers, integrating visual themes for enhanced data management and user experience.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

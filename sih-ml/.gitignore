@@ -1,0 +1,21 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+data/interim/
+data/processed/*.parquet
+reports/*.png
+reports/**/*.png
+.DS_Store
+# Stage 3/4 training outputs
+models/
+checkpoints/
+mlruns/
+
+studies/
+# Stage 11 deployment: generated artifacts + environments (rebuild with `make bundle`)
+.venv-deploy/
+.venv-publish/
+deploy/bundles/
+deploy/featurestore/
+deploy/scores/
+reports/stage11/*.npy

@@ -1,0 +1,1015 @@
+{
+ "host": {
+  "machine": "arm64",
+  "cpus": 10,
+  "note": "client and server share this machine"
+ },
+ "results": [
+  {
+   "scenario": "lookup_1",
+   "concurrency": 1,
+   "client_processes": 1,
+   "requests": 6564,
+   "ok": 6564,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 1,
+   "rps": 806.2732538114981,
+   "p50_ms": 1.1644580008578487,
+   "p95_ms": 1.4026000990270404,
+   "p99_ms": 1.5720462513854727,
+   "max_ms": 54.131832999701146,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.8243360000051325,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "lookup_1",
+   "concurrency": 8,
+   "client_processes": 5,
+   "requests": 21902,
+   "ok": 21902,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 8,
+   "rps": 2496.5524505121075,
+   "p50_ms": 2.811166996252723,
+   "p95_ms": 4.643679798755329,
+   "p99_ms": 5.289688414995911,
+   "max_ms": 79.7789999996894,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.8243360000051325,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "lookup_1",
+   "concurrency": 32,
+   "client_processes": 5,
+   "requests": 22175,
+   "ok": 22175,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 32,
+   "rps": 2548.273954504555,
+   "p50_ms": 12.22804199642269,
+   "p95_ms": 17.549404194869567,
+   "p99_ms": 23.80892374363606,
+   "max_ms": 73.39079200028209,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.8243360000051325,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "lookup_1",
+   "concurrency": 64,
+   "client_processes": 5,
+   "requests": 21372,
+   "ok": 21372,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 76,
+   "rps": 2451.0575869935024,
+   "p50_ms": 24.540583497582702,
+   "p95_ms": 37.277187648578554,
+   "p99_ms": 40.04371142727905,
+   "max_ms": 81.1917499959236,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.8243360000051325,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "lookup_100",
+   "concurrency": 1,
+   "client_processes": 1,
+   "requests": 4678,
+   "ok": 4678,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 3,
+   "rps": 574.0692913609957,
+   "p50_ms": 1.598145503521664,
+   "p95_ms": 1.9452811990049668,
+   "p99_ms": 2.2572301567561186,
+   "max_ms": 58.58595799509203,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.8243360000051325,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "lookup_100",
+   "concurrency": 8,
+   "client_processes": 5,
+   "requests": 16154,
+   "ok": 16154,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 12,
+   "rps": 1861.5092364889701,
+   "p50_ms": 3.283416499471059,
+   "p95_ms": 7.629308450850658,
+   "p99_ms": 9.2236145017523,
+   "max_ms": 76.87866599735571,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.8243360000051325,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "lookup_100",
+   "concurrency": 32,
+   "client_processes": 5,
+   "requests": 16555,
+   "ok": 16555,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 32,
+   "rps": 1896.6639054296688,
+   "p50_ms": 13.278708996949717,
+   "p95_ms": 25.670108599297233,
+   "p99_ms": 41.48009317592365,
+   "max_ms": 128.51341699570185,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.8243360000051325,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "lookup_100",
+   "concurrency": 64,
+   "client_processes": 5,
+   "requests": 16917,
+   "ok": 16917,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 64,
+   "rps": 1925.268423081862,
+   "p50_ms": 27.811792002466973,
+   "p95_ms": 47.57880780525736,
+   "p99_ms": 64.61065671697726,
+   "max_ms": 91.72145900083706,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.8243360000051325,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "score_100",
+   "concurrency": 1,
+   "client_processes": 1,
+   "requests": 158,
+   "ok": 158,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 1,
+   "rps": 19.347690866054364,
+   "p50_ms": 48.185103998548584,
+   "p95_ms": 59.76643750327639,
+   "p99_ms": 91.13809725233297,
+   "max_ms": 116.09520800266182,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.8243360000051325,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "score_100",
+   "concurrency": 8,
+   "client_processes": 5,
+   "requests": 626,
+   "ok": 626,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 8,
+   "rps": 71.83153199610113,
+   "p50_ms": 94.37956299734651,
+   "p95_ms": 174.7983232507977,
+   "p99_ms": 275.5870002511074,
+   "max_ms": 344.5686669947463,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.8243360000051325,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "score_100",
+   "concurrency": 32,
+   "client_processes": 5,
+   "requests": 690,
+   "ok": 690,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 32,
+   "rps": 72.93045691875922,
+   "p50_ms": 279.95833399836556,
+   "p95_ms": 911.897845502608,
+   "p99_ms": 971.5035056250053,
+   "max_ms": 1071.2153749991558,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.8243360000051325,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "score_100",
+   "concurrency": 64,
+   "client_processes": 5,
+   "requests": 749,
+   "ok": 749,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 64,
+   "rps": 77.48179543646754,
+   "p50_ms": 594.036665999738,
+   "p95_ms": 1232.0162666001124,
+   "p99_ms": 1280.7889883243479,
+   "max_ms": 1341.6677499990328,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.8243360000051325,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "whatif_100",
+   "concurrency": 1,
+   "client_processes": 1,
+   "requests": 487,
+   "ok": 487,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 1,
+   "rps": 59.68703952622682,
+   "p50_ms": 15.804416994797066,
+   "p95_ms": 17.969625000841916,
+   "p99_ms": 29.060175884223977,
+   "max_ms": 38.49099999933969,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.8243360000051325,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "whatif_100",
+   "concurrency": 8,
+   "client_processes": 5,
+   "requests": 1027,
+   "ok": 1027,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 8,
+   "rps": 118.89684737615657,
+   "p50_ms": 64.94349999411497,
+   "p95_ms": 67.58494179666741,
+   "p99_ms": 71.54589199941256,
+   "max_ms": 75.64575000287732,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.8243360000051325,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "whatif_100",
+   "concurrency": 32,
+   "client_processes": 5,
+   "requests": 2067,
+   "ok": 2067,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 32,
+   "rps": 238.4516745674033,
+   "p50_ms": 129.9331250047544,
+   "p95_ms": 165.3416127024684,
+   "p99_ms": 169.58266099623867,
+   "max_ms": 174.26425000303425,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.8243360000051325,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "whatif_100",
+   "concurrency": 64,
+   "client_processes": 5,
+   "requests": 2026,
+   "ok": 2026,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 64,
+   "rps": 232.81279774017537,
+   "p50_ms": 274.4038750024629,
+   "p95_ms": 317.9050310027378,
+   "p99_ms": 336.91008349524054,
+   "max_ms": 373.1234590013628,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.8243360000051325,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "alerts",
+   "concurrency": 1,
+   "client_processes": 1,
+   "requests": 2265,
+   "ok": 2265,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 1,
+   "rps": 277.7069745217936,
+   "p50_ms": 3.4599580030771904,
+   "p95_ms": 4.016649999539368,
+   "p99_ms": 4.270765120745639,
+   "max_ms": 34.49558300053468,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.8243360000051325,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "alerts",
+   "concurrency": 8,
+   "client_processes": 5,
+   "requests": 8164,
+   "ok": 8164,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 8,
+   "rps": 941.2901360720291,
+   "p50_ms": 7.381354498647852,
+   "p95_ms": 12.487983852042817,
+   "p99_ms": 19.519862709203142,
+   "max_ms": 80.1202500006184,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.8243360000051325,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "alerts",
+   "concurrency": 32,
+   "client_processes": 5,
+   "requests": 9107,
+   "ok": 9107,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 32,
+   "rps": 1050.1483304255175,
+   "p50_ms": 27.08987500227522,
+   "p95_ms": 38.82142480215407,
+   "p99_ms": 49.168686981720406,
+   "max_ms": 113.33929200191051,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.8243360000051325,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "alerts",
+   "concurrency": 64,
+   "client_processes": 5,
+   "requests": 7955,
+   "ok": 7955,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 105,
+   "rps": 915.5050592127773,
+   "p50_ms": 59.97554199711885,
+   "p95_ms": 102.21072149579412,
+   "p99_ms": 118.52470999976504,
+   "max_ms": 171.9318329996895,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.8243360000051325,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "workers": 4,
+   "server_alive_after": true
+  },
+  {
+   "scenario": "lookup_100",
+   "concurrency": 8,
+   "client_processes": 5,
+   "requests": 5064,
+   "ok": 5064,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 8,
+   "rps": 587.9625125133216,
+   "p50_ms": 12.4921250026091,
+   "p95_ms": 14.765206298397965,
+   "p99_ms": 20.190928373121995,
+   "max_ms": 71.58625000010943,
+   "label": "gunicorn-1w",
+   "workers": 1,
+   "startup_s": 0.6120209590008017,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "lookup_100",
+   "concurrency": 32,
+   "client_processes": 5,
+   "requests": 4946,
+   "ok": 4946,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 32,
+   "rps": 571.2492042606443,
+   "p50_ms": 51.375124501646496,
+   "p95_ms": 68.33976024609001,
+   "p99_ms": 119.52178750252642,
+   "max_ms": 167.74762499699136,
+   "label": "gunicorn-1w",
+   "workers": 1,
+   "startup_s": 0.6120209590008017,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "score_100",
+   "concurrency": 8,
+   "client_processes": 5,
+   "requests": 176,
+   "ok": 176,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 8,
+   "rps": 20.273677753393596,
+   "p50_ms": 380.16814599905047,
+   "p95_ms": 417.0334584941884,
+   "p99_ms": 476.2067190022208,
+   "max_ms": 477.4410409954726,
+   "label": "gunicorn-1w",
+   "workers": 1,
+   "startup_s": 0.6120209590008017,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "score_100",
+   "concurrency": 32,
+   "client_processes": 5,
+   "requests": 198,
+   "ok": 198,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 32,
+   "rps": 19.960161332539347,
+   "p50_ms": 1516.2186665002082,
+   "p95_ms": 1646.161501701863,
+   "p99_ms": 1656.281981248976,
+   "max_ms": 1657.454542000778,
+   "label": "gunicorn-1w",
+   "workers": 1,
+   "startup_s": 0.6120209590008017,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "workers": 1,
+   "server_alive_after": true
+  },
+  {
+   "scenario": "lookup_100",
+   "concurrency": 8,
+   "client_processes": 5,
+   "requests": 9378,
+   "ok": 9378,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 8,
+   "rps": 1074.8900017740932,
+   "p50_ms": 6.155208000564016,
+   "p95_ms": 9.88080804963829,
+   "p99_ms": 11.4891649999481,
+   "max_ms": 68.89395900361706,
+   "label": "gunicorn-2w",
+   "workers": 2,
+   "startup_s": 0.6166879160009557,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "lookup_100",
+   "concurrency": 32,
+   "client_processes": 5,
+   "requests": 9826,
+   "ok": 9826,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 32,
+   "rps": 1128.0346550509275,
+   "p50_ms": 26.69418749792385,
+   "p95_ms": 32.73801024806744,
+   "p99_ms": 40.008312249483424,
+   "max_ms": 60.124584000732284,
+   "label": "gunicorn-2w",
+   "workers": 2,
+   "startup_s": 0.6166879160009557,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "score_100",
+   "concurrency": 8,
+   "client_processes": 5,
+   "requests": 320,
+   "ok": 320,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 8,
+   "rps": 36.87400435844693,
+   "p50_ms": 209.83049999995274,
+   "p95_ms": 301.5596006465785,
+   "p99_ms": 331.61583291475836,
+   "max_ms": 351.5983750039595,
+   "label": "gunicorn-2w",
+   "workers": 2,
+   "startup_s": 0.6166879160009557,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "score_100",
+   "concurrency": 32,
+   "client_processes": 5,
+   "requests": 383,
+   "ok": 383,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 32,
+   "rps": 40.721875335868425,
+   "p50_ms": 603.4967080049682,
+   "p95_ms": 1081.022541897255,
+   "p99_ms": 1102.8740980586736,
+   "max_ms": 1143.5361249968992,
+   "label": "gunicorn-2w",
+   "workers": 2,
+   "startup_s": 0.6166879160009557,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "workers": 2,
+   "server_alive_after": true
+  },
+  {
+   "scenario": "lookup_100",
+   "concurrency": 8,
+   "client_processes": 5,
+   "requests": 20755,
+   "ok": 20755,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 8,
+   "rps": 2342.0092226388333,
+   "p50_ms": 2.5578330023563467,
+   "p95_ms": 5.1246583032479975,
+   "p99_ms": 6.867466720577794,
+   "max_ms": 138.92858399776742,
+   "label": "gunicorn-8w",
+   "workers": 8,
+   "startup_s": 0.6112162909994368,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "lookup_100",
+   "concurrency": 32,
+   "client_processes": 5,
+   "requests": 23790,
+   "ok": 23790,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 32,
+   "rps": 2690.159152820027,
+   "p50_ms": 10.016145999543369,
+   "p95_ms": 22.529195802781032,
+   "p99_ms": 29.91851310682251,
+   "max_ms": 85.56695799779845,
+   "label": "gunicorn-8w",
+   "workers": 8,
+   "startup_s": 0.6112162909994368,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "score_100",
+   "concurrency": 8,
+   "client_processes": 5,
+   "requests": 1008,
+   "ok": 1008,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 8,
+   "rps": 115.58605963199533,
+   "p50_ms": 47.37287450188887,
+   "p95_ms": 96.81379760004346,
+   "p99_ms": 106.80618018086533,
+   "max_ms": 131.09904100565473,
+   "label": "gunicorn-8w",
+   "workers": 8,
+   "startup_s": 0.6112162909994368,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "score_100",
+   "concurrency": 32,
+   "client_processes": 5,
+   "requests": 1149,
+   "ok": 1149,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 32,
+   "rps": 126.87830422102364,
+   "p50_ms": 165.9435420006048,
+   "p95_ms": 481.9707837988972,
+   "p99_ms": 536.7965751638984,
+   "max_ms": 561.0792919978849,
+   "label": "gunicorn-8w",
+   "workers": 8,
+   "startup_s": 0.6112162909994368,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "workers": 8,
+   "server_alive_after": true
+  },
+  {
+   "scenario": "lookup_1",
+   "concurrency": 128,
+   "client_processes": 5,
+   "requests": 23731,
+   "ok": 23731,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 128,
+   "rps": 2724.9136072803326,
+   "p50_ms": 41.14604200003669,
+   "p95_ms": 55.22897899936652,
+   "p99_ms": 57.14809999772115,
+   "max_ms": 78.44716699764831,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.6142304160021013,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "scenario": "lookup_1",
+   "concurrency": 256,
+   "client_processes": 5,
+   "requests": 22217,
+   "ok": 22217,
+   "errors": 0,
+   "error_codes": {},
+   "client_exceptions": {},
+   "connections_opened": 256,
+   "rps": 2554.0004566963253,
+   "p50_ms": 93.7909589993069,
+   "p95_ms": 128.53821640164827,
+   "p99_ms": 197.8210247179959,
+   "max_ms": 240.88641699927393,
+   "label": "gunicorn-4w",
+   "workers": 4,
+   "startup_s": 0.6142304160021013,
+   "mem_idle": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   },
+   "mem_after_load": {
+    "master_mb": null,
+    "workers_mb": [],
+    "total_mb": 0.0
+   }
+  },
+  {
+   "workers": 4,
+   "server_alive_after": true
+  }
+ ]
+}

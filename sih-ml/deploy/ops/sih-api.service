@@ -1,0 +1,18 @@
+[Unit]
+Description=SIH inference API (gunicorn)
+After=network-online.target
+
+[Service]
+User=sih
+WorkingDirectory=/opt/sih-ml
+Environment=PYTHONPATH=/opt/sih-ml/src SIH_WORKERS=4 SIH_THREADS=1
+Environment=SIH_BUNDLE=/opt/sih-ml/deploy/bundles/current SIH_STORE=/opt/sih-ml/deploy/featurestore
+Environment=SIH_SCORES=/opt/sih-ml/deploy/scores
+ExecStart=/opt/sih-ml/.venv/bin/gunicorn -c deploy/gunicorn.conf.py "sih_ml.serve.api:create_app()"
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=always
+RestartSec=2
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,57 @@
+import '../core/demo/demo_mode.dart';
+import 'models.dart';
+
+const List<Shipment> _demoShipments = [
+  Shipment(
+    id: 'LOG-4471',
+    vehicleId: 'MG-01-TR-2241',
+    cargoType: 'Medical supplies',
+    origin: 'Guwahati',
+    destination: 'Shillong Civil Hospital',
+    currentLocation: 'NH-6, Km 18',
+    route: 'NH-6',
+    status: ShipmentStatus.inTransit,
+    risk: RiskLevel.caution,
+    eta: '14:20',
+  ),
+  Shipment(
+    id: 'LOG-4438',
+    vehicleId: 'MG-03-TR-1182',
+    cargoType: 'Relief materials',
+    origin: 'Silchar',
+    destination: 'Nongpoh District Store',
+    currentLocation: 'NH-27, Km 44',
+    route: 'NH-27',
+    status: ShipmentStatus.inTransit,
+    risk: RiskLevel.clear,
+    eta: '15:45',
+  ),
+  Shipment(
+    id: 'LOG-4451',
+    vehicleId: 'AS-07-TR-0091',
+    cargoType: 'Construction material',
+    origin: 'Lumding',
+    destination: 'Umiam Bridge site',
+    currentLocation: 'SH-5 — REROUTING',
+    route: 'SH-5',
+    status: ShipmentStatus.delayed,
+    risk: RiskLevel.critical,
+    eta: '17:30',
+    delay: '+2h 15m (route blocked)',
+  ),
+  Shipment(
+    id: 'LOG-4402',
+    vehicleId: 'MG-02-TR-3310',
+    cargoType: 'Food rations',
+    origin: 'Guwahati',
+    destination: 'Ri Bhoi District HQ',
+    currentLocation: 'Lumshnong Bypass',
+    route: 'PMGSY-L',
+    status: ShipmentStatus.onSchedule,
+    risk: RiskLevel.clear,
+    eta: '13:10',
+  ),
+];
+
+/// The sample data while demo mode is on, otherwise empty.
+List<Shipment> get mockShipments => DemoMode.enabled ? _demoShipments : const [];

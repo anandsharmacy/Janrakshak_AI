@@ -1,0 +1,10 @@
+{
+  "description": "Securely manage user access for the NER Logistics Platform, enabling government officials to log in or create accounts based on their designated roles.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

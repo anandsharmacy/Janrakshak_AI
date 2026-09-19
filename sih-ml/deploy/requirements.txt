@@ -1,0 +1,10 @@
+# Serving runtime — deliberately minimal. No scikit-learn (calibrators ship as JSON),
+# no geopandas (the feature store is prebuilt), no pickles.
+# lightgbm MUST equal the training version: the model text format and predictions are
+# pinned to it (bundle manifest records lightgbm_version; tests check parity).
+lightgbm==4.7.0
+numpy==2.5.3
+pandas>=2.2,<4
+pyarrow>=16
+PyYAML>=6.0
+gunicorn==23.0.0

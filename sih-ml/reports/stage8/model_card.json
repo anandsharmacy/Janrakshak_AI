@@ -1,0 +1,140 @@
+{
+  "model_name": "sih-ml corridor disruption \u2014 final_v1",
+  "version": "final_v1",
+  "config_sha256_16": "5c8ab2326f9c5b5c",
+  "git_sha": "nogit",
+  "task": "binary classification: will this road segment be disrupted by a rainfall-triggered landslide/flood on this day",
+  "architecture": "LightGBM GBDT (4 leaves/tree) + per-slope isotonic calibration",
+  "training_data": {
+    "rows": 80688,
+    "earlystop_rows": 14281,
+    "trees": 1199
+  },
+  "training_recipe": [
+    "aug/gaussian_all_s0.1",
+    "aug/smote_k5_f0.5"
+  ],
+  "test_metrics": {
+    "n": 8277,
+    "n_pos": 1344,
+    "base_rate": 0.16237767306995288,
+    "average_precision": 0.37600301127272495,
+    "roc_auc": 0.7878677632166382,
+    "brier": 0.11736268721567973,
+    "ece": 0.046897725405868736,
+    "precision@10": 1.0,
+    "recall@10": 0.00744047619047619,
+    "precision@50": 0.84,
+    "recall@50": 0.03125,
+    "precision@100": 0.81,
+    "recall@100": 0.060267857142857144,
+    "precision@200": 0.685,
+    "recall@200": 0.10193452380952381,
+    "lift@1pct": 4.9713048623063685,
+    "lift@5pct": 2.6776009316770186,
+    "lift@10pct": 1.8966339932712215,
+    "steep_n": 4586,
+    "steep_base_rate": 0.2564326210204972,
+    "steep_AP": 0.3689274934610299,
+    "steep_AP_over_base": 1.4386917389560228,
+    "steep_roc_auc": 0.6241873142218763,
+    "steep_lift@10pct": 1.3538120488370018
+  },
+  "generalization": [
+    {
+      "split": "train (in-sample)",
+      "n": 80688,
+      "n_pos": 6801,
+      "base_rate": 0.0842876264128495,
+      "AP": 0.7730646204293179,
+      "AP_over_base": 9.17174505119847,
+      "roc_auc": 0.9654721203074148,
+      "note": "rows the final model fitted on"
+    },
+    {
+      "split": "early-stopping",
+      "n": 14281,
+      "n_pos": 1242,
+      "base_rate": 0.0869686996708914,
+      "AP": 0.7291499283576341,
+      "AP_over_base": 8.384050021638787,
+      "roc_auc": 0.9527787873836685,
+      "note": "event-grouped holdout that chose the round count"
+    },
+    {
+      "split": "dev spatial-CV OOF",
+      "n": 94969,
+      "n_pos": 8043,
+      "base_rate": 0.08469079383798923,
+      "AP": 0.3790762296113048,
+      "AP_over_base": 4.476002791241577,
+      "roc_auc": 0.8563966379900452,
+      "note": "each row scored by a model that never saw it"
+    },
+    {
+      "split": "LOCKED TEST",
+      "n": 8277,
+      "n_pos": 1344,
+      "base_rate": 0.16237767306995288,
+      "AP": 0.37600301127272495,
+      "AP_over_base": 2.31560783058359,
+      "roc_auc": 0.7878677632166382,
+      "note": "opened once, under pre-registration"
+    }
+  ],
+  "deployment_gates_passed": "8/11",
+  "failed_gates": [
+    "STEEP-TERRAIN discrimination",
+    "steep-terrain lift",
+    "probability calibration transfers"
+  ],
+  "runtime": {
+    "model_bytes": 727368,
+    "model_kb": 710.3,
+    "n_trees": 1199,
+    "total_leaves": 4796,
+    "mean_leaves_per_tree": 4.0,
+    "n_rows": 20000,
+    "repeats": 5,
+    "median_sec": 0.06658533401787281,
+    "p95_sec": 0.10800210000597871,
+    "per_row_us": 3.329,
+    "rows_per_sec": 300366,
+    "full_corridor_sec": 1.03,
+    "deployment_segments": 309042,
+    "predict_peak_mb": 7.15
+  },
+  "reproducibility": {
+    "ledger_average_precision": 0.37600301127272495,
+    "recomputed_average_precision": 0.37600301127272495,
+    "abs_difference": 0.0,
+    "bit_identical": true,
+    "config_sha256_16": "5c8ab2326f9c5b5c",
+    "seed": 42,
+    "determinism_settings": {
+      "lightgbm_deterministic": true,
+      "force_row_wise": true,
+      "numpy_seed": 42,
+      "fold_order": "fixed (parquet, no shuffle on load)"
+    },
+    "caveat": "Bit-exactness holds for this machine and these pinned library versions. LightGBM/OpenMP version changes or a different CPU architecture can alter floating-point summation order; pin requirements.txt for cross-machine reproduction."
+  },
+  "intended_use": "daily batch scoring of corridor road segments; output feeds the risk-aware routing edge penalty W = dist*(1 + lambda*P)",
+  "out_of_scope": [
+    "per-incident timing or severity prediction",
+    "non-rainfall-triggered disruption (earthquake, construction, accident)",
+    "absolute risk on terrain outside the training corridor",
+    "any use where a missed closure endangers life without human review"
+  ],
+  "known_limitations": [
+    "All training positives are WEAK labels; the only 3 verified closures are in the test split and sit on the one segment that also appears in training (as a positive, 15 times) \u2014 their top-1% ranking survives deleting rainfall entirely, so it reflects segment identity, not skill.",
+    "On the locked test split rainfall carries NO usable signal and the longer windows are inverted (7d ROC 0.46); ablating rainfall RAISES AP by 0.112. Headline skill there comes from seasonality, hydrology and road class.",
+    "Near-chance discrimination on steep terrain (ROC 0.624, lift 1.44x) \u2014 which is where routing decisions actually are.",
+    "Per-slope calibration does not transfer across regions (worst stratum 1.32x within dev -> 2.20x on unseen ground). Do not drive the routing penalty with absolute probabilities on new terrain.",
+    "id_exceed_1d/3d/7d are derived from monotone-constrained features but are themselves unconstrained: more rain can lower the score (77 violations).",
+    "CHIRPS ~25 km daily rainfall cannot resolve valley-scale cloudbursts.",
+    "The FN:FP = 20 cost ratio behind the threshold is an unvalidated placeholder; FN:FP = 10 measured strictly better.",
+    "One test region, 6 spatial blocks, one of them 77% positive \u2014 a single split cannot separate selection bias from distribution shift."
+  ],
+  "deployment_recommendation": "NOT ready for autonomous deployment (3 of 11 gates fail, all concerning steep terrain and calibration transfer). Suitable for a decision-support pilot: ship the RANKING not the probability, operate in selective mode on the top 1-2% of segment-days (precision 0.72-0.81), and keep a human in the loop on every alert."
+}

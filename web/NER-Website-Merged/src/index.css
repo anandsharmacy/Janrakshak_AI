@@ -1,0 +1,255 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap');
+@import 'tailwindcss';
+
+/*
+  NER Platform — color system extracted pixel-by-pixel from the brand image.
+
+  The image's signature is a full-canvas diagonal gradient:
+    top-left  → warm peach-ochre  #D0956A
+    mid-blend → sandy cream       #DFCBA8
+    btm-right → cool sage-mint    #BFD0C0
+
+  That gradient IS the brand. Every surface in the dashboard
+  must feel like it sits on or derives from that landscape.
+*/
+@theme {
+  --font-sans: 'Inter', sans-serif;
+
+  /* ── Brand primaries (ops.md spec) ──────────────────────────── */
+  --color-navy:       #17324D;
+  --color-navy-light: #1E3F5E;
+  --color-teal:       #2F6F7E;
+  --color-gold:       #D7A73A;
+
+  /* ── NER gradient palette (extracted from image) ────────────── */
+  --ner-warm:         #D0956A;   /* top-left  — peach-ochre     */
+  --ner-mid:          #DFCBA8;   /* centre    — sandy cream     */
+  --ner-sage:         #BFD0C0;   /* btm-right — cool sage-mint  */
+  --ner-gradient: linear-gradient(135deg, #D0956A 0%, #DFCBA8 45%, #BFD0C0 100%);
+
+  /* ── Surface tokens — warmer than standard ──────────────────── */
+  --color-bg:        #DDD0B8;        /* fallback flat for old browsers */
+  --color-surface:   rgba(252,248,242,0.88);   /* warm cream, semi-transparent */
+  --color-surface-solid: #FAF7F0;              /* opaque variant for tables    */
+  --color-surface-2: rgba(238,228,210,0.90);   /* sandy secondary              */
+  --color-border:    rgba(180,162,136,0.70);   /* warm earthy border           */
+  --color-border-solid: #C8BAA4;               /* opaque border                */
+
+  /* ── Text ───────────────────────────────────────────────────── */
+  --color-text-primary:   #17212B;
+  --color-text-secondary: #5A6670;
+  --color-text-muted:     #8A9098;
+
+  /* ── Status ─────────────────────────────────────────────────── */
+  --color-safe:     #2D6B4F;
+  --color-moderate: #C4861A;
+  --color-high:     #C25A1A;
+  --color-critical: #BE2424;
+  --color-amber:    #D4743C;   /* exact orange from image route highlight */
+
+  /* ── Map palette (direct match to image gradient) ────────────── */
+  --map-warm:   #D0956A;
+  --map-mid:    #DFCBA8;
+  --map-sage:   #BFD0C0;
+}
+
+html, body, #root {
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+  /*
+    Refined enterprise ambience — a clean cool-neutral base lifted by faint
+    teal + navy glows, keeping the platform firmly in the Navy·Teal·Gold theme
+    while reading as a professional government control surface.
+  */
+  background:
+    radial-gradient(1100px 760px at 12% 8%, rgba(47,111,126,0.10), transparent 58%),
+    radial-gradient(1000px 720px at 92% 96%, rgba(23,50,77,0.12), transparent 55%),
+    radial-gradient(900px 600px at 85% 6%, rgba(215,167,58,0.06), transparent 50%),
+    linear-gradient(135deg, #EEF2F5 0%, #E9EDEF 48%, #EBEEEC 100%) fixed;
+  color: #16222E;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'cv05' 1, 'ss01' 1;
+}
+
+* { box-sizing: border-box; }
+
+/*
+  Dark theme — applied instantly by ThemeProvider (src/lib/theme.tsx) via
+  `html[data-theme="dark"]`. Covers the shared app-wide surfaces (canvas
+  background, the account/settings panel, scrollbars). Individual page
+  cards still use their original light palette pending a broader design-
+  token refactor of the whole codebase.
+*/
+html[data-theme='dark'], html.dark {
+  color-scheme: dark;
+}
+html[data-theme='dark'] body,
+html[data-theme='dark'] #root {
+  background:
+    radial-gradient(1100px 760px at 12% 8%, rgba(47,111,126,0.16), transparent 58%),
+    radial-gradient(1000px 720px at 92% 96%, rgba(23,50,77,0.30), transparent 55%),
+    radial-gradient(900px 600px at 85% 6%, rgba(215,167,58,0.08), transparent 50%),
+    linear-gradient(135deg, #101821 0%, #0E1A24 48%, #10181F 100%) fixed;
+  color: #E7ECEF;
+}
+html[data-theme='dark'] ::-webkit-scrollbar-thumb { background: rgba(160,180,200,0.35); }
+html[data-theme='dark'] ::-webkit-scrollbar-thumb:hover { background: rgba(160,180,200,0.55); }
+
+/* ── Typography hierarchy ─────────────────────────────────────────── */
+h1 { letter-spacing: -0.02em; }
+h2, h3 { letter-spacing: -0.01em; }
+/* Tabular figures keep KPI numbers aligned as they update/refresh */
+.font-mono, .tabular, [class*="text-3xl"], [class*="text-2xl"] { font-variant-numeric: tabular-nums; }
+
+/* Scrollbar — cool slate tones */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(90,110,130,0.42); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(70,90,112,0.62); }
+
+/* ── Interaction & motion layer ───────────────────────────────────── */
+/* Consistent, subtle easing for interactive surfaces */
+button, a, [role="button"] { transition: background-color .18s ease, color .18s ease,
+  border-color .18s ease, box-shadow .22s ease, transform .18s ease; }
+
+/* Card hover lift — opt-in via .ui-card */
+.ui-card { transition: transform .2s cubic-bezier(.4,0,.2,1), box-shadow .24s cubic-bezier(.4,0,.2,1), border-color .2s ease; }
+.ui-card:hover { transform: translateY(-2px); box-shadow: 0 10px 26px -14px rgba(23,50,77,0.38); border-color: rgba(47,111,126,0.5); }
+
+/* KPI cards get a slightly firmer lift */
+.ui-kpi:hover { transform: translateY(-3px); box-shadow: 0 14px 30px -16px rgba(23,50,77,0.42); }
+
+/* Table row hover */
+.ui-row { transition: background-color .15s ease; }
+.ui-row:hover { background: rgba(47,111,126,0.07) !important; }
+
+/* Sidebar item sheen */
+.ui-navitem { transition: background-color .16s ease, color .16s ease, border-color .16s ease; }
+
+/* Focus visibility for accessibility */
+button:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 2px solid rgba(47,111,126,0.6); outline-offset: 2px;
+}
+
+/* Page / content entrance */
+@keyframes ui-fade-up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+/* `backwards`, not `both`: a retained transform would trap fixed-position drawers inside the page */
+.ui-page { animation: ui-fade-up .34s cubic-bezier(.4,0,.2,1) backwards; }
+
+/* Skeleton shimmer */
+@keyframes ui-shimmer { 0% { background-position: -420px 0; } 100% { background-position: 420px 0; } }
+.ui-skeleton {
+  background: linear-gradient(90deg, rgba(23,50,77,0.06) 25%, rgba(23,50,77,0.13) 37%, rgba(23,50,77,0.06) 63%);
+  background-size: 840px 100%;
+  animation: ui-shimmer 1.4s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+/* AI processing — animated gradient sweep for "analyzing" states */
+@keyframes ui-ai-sweep { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+.ui-ai-processing {
+  background: linear-gradient(90deg, #2F6F7E, #D7A73A, #2F6F7E);
+  background-size: 200% 100%;
+  animation: ui-ai-sweep 1.6s linear infinite;
+}
+
+/* Refresh spin */
+@keyframes ui-spin { to { transform: rotate(360deg); } }
+.ui-spin { animation: ui-spin .9s linear infinite; display: inline-block; }
+
+/* Live/critical pulse dot */
+@keyframes ui-pulse { 0% { box-shadow: 0 0 0 0 currentColor; opacity: 1; } 70% { box-shadow: 0 0 0 6px transparent; opacity: .85; } 100% { box-shadow: 0 0 0 0 transparent; opacity: 1; } }
+.ui-pulse-dot { animation: ui-pulse 1.8s ease-out infinite; }
+
+/* Map incident marker pulse (SVG) */
+@keyframes ui-ring { 0% { r: 6; opacity: .55; } 100% { r: 22; opacity: 0; } }
+.ui-map-ring { animation: ui-ring 1.9s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+
+/* GPS / location loader — themed concentric radar sweep */
+@keyframes ui-gps-ping { 0% { transform: scale(.35); opacity: .9; } 100% { transform: scale(1.6); opacity: 0; } }
+@keyframes ui-gps-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+.ui-gps { position: relative; width: 56px; height: 56px; display: grid; place-items: center; }
+.ui-gps::before, .ui-gps::after {
+  content: ''; position: absolute; inset: 0; border-radius: 9999px;
+  border: 2px solid rgba(47,111,126,0.55); animation: ui-gps-ping 1.8s cubic-bezier(0,.2,.8,1) infinite;
+}
+.ui-gps::after { animation-delay: .9s; }
+.ui-gps-pin { animation: ui-gps-bob 1.8s ease-in-out infinite; color: #17324D; font-size: 22px; z-index: 1; }
+
+/* Slide-over panel (Profile) */
+@keyframes ui-slide-in-right { from { transform: translateX(24px); opacity: .4; } to { transform: none; opacity: 1; } }
+@keyframes ui-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+.ui-panel { animation: ui-slide-in-right .3s cubic-bezier(.32,.72,.35,1) both; }
+.ui-backdrop { animation: ui-backdrop-in .25s ease both; }
+@keyframes ui-stagger { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.ui-stagger > * { animation: ui-stagger .34s cubic-bezier(.4,0,.2,1) both; }
+.ui-stagger > *:nth-child(1) { animation-delay: .04s; }
+.ui-stagger > *:nth-child(2) { animation-delay: .08s; }
+.ui-stagger > *:nth-child(3) { animation-delay: .12s; }
+.ui-stagger > *:nth-child(4) { animation-delay: .16s; }
+.ui-stagger > *:nth-child(5) { animation-delay: .20s; }
+.ui-stagger > *:nth-child(6) { animation-delay: .24s; }
+
+/* ── Scoped polish for existing dashboard markup ──────────────────── */
+/* Top-level cards (rounded-xl + border) lift subtly on hover */
+main .rounded-xl.border { transition: transform .2s cubic-bezier(.4,0,.2,1), box-shadow .24s cubic-bezier(.4,0,.2,1), border-color .2s ease; }
+main .rounded-xl.border:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -16px rgba(23,50,77,0.40); border-color: rgba(47,111,126,0.45); }
+/* Don't lift the large map card itself (it holds absolute overlays) */
+main .rounded-xl.border.overflow-hidden:hover { transform: none; box-shadow: 0 12px 28px -18px rgba(23,50,77,0.35); }
+
+/* …nor any card holding an interactive Leaflet map */
+main .rounded-xl.border:has(.leaflet-container):hover { transform: none; }
+
+/* ── Leaflet maps (MapViz) ─────────────────────────────────────────── */
+.ner-map.leaflet-container { font: inherit; font-size: 12px; background: #E9E1D2; }
+.ner-map.is-picking.leaflet-grab { cursor: crosshair; }
+.ner-map .leaflet-bar { border: 1px solid rgba(150,165,180,0.6); border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(23,50,77,0.12); }
+.ner-map .leaflet-bar a { width: 32px; height: 32px; line-height: 32px; background: rgba(250,250,251,0.94); color: #17324D; border-bottom-color: rgba(150,165,180,0.45); }
+.ner-map .leaflet-bar a:hover { background: #fff; color: #2F6F7E; }
+.ner-map .leaflet-control-attribution { background: rgba(250,247,240,0.8); color: #5A6670; font-size: 10px; }
+.ner-map .leaflet-control-attribution a { color: #2F6F7E; }
+.ner-map .leaflet-popup-content-wrapper, .ner-map .leaflet-popup-tip { background: rgba(250,247,240,0.97); color: #17212B; }
+.ner-map .leaflet-popup-content-wrapper { border: 1px solid rgba(180,162,136,0.55); border-radius: 10px; box-shadow: 0 10px 24px -12px rgba(23,50,77,0.45); }
+.ner-map .leaflet-popup-content { margin: 10px 12px; font-size: 12px; line-height: 1.45; min-width: 180px; }
+.ner-map .leaflet-tooltip { background: rgba(250,247,240,0.95); border: 1px solid rgba(180,162,136,0.6); border-radius: 4px; color: #17212B; font-size: 11px; padding: 3px 7px; box-shadow: none; }
+.ner-pop-title { font-weight: 600; font-size: 13px; }
+.ner-pop-meta { color: #5A6670; margin: 2px 0 6px; }
+.ner-pop-row { display: flex; gap: 8px; }
+.ner-pop-row > span:first-child { width: 62px; flex-shrink: 0; color: #8A9098; }
+.ner-pop-chip { display: inline-block; padding: 0 6px; border-radius: 9999px; background: var(--c); color: #fff; font-size: 10px; font-weight: 600; }
+
+.ner-marker { background: none; border: 0; }
+.ner-inc {
+  position: absolute; left: -7px; top: -7px; width: 14px; height: 14px; border-radius: 9999px;
+  background: var(--c); border: 2px solid #fff; box-shadow: 0 1px 4px rgba(23,33,43,0.35);
+}
+@keyframes ner-ring { from { transform: scale(1); opacity: .6; } to { transform: scale(3.2); opacity: 0; } }
+.ner-inc.is-pending::after {
+  content: ''; position: absolute; inset: -2px; border-radius: 9999px;
+  border: 2px solid var(--c); animation: ner-ring 1.9s ease-out infinite;
+}
+.ner-veh {
+  position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); white-space: nowrap;
+  padding: 1px 6px; border-radius: 4px; background: rgba(250,247,240,0.95); border: 1.5px solid var(--c);
+  color: var(--c); font-size: 9px; font-weight: 700; box-shadow: 0 1px 3px rgba(23,33,43,0.2);
+}
+.ner-veh.is-idle { opacity: 0.8; border-style: dashed; }
+.ner-veh.is-selected { border-width: 2px; background: var(--c); color: #fff; box-shadow: 0 0 0 3px rgba(23,50,77,0.18), 0 1px 4px rgba(23,33,43,0.35); }
+.ner-pin {
+  position: absolute; left: -11px; top: -11px; width: 22px; height: 22px; border-radius: 9999px;
+  background: var(--c); border: 4px solid #fff; box-shadow: 0 2px 8px rgba(23,33,43,0.4);
+}
+
+/* Table row hover — overrides inline zebra backgrounds */
+main tbody tr { transition: background-color .15s ease; }
+main tbody tr:hover td { background: rgba(47,111,126,0.08); }
+
+@media (prefers-reduced-motion: reduce) {
+  main .rounded-xl.border:hover { transform: none; }
+  .ui-page, .ui-skeleton, .ui-ai-processing, .ui-spin, .ui-pulse-dot, .ui-map-ring,
+  .ui-gps::before, .ui-gps::after, .ui-gps-pin, .ner-inc.is-pending::after,
+  .ui-panel, .ui-backdrop, .ui-stagger > * { animation: none !important; }
+  .ui-card:hover, .ui-kpi:hover { transform: none; }
+}

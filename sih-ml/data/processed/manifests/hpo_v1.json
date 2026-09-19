@@ -1,0 +1,18 @@
+{
+  "_generated_utc": "2026-09-11T09:02:59.733201+00:00",
+  "_git_sha": "nogit",
+  "best_params": {
+    "num_leaves": 4,
+    "max_depth": 11,
+    "min_child_samples": 364,
+    "learning_rate": 0.03218814577630251,
+    "reg_alpha": 1.9787843500081188,
+    "reg_lambda": 0.23696573020861914,
+    "colsample_bytree": 0.8531476828735367,
+    "subsample": 0.6971305573243116,
+    "min_split_gain": 0.8392636293753901,
+    "use_monotone": true,
+    "scale_pos_weight_mult": 0.1381132349355172
+  },
+  "report_mean_AP": 0.21677061701951575
+}

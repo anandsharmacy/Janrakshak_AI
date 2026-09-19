@@ -1,0 +1,35 @@
+# Prometheus alerting rules. Thresholds are starting points sized from the Stage 11
+# measurements (DEPLOYMENT.md §6); tune after two weeks of production traffic.
+groups:
+- name: sih-inference
+  rules:
+  - alert: RainfallFeedStale
+    expr: sih_rain_feed_lag_days > 2
+    for: 1h
+    labels: {severity: page}
+    annotations: {summary: "Rainfall feed {{ $value }} days behind — the daily job will refuse to score"}
+  - alert: DailyBatchMissing
+    expr: time() - max(sih_batch_last_success_timestamp) > 36 * 3600
+    labels: {severity: page}
+    annotations: {summary: "No corridor scores for >36h — routing is using stale risk"}
+  - alert: ApiErrorRate
+    expr: sum(rate(sih_http_requests_total{status=~"5.."}[5m])) / sum(rate(sih_http_requests_total[5m])) > 0.01
+    for: 10m
+    labels: {severity: page}
+  - alert: ApiLatencyP95
+    expr: histogram_quantile(0.95, sum by (le, route) (rate(sih_http_request_seconds_bucket{route="/v1/scores"}[5m]))) > 0.1
+    for: 10m
+    labels: {severity: ticket}
+  - alert: NotReady
+    expr: probe_success{job="sih-readyz"} == 0
+    for: 15m
+    labels: {severity: ticket}
+  - alert: PublishFailed
+    expr: sih_publish_last_run_ok == 0
+    for: 30m
+    labels: {severity: page}
+    annotations: {summary: "Scored day not published to Supabase — apps still show the previous day"}
+  - alert: PublishMissing
+    expr: time() - sih_publish_last_success_timestamp_seconds > 36 * 3600
+    labels: {severity: page}
+    annotations: {summary: "No ML publish for >36h — apps will label ML risk as stale"}

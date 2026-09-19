@@ -1,0 +1,13 @@
+gate,threshold,measured,pass,why
+beats chance on held-out ground,test AP / base rate > 2.0,2.20x,True,below this the ranking is not worth the pipeline
+top-of-ranking precision,precision@100 >= 0.50,0.290,False,"operators act on the top of the list, not the whole list"
+recall at the operating threshold,>= 0.80,0.955,True,a missed closure is the costly error for this product
+STEEP-TERRAIN discrimination,steep ROC-AUC >= 0.70,0.630,False,"the roads that actually close are all steep; global AP is inflated by plains-vs-hills, which routing already knows"
+steep-terrain lift,>= 2.0x,1.43x,False,"operational value, not global value"
+probability calibration transfers,worst terrain stratum within 1.5x on unseen region,2.65x,False,calibrated P becomes the routing penalty W = dist*(1 + lambda*P)
+survives rainfall forecast error,>= 80% of clean AP at sigma = 0.25,99.5%,True,"deployment feeds a forecast, not an observation"
+rainfall is actually driving the prediction,positives lose >= 30% of score under zero rainfall,95.9%,True,otherwise it is a terrain map with a weather-shaped label
+daily corridor scoring fits the batch window,"< 300 s for 309,042 segments",1.06 s,True,once-daily batch job
+artifact size is deployable,< 50 MB,0.69 MB,True,ships inside a container image
+reproducible from config + seed,retrain reproduces the recorded test AP,bit-identical,True,an unreproducible model cannot be audited or rolled back
+rainfall monotonicity enforced end-to-end,0 rank violations with derived flags recomputed,0 violations,True,more rain must never lower the score; derived id_exceed_* flags were escaping the constraint set

@@ -1,0 +1,119 @@
+# Stage 2 — Data Pipeline configuration
+# All paths are relative to the repo root (sih-ml/) unless absolute.
+
+seed: 42
+
+paths:
+  # Read-only source tree (produced by the data-acquisition pipeline in data2/)
+  data_root: "../data2/training_data"
+  roads_gpkg: "../data2/training_data/road_network/corridor_roads.gpkg"
+  roads_csv: "../data2/training_data/road_network/corridor_roads.csv"
+  static_features: "../data2/training_data/segment_features/segment_static_features.csv"
+  hydro_features: "../data2/training_data/segment_features/segment_hydrology_features.csv"
+  chirps_csv: "../data2/training_data/rainfall_chirps/corridor_chirps_daily.csv.gz"
+  glc_bbox: "../data2/training_data/landslide_inventory_coolr/glc_chickens_neck_bbox.csv"
+  corridor_landslides: "../data2/training_data/disruption_labels_events/corridor_landslides.csv"
+  disruption_events: "../data2/training_data/disruption_labels_events/corridor_disruption_events.csv"
+  flood_extents: "../data2/training_data/disruption_labels_events/corridor_flood_extents.gpkg"
+  road_segment_labels: "../data2/training_data/disruption_labels_events/road_segment_disruption_labels.csv"
+  # Outputs
+  interim: "data/interim"
+  processed: "data/processed"
+  manifests: "data/processed/manifests"
+  reports: "reports"
+
+corridor:
+  # Chicken's Neck / Siliguri corridor bounding box (lon/lat, EPSG:4326)
+  min_lon: 87.0
+  max_lon: 90.0
+  min_lat: 25.5
+  max_lat: 28.2
+  metric_crs: "EPSG:32645"   # UTM 45N — for distance / area in metres
+
+labels:
+  # Temporal gate: earliest event date we accept (needs CHIRPS antecedent history).
+  # CHIRPS starts 2005-01-01; require a few months of lead for climatology features.
+  min_event_date: "2005-07-01"
+  max_event_date: "2026-09-11"
+  # Days the road is considered disrupted AFTER the trigger date (persistence).
+  persistence_days: 2
+  # Hazards to keep (substring match on the source hazard string).
+  keep_hazards: ["landslide", "flood", "road", "mudslide", "debris"]
+  # Hazards to hard-drop even if they co-occur.
+  drop_hazards: ["EQ", "earthquake", "TC", "cyclone"]
+  # GLC triggers to keep (rainfall-driven mechanism only).
+  glc_keep_triggers: ["downpour", "rain", "continuous_rain", "monsoon", "flooding", "tropical_cyclone", "unknown"]
+  # Maximum location accuracy (metres) we will use. Events coarser than this are dropped.
+  max_location_accuracy_m: 25000
+  # When snapping an event to segments, cap the number of candidate segments.
+  max_candidate_segments: 20
+  # Minimum snapping radius (metres) regardless of stated accuracy.
+  min_snap_radius_m: 500
+  # Dedup: merge events within this many days AND this many metres.
+  dedup_days: 2
+  dedup_metres: 5000
+  # Tier priors (multiplied by the distance-decay factor to get label_confidence).
+  tier_prior:
+    gold: 1.00
+    silver: 0.75
+    bronze: 0.40
+
+flood_polygons:
+  # Dartmouth flood polygons (1985-2019, coarse). OFF for v1: they explode the
+  # positive count (whole max-inundation extent x multi-week span) and are low
+  # confidence. v2 should use per-day Sentinel-1 inundation instead.
+  enabled: false
+  span_days: 2               # only Began .. Began+span_days, not full Began..Ended
+  max_segments_per_polygon: 300
+
+negatives:
+  # Negative : positive row ratio in the built panel.
+  ratio: 10
+  # Segments within this distance (m) of ANY historical hazard are excluded from the negative pool.
+  hazard_exclusion_m: 2000
+  # "Easy" negatives: segments at/below this susceptibility quantile (mostly plains).
+  susceptibility_max_quantile: 0.33
+  # HARD negatives: a "donut" of segments 2-25 km from a positive event — same hill
+  # terrain / same region, but not the road that failed. Forces the model to use
+  # rainfall + local terrain, not "is this segment in the Darjeeling hills".
+  hard_negative_fraction: 0.45
+  hard_negative_radius_m: 25000
+  # Fraction of negative days drawn from the monsoon season (Jun–Sep) vs uniform-over-year.
+  monsoon_day_fraction: 0.6
+  monsoon_months: [6, 7, 8, 9]
+
+split:
+  # Spatial block grid cell size in degrees (~0.25 deg ~= 25 km at this latitude).
+  block_deg: 0.25
+  n_spatial_folds: 5
+  # Buffer (m): training segments closer than this to a validation block are dropped from that fold's train set.
+  fold_buffer_m: 5000
+  # Out-of-time split (lives inside dev, used as a CV-style diagnostic — NOT the
+  # locked test). NOTE: COOLR/GLC positives stop in 2017 and post-2018 positives
+  # come mostly from reliefweb — the temporal test therefore also carries a label-
+  # SOURCE shift, not just a time shift. Spatial-block CV is the primary metric.
+  temporal_train_end: "2015-12-31"
+  temporal_val_end: "2018-12-31"
+  # Locked final test = this fraction of positive-bearing spatial block-COMPONENTS,
+  # held out of all CV folds. Purely spatial so it does not collide with the
+  # temporal out-of-time split.
+  #
+  # It used to be "... + all gold-tier rows", and that OR-clause was the project's
+  # only real leak: all 3 gold rows sit in BLK_005_006, which was not a held block,
+  # so they were lifted out of a 4,424-row block whose other rows — including 15
+  # positive rows of the SAME segment across 5 events — stayed in training. A
+  # membership rule for the locked split must be a function of the block alone.
+  test_block_frac: 0.15
+  # Force the component holding the verified (gold) labels into the locked test.
+  # FALSE by design: on this data that component carries 37.4% of all positives, so
+  # holding it would cost a third of the training positives and leave the test
+  # dominated by two adjacent blocks — trading one composition confound for another
+  # to keep 3 rows that are statistically inert at n=3. Revisit when verified labels
+  # are numerous enough to carry weight. See FINAL_MODEL.md.
+  hold_gold_blocks: false
+  # Event-cluster (LOECO) DBSCAN parameters on (lon, lat) degrees + time bucket.
+  cluster_eps_deg: 0.15
+  cluster_min_samples: 1
+  cluster_time_bucket_days: 30
+
+schema_version: "v1"

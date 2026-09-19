@@ -1,0 +1,6 @@
+fold,n_es_pos,es_pos_share_seen_in_train__segment,es_pos_share_seen_in_train__block+date,es_pos_share_seen_in_train__event_id,es_pos_share_seen_in_train__block
+0,729,0.9958847736625515,1.0,1.0,1.0
+1,647,0.98145285935085,1.0,1.0,1.0
+2,856,0.9929906542056075,0.9964953271028038,1.0,1.0
+3,877,0.9897377423033067,1.0,1.0,1.0
+4,1069,0.9859681945743686,0.9990645463049579,1.0,1.0

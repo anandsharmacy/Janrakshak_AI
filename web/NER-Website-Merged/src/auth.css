@@ -1,0 +1,185 @@
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500&display=swap');
+@import 'tailwindcss';
+
+@theme inline {
+  --color-navy-900: #0E2A47;
+  --color-navy-700: #1B3F63;
+  --color-navy-100: #E8EEF5;
+  --color-navy-50: #F0F4F8;
+  --color-paper: #F5F5F1;
+  --color-saffron: #D97A1F;
+  --color-signal-red: #B3261E;
+  --color-deep-green: #1E6B45;
+  --color-slate: #5B6472;
+  --color-slate-200: #D1D5DB;
+  --color-slate-100: #E8EAED;
+
+  --font-ui: 'Public Sans', system-ui, sans-serif;
+  --font-body: 'Noto Sans', sans-serif;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: #F5F5F1;
+  color: #0E2A47;
+}
+
+/* ---- Identity panel: embossed emblem + live-system motion ---- */
+
+/* Slow idle float + a few degrees of parallax rotation, like a coin
+   suspended over its pedestal. No spin gimmick. */
+@keyframes emblemFloat {
+  0%   { transform: translateY(0) rotateX(14deg) rotateY(-11deg); }
+  50%  { transform: translateY(-9px) rotateX(14deg) rotateY(11deg); }
+  100% { transform: translateY(0) rotateX(14deg) rotateY(-11deg); }
+}
+
+/* Cast shadow tightens as the coin lifts. */
+@keyframes emblemCast {
+  0%   { transform: translateX(-50%) scaleX(1);    opacity: 0.42; }
+  50%  { transform: translateX(-50%) scaleX(0.82); opacity: 0.28; }
+  100% { transform: translateX(-50%) scaleX(1);    opacity: 0.42; }
+}
+
+/* A single glowing segment traveling along the route path. */
+@keyframes routeTrace {
+  to { stroke-dashoffset: -560; }
+}
+
+/* Risk-node ping: a ring expanding out and fading. */
+@keyframes nodePing {
+  0%   { transform: scale(1);   opacity: 0.9; }
+  70%  { transform: scale(3.4); opacity: 0; }
+  100% { transform: scale(3.4); opacity: 0; }
+}
+
+@keyframes nodeCore {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+
+.emblem-scene { perspective: 900px; }
+
+.emblem-coin {
+  transform-style: preserve-3d;
+  animation: emblemFloat 9s ease-in-out infinite;
+  will-change: transform;
+}
+
+.emblem-cast {
+  animation: emblemCast 9s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.route-glow { animation: routeTrace 6s linear infinite; }
+
+.risk-ping { transform-box: fill-box; transform-origin: center; }
+
+/* ---- Liquid glass: input fields ---- */
+/* Refraction via SVG displacement (#liquidGlass) on the backdrop, a crisp
+   hairline edge, and an inset top specular highlight to sell the glass read. */
+.glass-field {
+  position: relative;
+  width: 100%;
+  border: 1px solid rgba(91, 100, 114, 0.32);
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.14);
+  -webkit-backdrop-filter: url(#liquidGlass) blur(2px);
+  backdrop-filter: url(#liquidGlass) blur(2px);
+  color: #0E2A47;
+  font-family: 'Noto Sans', sans-serif;
+  font-size: 14px;
+  padding: 10px 12px;
+  outline: none;
+  box-shadow:
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.65),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.1),
+    0 1px 3px rgba(74, 51, 32, 0.06);
+  transition: border-color 0.18s ease, background-color 0.18s ease,
+    box-shadow 0.18s ease, backdrop-filter 0.18s ease;
+}
+.glass-field::placeholder { color: #5B6472; opacity: 0.9; }
+.glass-field.has-toggle { padding-right: 40px; }
+.glass-field:focus {
+  background-color: rgba(255, 255, 255, 0.22);
+  -webkit-backdrop-filter: url(#liquidGlassStrong) blur(3px);
+  backdrop-filter: url(#liquidGlassStrong) blur(3px);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.8),
+    inset 0 -1px 1.5px rgba(255, 255, 255, 0.14),
+    0 2px 9px rgba(74, 51, 32, 0.1);
+}
+.glass-field.accent-saffron:focus { border-color: #C2691A; }
+.glass-field.accent-green:focus { border-color: #1E6B45; }
+
+/* ---- Liquid glass: form card ---- */
+.liquid-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.4);
+  -webkit-backdrop-filter: url(#liquidGlass) blur(7px);
+  backdrop-filter: url(#liquidGlass) blur(7px);
+  box-shadow:
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.9),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 12px 34px -12px rgba(74, 51, 32, 0.28);
+}
+/* Slow-shifting specular sheen across the top of the card */
+.liquid-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    118deg,
+    transparent 32%,
+    rgba(255, 255, 255, 0.22) 48%,
+    transparent 60%
+  );
+  background-size: 220% 220%;
+  animation: glassSheen 11s ease-in-out infinite;
+}
+@keyframes glassSheen {
+  0% { background-position: 130% 0; }
+  100% { background-position: -30% 0; }
+}
+
+/* ---- Page-transition entry animations ---- */
+@keyframes formCardIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.form-card-in {
+  animation: formCardIn 720ms cubic-bezier(0.16, 1, 0.3, 1) 280ms both;
+}
+
+@keyframes splashIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.splash-in { animation: splashIn 520ms ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .emblem-coin,
+  .emblem-cast,
+  .route-glow,
+  .risk-ping,
+  .risk-core,
+  .form-card-in,
+  .splash-in,
+  .liquid-card::before { animation: none !important; }
+}
+
+body { font-family: 'Inter', sans-serif; }

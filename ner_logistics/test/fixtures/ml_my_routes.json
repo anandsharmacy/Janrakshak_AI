@@ -1,0 +1,97 @@
+{
+ "mode": "replay",
+ "state": "replay",
+ "caveat": "p_calibrated is calibrated on a case-control training panel (~10 sampled negatives per positive), so its absolute level overstates the true daily probability on the full corridor; Stage 9 also measured calibration NOT transferring to a new region (worst terrain stratum 2.65x). Rank by risk_percentile. Do not feed p_calibrated into the routing penalty on unseen terrain without recalibrating on local history.",
+ "routes": [
+  {
+   "name": "NH-37 Assam\u2013Nagaland",
+   "summary": {
+    "band": "no_coverage",
+    "worst": null,
+    "n_alert": 0,
+    "n_matched": 0,
+    "max_percentile": null,
+    "n_human_review": 0
+   },
+   "route_id": "50000000-0000-0000-0000-000000000003",
+   "segments": [],
+   "shipment_id": "70000000-0000-0000-0000-000000000002",
+   "route_number": "NH-37",
+   "route_length_m": 265169,
+   "shipment_number": "LG-108",
+   "shipment_status": "in_transit",
+   "coverage_fraction": 0.0
+  },
+  {
+   "name": "NH-10 Sikkim Corridor",
+   "summary": {
+    "band": "high",
+    "worst": {
+     "lat": 26.953363,
+     "lon": 88.4378084,
+     "tier": "human_review",
+     "steep": true,
+     "along_m": 79488,
+     "segment_id": "SEG247524",
+     "risk_percentile": 99.9961
+    },
+    "n_alert": 44,
+    "n_matched": 640,
+    "max_percentile": 99.9961,
+    "n_human_review": 131
+   },
+   "route_id": "50000000-0000-0000-0000-000000000007",
+   "segments": [
+    {
+     "lat": 27.3427364,
+     "lon": 88.6050839,
+     "tier": "human_review",
+     "steep": true,
+     "along_m": 465,
+     "segment_id": "SEG250547",
+     "risk_percentile": 99.9075
+    },
+    {
+     "lat": 27.3368643,
+     "lon": 88.6045777,
+     "tier": "human_review",
+     "steep": true,
+     "along_m": 1488,
+     "segment_id": "SEG250427",
+     "risk_percentile": 99.901
+    },
+    {
+     "lat": 27.3368162,
+     "lon": 88.6061027,
+     "tier": "human_review",
+     "steep": true,
+     "along_m": 1599,
+     "segment_id": "SEG250426",
+     "risk_percentile": 99.6463
+    },
+    {
+     "lat": 27.336235,
+     "lon": 88.6061985,
+     "tier": "human_review",
+     "steep": true,
+     "along_m": 1637,
+     "segment_id": "SEG250419",
+     "risk_percentile": 99.9495
+    }
+   ],
+   "shipment_id": "70000000-0000-0000-0000-000000000031",
+   "route_number": "NH-10",
+   "route_length_m": 517636,
+   "shipment_number": "LG-131",
+   "shipment_status": "scheduled",
+   "coverage_fraction": 0.5559
+  }
+ ],
+ "run_id": 1,
+ "expires_at": null,
+ "score_date": "2025-08-05",
+ "bundle_hash": "bf4ff57518c571e9",
+ "published_at": "2026-09-12T07:30:03.943865+00:00",
+ "model_version": "final_v3",
+ "primary_output": "risk_percentile"
+}

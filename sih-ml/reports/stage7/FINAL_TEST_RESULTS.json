@@ -1,0 +1,101 @@
+{
+  "opened_utc": "2026-09-11T12:55:17.179165+00:00",
+  "opening_number": 1,
+  "config_sha256_16": "5c8ab2326f9c5b5c",
+  "git_sha": "nogit",
+  "n_test_rows": 8277,
+  "n_test_pos": 1344,
+  "dev_estimate": {
+    "scorer": "composite/passed",
+    "spatial_cv_mean_AP": 0.37818023708898574,
+    "spatial_cv_std_AP": 0.1628065815632942,
+    "incumbent_mean_AP": 0.3505504824395985,
+    "note": "This CV number is optimistically biased: it was used to SELECT among ~25 arms. The locked final_test exists to measure that bias."
+  },
+  "metrics": {
+    "n": 8277,
+    "n_pos": 1344,
+    "base_rate": 0.16237767306995288,
+    "average_precision": 0.37600301127272495,
+    "roc_auc": 0.7878677632166382,
+    "brier": 0.11736268721567973,
+    "ece": 0.046897725405868736,
+    "precision@10": 1.0,
+    "recall@10": 0.00744047619047619,
+    "precision@50": 0.84,
+    "recall@50": 0.03125,
+    "precision@100": 0.81,
+    "recall@100": 0.060267857142857144,
+    "precision@200": 0.685,
+    "recall@200": 0.10193452380952381,
+    "lift@1pct": 4.9713048623063685,
+    "lift@5pct": 2.6776009316770186,
+    "lift@10pct": 1.8966339932712215,
+    "frozen_threshold": 0.05667060212514758,
+    "tp": 1244,
+    "fp": 3133,
+    "fn": 100,
+    "tn": 3800,
+    "precision": 0.28421293123143704,
+    "recall": 0.9255952380952381,
+    "f1": 0.43488900541863307,
+    "steep_AP": 0.3689274934610299,
+    "steep_base_rate": 0.2564326210204972,
+    "steep_lift@10pct": 1.3538120488370018,
+    "steep_n": 4586,
+    "steep_roc_auc": 0.6241873142218763,
+    "n_gold": 3,
+    "gold_scores": [
+      0.5641025641025641,
+      0.5,
+      0.5
+    ],
+    "gold_percentile": [
+      0.9908179292014014,
+      0.9882807780596835,
+      0.9882807780596835
+    ]
+  },
+  "calibration_on_test": [
+    {
+      "stratum": "slope [0, 2.5)",
+      "n": 3057,
+      "n_pos": 39,
+      "predicted": 0.014551447236785935,
+      "observed": 0.012757605495583905,
+      "pred_over_obs": 1.14060959494499
+    },
+    {
+      "stratum": "slope [2.5, 10)",
+      "n": 634,
+      "n_pos": 129,
+      "predicted": 0.0923381304290811,
+      "observed": 0.20347003154574134,
+      "pred_over_obs": 0.45381685807780936
+    },
+    {
+      "stratum": "slope [10, 20)",
+      "n": 1515,
+      "n_pos": 219,
+      "predicted": 0.1678675976556172,
+      "observed": 0.14455445544554454,
+      "pred_over_obs": 1.161275846795708
+    },
+    {
+      "stratum": "slope [20, 90)",
+      "n": 3071,
+      "n_pos": 957,
+      "predicted": 0.19535507040623123,
+      "observed": 0.31162487788993815,
+      "pred_over_obs": 0.6268917672074568
+    },
+    {
+      "stratum": "all",
+      "n": 8277,
+      "n_pos": 1344,
+      "predicted": 0.11565554917973761,
+      "observed": 0.16237767306995288,
+      "pred_over_obs": 0.7122626343457502
+    }
+  ]
+}

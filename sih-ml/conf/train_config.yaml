@@ -1,0 +1,65 @@
+# Stage 4 — "training from scratch" run configuration.
+# Same model family/hyperparameters as conf/model_baseline.yaml (Stage 3 already
+# established the config; Stage 4's job is the TRAINING INFRASTRUCTURE around it —
+# monitoring, checkpointing, resume, reproducibility — not re-tuning. Systematic
+# hyperparameter search is Stage 6 (Fine-Tuning & HPO).
+
+base_config: "conf/model_baseline.yaml"
+
+seed: 42
+model_version: "training_v1"
+
+lgbm:
+  # Stage 4 correction, surfaced by the per-round curves this stage added:
+  # LightGBM tracks binary_logloss alongside our custom PR-AUC and stops on
+  # whichever goes stale first. On fold 0 that was logloss (turns at round ~17)
+  # while PR-AUC was still climbing at round 96 — i.e. early stopping was driven
+  # by a metric we never declared as primary. "pr_auc" makes the declared primary
+  # metric the sole early-stopping signal. Stage 3 (conf/model_baseline.yaml)
+  # deliberately keeps the old "both" behaviour so its numbers stay reproducible.
+  early_stopping_metric: "pr_auc"
+  # Kept at Stage 3's PRE-REGISTERED 1200-round cap (chosen in Stage 3 before any
+  # of these outer-fold results existed — so it is not a value selected by peeking
+  # at the evaluation).
+  #
+  # Recorded ablation (TRAINING_STRATEGY.md §6): raising the cap to 5000 lets the
+  # inner early-stopping set run to its own optimum (1678–2712 rounds per fold) and
+  # scores 0.318 ± 0.144 — slightly WORSE than 0.325 ± 0.139 at the 1200 cap. The
+  # inner ES set is a stratified row sample of the SAME spatial blocks as train, so
+  # it is in-distribution and systematically over-recommends rounds that do not
+  # transfer across regions. Proper round selection needs a block-based inner
+  # holdout and belongs in Stage 6 HPO; we do NOT claim 1200 as tuned, only as
+  # pre-registered.
+  n_estimators: 1200
+
+paths:
+  panel: "data/processed/panel_v1.parquet"
+  folds: "data/processed/folds_v1.parquet"
+  models: "models"
+  reports: "reports/stage4"
+  checkpoints: "checkpoints"      # periodic crash-resume checkpoints (gitignored)
+  mlruns: "mlruns"
+
+training:
+  # Save a full booster snapshot every N rounds so an interrupted run can resume
+  # without starting over. NOTE (verified empirically, see TRAINING_STRATEGY.md):
+  # resuming via init_model is NOT bit-identical to one continuous run — bagging/
+  # feature-sampling RNG restarts at the resume boundary. Acceptable for crash
+  # recovery; do not rely on it to reproduce a specific uninterrupted run.
+  checkpoint_every_rounds: 50
+  # Delete per-round checkpoints once a fold finishes successfully (keep only the
+  # final + fold booster). Set false while debugging resume.
+  clean_checkpoints_on_success: true
+  track_train_curve: true         # log train AND val PR-AUC per round (over/underfit read)
+
+determinism:
+  # What IS pinned: numpy/random seed, LightGBM `deterministic=True` +
+  # `force_row_wise=True` (avoids the multi-threaded histogram race that makes
+  # standard LightGBM non-deterministic), a fixed seed threaded into every
+  # bagging/feature-sampling call, identical fold/row ordering (parquet, no
+  # shuffling on load).
+  # What is NOT bit-exact: resumed-from-checkpoint training (see above); results
+  # across different LightGBM/OpenMP versions or CPU architectures (upstream
+  # floating-point summation order can differ) — pin `requirements.txt` versions
+  # if bit-exact reproduction across machines is required.
+  note: "see comments above; enforced in models/lgbm_baseline.py _lgb_params()"

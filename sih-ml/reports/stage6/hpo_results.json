@@ -1,0 +1,156 @@
+{
+  "git_sha": "nogit",
+  "selection_folds": [
+    0,
+    1,
+    2
+  ],
+  "report_folds": [
+    3,
+    4
+  ],
+  "E0_baseline_row_es": {
+    "selection": {
+      "fold_0": {
+        "AP": 0.44067643725926675,
+        "best_iteration": 1200
+      },
+      "fold_1": {
+        "AP": 0.5362963124101675,
+        "best_iteration": 1192
+      },
+      "fold_2": {
+        "AP": 0.21809709546486117,
+        "best_iteration": 1199
+      },
+      "mean_AP": 0.3983566150447651,
+      "std_AP": 0.1333064412806118
+    },
+    "report": {
+      "fold_3": {
+        "AP": 0.18295112653346554,
+        "best_iteration": 1200
+      },
+      "fold_4": {
+        "AP": 0.24560287980284357,
+        "best_iteration": 1200
+      },
+      "mean_AP": 0.21427700316815457,
+      "std_AP": 0.03132587663468901
+    }
+  },
+  "E1_event_grouped_es": {
+    "selection": {
+      "fold_0": {
+        "AP": 0.28831829109010937,
+        "best_iteration": 27
+      },
+      "fold_1": {
+        "AP": 0.5494594151599391,
+        "best_iteration": 1200
+      },
+      "fold_2": {
+        "AP": 0.23201940427608658,
+        "best_iteration": 1200
+      },
+      "mean_AP": 0.356599036842045,
+      "std_AP": 0.1382961443372289
+    },
+    "report": {
+      "fold_3": {
+        "AP": 0.1774256076753944,
+        "best_iteration": 1199
+      },
+      "fold_4": {
+        "AP": 0.2284140657823603,
+        "best_iteration": 1136
+      },
+      "mean_AP": 0.20291983672887734,
+      "std_AP": 0.025494229053482947
+    }
+  },
+  "E2_hpo": {
+    "n_trials_total": 40,
+    "n_complete": 29,
+    "n_pruned": 11,
+    "best_params": {
+      "num_leaves": 4,
+      "max_depth": 11,
+      "min_child_samples": 364,
+      "learning_rate": 0.03218814577630251,
+      "reg_alpha": 1.9787843500081188,
+      "reg_lambda": 0.23696573020861914,
+      "colsample_bytree": 0.8531476828735367,
+      "subsample": 0.6971305573243116,
+      "min_split_gain": 0.8392636293753901,
+      "use_monotone": true,
+      "scale_pos_weight_mult": 0.1381132349355172
+    },
+    "best_selection_AP": 0.4397370593863203,
+    "best_fold_aps": [
+      0.5072323886408431,
+      0.5815409595255897,
+      0.23043782999252801
+    ],
+    "report": {
+      "fold_3": {
+        "AP": 0.19513296947223868,
+        "best_iteration": 1176
+      },
+      "fold_4": {
+        "AP": 0.23840826456679282,
+        "best_iteration": 1009
+      },
+      "mean_AP": 0.21677061701951575,
+      "std_AP": 0.021637647547277067
+    }
+  },
+  "E3_finetune_temporal": [
+    {
+      "stage": "base_old_period_only",
+      "AP": 0.09505518413910795,
+      "n_trees": 1192
+    },
+    {
+      "stage": "0_frozen_base",
+      "AP": 0.09505518413910795,
+      "n_trees": 1192
+    },
+    {
+      "stage": "1_refit_leaves",
+      "decay_rate": 0.9,
+      "AP": 0.09795774693753108,
+      "n_trees": 1192
+    },
+    {
+      "stage": "2_continue_boosting",
+      "lr_scale": 0.3,
+      "extra_rounds": 200,
+      "AP": 0.0822980665716573,
+      "n_trees": 1228
+    },
+    {
+      "stage": "3_full_retrain_on_train+adapt",
+      "AP": 0.1951751311306268,
+      "n_trees": 1194
+    }
+  ],
+  "model_selection": {
+    "candidates_report_AP": {
+      "E0_baseline": 0.21427700316815457,
+      "E1_event_es": 0.20291983672887734,
+      "E2_hpo_tuned": 0.21677061701951575
+    },
+    "candidates_report_std": {
+      "E0_baseline": 0.03132587663468901,
+      "E1_event_es": 0.025494229053482947,
+      "E2_hpo_tuned": 0.021637647547277067
+    },
+    "argmax": "E2_hpo_tuned",
+    "margin_over_baseline": 0.0024936138513611816,
+    "fold_spread_as_noise_floor": 0.03132587663468901,
+    "improvement_exceeds_noise": false,
+    "n_trees_tuned": 4,
+    "decision_rule": "Select the tuned config ONLY if its report-fold gain exceeds the fold spread AND it is not materially larger/slower. With 2 report folds the spread is a crude noise floor, so a gain inside it is reported as 'not demonstrated', never as an improvement."
+  }
+}

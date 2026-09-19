@@ -1,0 +1,6 @@
+stage,AP,n_trees,decay_rate,lr_scale,extra_rounds
+base_old_period_only,0.09505518413910795,1192,,,
+0_frozen_base,0.09505518413910795,1192,,,
+1_refit_leaves,0.09795774693753108,1192,0.9,,
+2_continue_boosting,0.0822980665716573,1228,,0.3,200.0
+3_full_retrain_on_train+adapt,0.1951751311306268,1194,,,

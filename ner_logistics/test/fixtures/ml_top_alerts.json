@@ -1,0 +1,60 @@
+{
+ "mode": "replay",
+ "rows": [
+  {
+   "lat": 27.0063407,
+   "lon": 88.2623845,
+   "tier": "alert",
+   "steep": false,
+   "near_km": 50.2,
+   "tier_rank": 1,
+   "near_place": "East Sikkim",
+   "near_state": "Sikkim",
+   "segment_id": "SEG291514",
+   "near_district": "East Sikkim",
+   "risk_percentile": 99.9987,
+   "promoted_alert_id": "16f8c0fb-0a86-45c2-87e1-4b39c2b35854"
+  },
+  {
+   "lat": 27.0085391,
+   "lon": 88.2523469,
+   "tier": "alert",
+   "steep": false,
+   "near_km": 50.7,
+   "tier_rank": 2,
+   "near_place": "East Sikkim",
+   "near_state": "Sikkim",
+   "segment_id": "SEG291519",
+   "near_district": "East Sikkim",
+   "risk_percentile": 99.9948,
+   "promoted_alert_id": null
+  },
+  {
+   "lat": 27.0388375,
+   "lon": 88.2619731,
+   "tier": "alert",
+   "steep": false,
+   "near_km": 47.7,
+   "tier_rank": 3,
+   "near_place": "East Sikkim",
+   "near_state": "Sikkim",
+   "segment_id": "SEG291676",
+   "near_district": "East Sikkim",
+   "risk_percentile": 99.9919,
+   "promoted_alert_id": null
+  }
+ ],
+ "tier": "alert",
+ "scope": "region",
+ "state": "replay",
+ "caveat": "p_calibrated is calibrated on a case-control training panel (~10 sampled negatives per positive), so its absolute level overstates the true daily probability on the full corridor; Stage 9 also measured calibration NOT transferring to a new region (worst terrain stratum 2.65x). Rank by risk_percentile. Do not feed p_calibrated into the routing penalty on unseen terrain without recalibrating on local history.",
+ "run_id": 1,
+ "capacity": 3,
+ "n_in_tier": 1713,
+ "expires_at": null,
+ "score_date": "2025-08-05",
+ "bundle_hash": "bf4ff57518c571e9",
+ "published_at": "2026-09-12T07:30:03.943865+00:00",
+ "model_version": "final_v3",
+ "primary_output": "risk_percentile"
+}

@@ -1,0 +1,115 @@
+/* PMO dashboard. Palette and surfaces follow the rest of the site (navy #17324D, teal #2F6F7E, warm cards). */
+
+.pmo-card { background: rgba(250,247,240,0.82); border: 1px solid rgba(180,162,136,0.55); border-radius: 12px; box-shadow: 0 1px 2px rgba(23,50,77,0.06); }
+.pmo-h2 { font-size: 15px; font-weight: 600; color: #17212B; }
+.pmo-muted { color: #5A6670; font-size: 12px; }
+
+/* The PMO page keeps its own light surface: its cards and text use the light palette, so the site's
+   dark theme (which only recolours the page background) must not leak through and wash out labels. */
+.pmo-root { color-scheme: light; color: #17212B; background: linear-gradient(135deg, #EEF2F5 0%, #E9EDEF 48%, #EBEEEC 100%); }
+
+/* Controls */
+.pmo-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.pmo-field > label, .pmo-label { font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #5A6670; }
+.pmo-input {
+  height: 34px; width: 100%; padding: 0 10px; font-size: 13px; color: #17212B;
+  background: #FFFFFF; border: 1px solid rgba(150,165,180,0.7); border-radius: 6px;
+}
+.pmo-input:disabled { opacity: .55; cursor: not-allowed; background: #F0EFED; }
+.pmo-input:focus-visible { outline: 2px solid rgba(47,111,126,0.6); outline-offset: 1px; }
+.pmo-btn {
+  height: 34px; padding: 0 12px; font-size: 12.5px; font-weight: 600; color: #17324D; cursor: pointer;
+  background: rgba(250,250,251,0.96); border: 1px solid rgba(150,165,180,0.7); border-radius: 6px; white-space: nowrap;
+}
+.pmo-btn:hover:not(:disabled) { background: #fff; border-color: #2F6F7E; color: #2F6F7E; }
+.pmo-btn:disabled { opacity: .55; cursor: not-allowed; }
+.pmo-btn-primary { background: #17324D; color: #fff; border-color: #17324D; }
+.pmo-btn-primary:hover:not(:disabled) { background: #1E3F5E; color: #fff; border-color: #1E3F5E; }
+.pmo-btn-danger { background: #BE2424; color: #fff; border-color: #BE2424; }
+.pmo-btn-danger:hover:not(:disabled) { background: #A11D1D; color: #fff; border-color: #A11D1D; }
+.pmo-btn-sm { height: 28px; padding: 0 10px; font-size: 12px; }
+.pmo-link { background: none; border: 0; padding: 0; color: #2F6F7E; text-decoration: underline; cursor: pointer; font: inherit; }
+
+/* Search suggestions */
+.pmo-suggest {
+  position: absolute; z-index: 1200; left: 0; right: 0; top: calc(100% + 4px); max-height: 280px; overflow: auto;
+  background: #fff; border: 1px solid rgba(150,165,180,0.7); border-radius: 8px; box-shadow: 0 10px 24px -12px rgba(23,50,77,0.45);
+  list-style: none; margin: 0; padding: 4px;
+}
+.pmo-suggest li { padding: 6px 8px; border-radius: 5px; font-size: 13px; cursor: pointer; display: flex; justify-content: space-between; gap: 8px; }
+.pmo-suggest li[aria-selected='true'], .pmo-suggest li:hover { background: rgba(47,111,126,0.12); }
+.pmo-suggest small { color: #5A6670; font-size: 11px; white-space: nowrap; }
+
+/* Multi-select popover */
+.pmo-pop {
+  position: absolute; z-index: 1200; top: calc(100% + 4px); left: 0; min-width: 220px; padding: 10px;
+  background: #fff; border: 1px solid rgba(150,165,180,0.7); border-radius: 8px; box-shadow: 0 10px 24px -12px rgba(23,50,77,0.45);
+}
+.pmo-pop label { display: flex; align-items: center; gap: 8px; padding: 4px 2px; font-size: 13px; cursor: pointer; }
+
+/* Active filter chips */
+.pmo-tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 4px 2px 8px; font-size: 12px; border-radius: 9999px; background: rgba(47,111,126,0.12); color: #17324D; border: 1px solid rgba(47,111,126,0.3); }
+.pmo-tag button { border: 0; background: none; cursor: pointer; color: #17324D; font-size: 14px; line-height: 1; padding: 0 4px; border-radius: 9999px; }
+.pmo-tag button:hover { background: rgba(23,50,77,0.12); }
+
+/* Statistic cards */
+.pmo-stat { text-align: left; padding: 12px 14px; cursor: pointer; color: inherit; font: inherit; border-left-width: 4px; }
+.pmo-stat:hover { border-color: #2F6F7E; }
+.pmo-stat[aria-pressed='true'] { outline: 2px solid #17324D; outline-offset: 1px; background: #fff; }
+.pmo-stat-total { cursor: default; }
+
+/* Map */
+.pmo-map { background: #E4EBF0; min-height: 320px; }
+.pmo-map-overlay { position: absolute; z-index: 1000; display: flex; gap: 6px; pointer-events: none; }
+.pmo-map-overlay > * { pointer-events: auto; }
+.pmo-map-tl { top: 10px; left: 10px; flex-direction: column; align-items: flex-start; max-width: calc(100% - 200px); }
+.pmo-map-tr { top: 10px; right: 10px; align-items: center; }
+.pmo-map-bl { bottom: 22px; left: 10px; }
+.pmo-chip {
+  padding: 5px 10px; font-size: 12px; color: #17212B; background: rgba(250,247,240,0.95);
+  border: 1px solid rgba(180,162,136,0.6); border-radius: 6px; box-shadow: 0 1px 3px rgba(23,50,77,0.12);
+}
+.pmo-chip-label { font-weight: 700; color: #5A6670; text-transform: uppercase; font-size: 10px; letter-spacing: .06em; margin-right: 4px; }
+.pmo-chip-sep { margin: 0 6px; color: #8A9098; }
+.pmo-chip-warn { background: #FEF8E6; border-color: #F5DFA8; color: #7A5A0F; }
+.pmo-toggle { display: inline-flex; align-items: center; gap: 6px; height: 34px; cursor: pointer; }
+.pmo-legend { list-style: none; margin: 0; padding: 6px 10px; display: grid; gap: 3px; font-size: 12px; background: rgba(250,247,240,0.95); border: 1px solid rgba(180,162,136,0.6); border-radius: 6px; box-shadow: 0 1px 3px rgba(23,50,77,0.12); }
+.pmo-legend li { display: flex; align-items: center; gap: 6px; }
+.pmo-legend-count { margin-left: auto; padding-left: 10px; color: #5A6670; font-variant-numeric: tabular-nums; }
+.pmo-dot { width: 10px; height: 10px; border-radius: 9999px; display: inline-block; border: 1.5px solid #fff; box-shadow: 0 0 0 1px rgba(23,33,43,0.25); }
+.pmo-pop-desc { margin: 0 0 6px; color: #17212B; max-width: 280px; overflow-wrap: anywhere; }
+.ner-inc.is-resolved { opacity: .45; }
+
+.pmo-cluster { background: none; border: 0; }
+.pmo-cluster span {
+  display: grid; place-items: center; margin: auto; border-radius: 9999px; color: #fff; font-weight: 700; font-size: 12px;
+  background: #17324D; border: 3px solid rgba(215,167,58,0.9); box-shadow: 0 2px 6px rgba(23,33,43,0.4);
+}
+.pmo-cluster-sm span { width: 30px; height: 30px; margin-top: 5px; }
+.pmo-cluster-md span { width: 36px; height: 36px; margin-top: 2px; }
+.pmo-cluster-lg span { width: 42px; height: 42px; margin-top: -1px; font-size: 13px; }
+
+/* Tables and dialogs */
+.pmo-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.pmo-table th { text-align: left; font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #5A6670; padding: 8px 10px; border-bottom: 1px solid rgba(180,162,136,0.55); white-space: nowrap; }
+.pmo-table td { padding: 9px 10px; border-bottom: 1px solid rgba(180,162,136,0.3); vertical-align: top; }
+.pmo-tab { padding: 6px 12px; font-size: 13px; font-weight: 600; color: #5A6670; background: none; border: 0; border-bottom: 2px solid transparent; cursor: pointer; }
+.pmo-tab[aria-selected='true'] { color: #17324D; border-bottom-color: #D7A73A; }
+.pmo-dialog { margin: auto; /* Tailwind's reset removes the UA centring */ border: 1px solid rgba(180,162,136,0.7); border-radius: 12px; padding: 0; width: min(520px, calc(100vw - 32px)); background: #FAF7F0; color: #17212B; box-shadow: 0 24px 60px -20px rgba(23,50,77,0.55); }
+.pmo-dialog::backdrop { background: rgba(15,37,56,0.55); }
+.pmo-dl { display: grid; grid-template-columns: 110px 1fr; gap: 6px 12px; font-size: 13px; margin: 0; }
+.pmo-dl dt { color: #5A6670; }
+.pmo-dl dd { margin: 0; overflow-wrap: anywhere; }
+.pmo-alert { padding: 8px 12px; border-radius: 8px; font-size: 13px; background: rgba(179,38,30,0.08); color: #B3261E; border: 1px solid rgba(179,38,30,0.25); }
+.pmo-ok { background: #EAF4EE; color: #2D6B4F; border-color: #A8D4B8; }
+.pmo-scroll-x { overflow-x: auto; }
+
+@media (max-width: 900px) {
+  .pmo-map-tl { max-width: calc(100% - 20px); top: 50px; }
+}
+
+/* Header navigation */
+.pmo-navlink { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; font-size: 13px; font-weight: 500; color: #D5E1EA; border-radius: 6px; text-decoration: none; }
+.pmo-navlink:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.pmo-navlink:focus-visible { outline: 2px solid #D7A73A; outline-offset: 1px; }
+.pmo-navbadge { min-width: 18px; padding: 0 5px; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; color: #17212B; background: #D7A73A; border-radius: 9999px; }
