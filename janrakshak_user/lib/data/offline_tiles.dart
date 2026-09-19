@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart' show ValueNotifier;
 import 'package:flutter/services.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:path/path.dart' as p;
@@ -18,10 +19,12 @@ import 'store.dart';
 /// disable. While the file is missing (not uploaded yet) or unset, the app shows the public OpenStreetMap raster server
 /// for display only (its usage policy forbids bulk/offline downloads).
 const kPmtilesUrl = String.fromEnvironment('PMTILES_URL',
-    defaultValue: 'https://sjcqwxthimfuxmrodsbs.supabase.co/storage/v1/object/public/basemap/north-eastern-zone.pmtiles');
+    defaultValue: 'https://sjcqwxthimfuxmrodsbs.supabase.co/storage/v1/object/public/basemap/india.pmtiles');
 
-/// Deepest zoom stored in the archive; must match `MAXZOOM` in tools/basemap/build.sh (12 = 30 MB, fits the 50 MB free-plan upload limit). The map overzooms beyond it.
-const kPmtilesMaxZoom = int.fromEnvironment('PMTILES_MAX_ZOOM', defaultValue: 12);
+/// Deepest zoom stored in the archive; must match `MAXZOOM` in tools/basemap/build.sh. The whole map shares one maximum
+/// zoom (a missing tile is blank, it is not replaced by a coarser one; overzoom only works past this level), and 9 is the
+/// deepest level at which ALL of India fits the 50 MB free-plan upload limit (34 MiB; zoom 10 is 85 MiB, zoom 12 530 MiB).
+const kPmtilesMaxZoom = int.fromEnvironment('PMTILES_MAX_ZOOM', defaultValue: 9);
 const kMinDownloadZoom = 5;
 const kOsmUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 const kAttribution = 'OpenMapTiles © OpenStreetMap contributors'; // the attribution widget adds the leading ©
@@ -37,6 +40,10 @@ double get navZoom => kPmtilesMaxZoom + 1.0;
 
 class OfflineTiles {
   static String? root; // null until init (tests, first frame)
+
+  /// False after several network failures in a row while reading tiles (offline, host down). Not touched by tiles that
+  /// are simply missing from the archive, nor by tiles served from disk.
+  static final tilesReachable = ValueNotifier<bool>(true);
   static PmTilesVectorProvider? provider;
   static vtr.Theme? theme;
 
@@ -80,6 +87,7 @@ class PmTilesVectorProvider extends VectorTileProvider {
   final String? root;
   final ByteSource source;
   Future<PmTilesReader>? _reader;
+  var _networkFailures = 0;
 
   /// Opened lazily and retried after a failure, so starting offline and coming online later just works.
   Future<PmTilesReader> get _open => _reader ??= PmTilesReader.open(source).catchError((Object e) {
@@ -107,8 +115,11 @@ class PmTilesVectorProvider extends VectorTileProvider {
     try {
       bytes = await (await _open).tile(tile.z, tile.x, tile.y);
     } catch (e) {
+      if (++_networkFailures >= 3) OfflineTiles.tilesReachable.value = false;
       throw ProviderException(message: 'Cannot read tile $tile: $e', retryable: Retryable.retry);
     }
+    _networkFailures = 0;
+    OfflineTiles.tilesReachable.value = true; // the host answered (even "no such tile")
     if (bytes == null) throw ProviderException(message: 'No tile $tile', retryable: Retryable.none, statusCode: 404);
     return bytes;
   }

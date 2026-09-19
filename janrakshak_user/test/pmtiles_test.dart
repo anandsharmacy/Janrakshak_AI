@@ -6,7 +6,8 @@ import 'package:crypto/crypto.dart' show sha1;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:janrakshak_user/data/offline_tiles.dart' show kPmtilesMaxZoom;
+import 'package:janrakshak_user/data/offline_tiles.dart' show kPmtilesMaxZoom, tileOf;
+import 'package:latlong2/latlong.dart';
 import 'package:janrakshak_user/data/pmtiles.dart';
 
 class BytesSource implements ByteSource {
@@ -95,7 +96,7 @@ void main() {
 /// Cross-check against the real Planetiler archive when it has been built (tools/basemap/build.sh); skipped otherwise.
 /// Expected hashes come from the reference Python reader.
 void realArchiveTests() {
-  final f = File('tools/basemap/out/north-eastern-zone.pmtiles');
+  final f = File('tools/basemap/out/india.pmtiles');
   final samples = jsonDecode(File('test/fixtures/real_samples.json').readAsStringSync()) as List;
   test('real archive: every sampled tile matches the reference reader byte for byte', () async {
     final reader = await PmTilesReader.open(HttpRangeSource('unused', client: MockClient((req) async {
@@ -122,4 +123,36 @@ void realArchiveTests() {
     }
     expect(present, greaterThan(20));
   }, skip: f.existsSync() ? false : 'build the basemap first: tools/basemap/build.sh');
+
+  // Regression: the map once showed only the North East because the archive was built from that extract alone.
+  test('real archive covers ALL of India: a tile exists at every zoom for cities in every region', () async {
+    final raf = f.openSync();
+    addTearDown(raf.closeSync);
+    final reader = await PmTilesReader.open(FileSource(raf));
+    const cities = {
+      'Delhi': LatLng(28.61, 77.21), 'Mumbai': LatLng(19.08, 72.88), 'Bengaluru': LatLng(12.97, 77.59),
+      'Hyderabad': LatLng(17.38, 78.48), 'Chennai': LatLng(13.08, 80.27), 'Kolkata': LatLng(22.57, 88.36),
+      'Guwahati': LatLng(26.14, 91.74), 'Silchar': LatLng(24.83, 92.78), 'Srinagar': LatLng(34.08, 74.80),
+      'Kochi': LatLng(9.93, 76.27), 'Ahmedabad': LatLng(23.02, 72.57), 'Port Blair': LatLng(11.62, 92.73),
+    };
+    expect(reader.header.maxZoom, kPmtilesMaxZoom);
+    for (final e in cities.entries) {
+      for (var z = 0; z <= kPmtilesMaxZoom; z++) {
+        final (x, y) = tileOf(e.value, z);
+        expect(await reader.tileRaw(z, x, y), isNotNull, reason: '${e.key} has no tile at z$z');
+      }
+    }
+  }, skip: f.existsSync() ? false : 'build the basemap first: tools/basemap/build.sh');
+}
+
+/// Reads a local file in place (the real archive is far too big to load into memory).
+class FileSource implements ByteSource {
+  FileSource(this.raf);
+  final RandomAccessFile raf;
+
+  @override
+  Future<Uint8List> read(int offset, int length) async {
+    raf.setPositionSync(offset);
+    return raf.readSync(length);
+  }
 }

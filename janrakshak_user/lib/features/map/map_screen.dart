@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../data/feed.dart';
+import '../../data/offline_tiles.dart';
 import '../../data/providers.dart';
 import '../../data/seed_data.dart';
 import '../../data/taxonomy.dart';
@@ -117,6 +118,15 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             Padding(padding: const EdgeInsets.only(top: 8), child: StatusBanner(lead: 'Not found.', text: _searchError!, color: AppColors.statusCritical, icon: Icons.error_outline)),
           if (!online)
             const Padding(padding: EdgeInsets.only(top: 8), child: StatusBanner(lead: 'Offline.', text: 'Live risk data unavailable; map tiles and search may not load.')),
+          ValueListenableBuilder<bool>(
+            valueListenable: OfflineTiles.tilesReachable,
+            builder: (_, ok, _) => ok
+                ? const SizedBox.shrink()
+                : const Padding(
+                    padding: EdgeInsets.only(top: 8),
+                    child: StatusBanner(
+                        lead: 'Map tiles unavailable.', text: 'Check your connection; areas you downloaded still work.')),
+          ),
           if (kSampleData)
             const Padding(padding: EdgeInsets.only(top: 8), child: StatusBanner(lead: 'Sample metrics.', text: 'Incident markers are live; risk scores, weather and facilities are illustrative.')),
           if (_legend) const Padding(padding: EdgeInsets.only(top: 8), child: _Legend()),
