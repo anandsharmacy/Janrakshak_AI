@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NER Connectivity Intelligence — Control Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800&family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+<style>
+:root{
+  --navy-900:#0E2A47; --navy-700:#1B3F63; --navy-500:#2C5480;
+  --paper:#F5F5F1; --paper-panel:#FBFBF9;
+  --saffron:#D97A1F; --red:#B3261E; --green:#1E6B45;
+  --slate:#5B6472; --slate-ink:#3A4048;
+  --hair:rgba(91,100,114,.24); --hair-soft:rgba(91,100,114,.14);
+  --ink:#1A2230;
+  --f-ui:'Public Sans',system-ui,sans-serif;
+  --f-data:'Noto Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:#DADBD6;
+  font-family:var(--f-data);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  display:flex;justify-content:center;
+  padding:24px;
+}
+a{color:var(--navy-700);text-decoration:none}
+a:hover{color:var(--navy-900)}
+
+/* ===== App frame — fixed 1440x900 desktop screen ===== */
+.app{
+  width:1440px;height:900px;flex:none;
+  background:var(--paper);
+  display:grid;grid-template-columns:236px 1fr;
+  border:1px solid var(--hair);
+  box-shadow:0 18px 50px rgba(14,42,71,.20);
+  overflow:hidden;position:relative;
+}
+
+/* ===== Nav rail ===== */
+.rail{
+  background:var(--navy-900);color:#EAF0F7;
+  display:flex;flex-direction:column;
+  border-right:1px solid #0A2038;
+}
+.brand{
+  padding:20px 20px 18px;display:flex;gap:12px;align-items:flex-start;
+  border-bottom:1px solid rgba(255,255,255,.09);
+}
+.crest{
+  width:38px;height:38px;flex:none;border-radius:5px;
+  background:var(--paper);color:var(--navy-900);
+  display:grid;place-items:center;font-family:var(--f-ui);font-weight:800;
+}
+.brand-tx b{font-family:var(--f-ui);font-weight:700;font-size:14.5px;letter-spacing:.2px;display:block;line-height:1.15}
+.brand-tx span{font-size:11px;color:#9FB4CC;font-family:var(--f-ui);display:block;margin-top:3px;letter-spacing:.3px}
+.rail-sec{padding:16px 14px 6px;font-family:var(--f-ui);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:#6E86A3}
+.navlist{list-style:none;margin:0;padding:0 10px;display:flex;flex-direction:column;gap:2px}
+.navitem{
+  display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:5px;
+  font-family:var(--f-ui);font-size:14px;font-weight:500;color:#C4D2E3;cursor:pointer;
+  border:1px solid transparent;
+}
+.navitem svg{width:19px;height:19px;flex:none;stroke:currentColor;fill:none;stroke-width:1.9}
+.navitem:hover{background:rgba(255,255,255,.06);color:#EAF0F7}
+.navitem.active{background:var(--navy-700);color:#fff;border-color:rgba(255,255,255,.14)}
+.navitem.active::before{content:"";position:absolute;left:0;width:3px;height:22px;background:var(--saffron);border-radius:0 2px 2px 0;margin-left:-11px}
+.navitem .badge{margin-left:auto;background:var(--red);color:#fff;font-family:var(--f-ui);font-size:11px;font-weight:700;min-width:18px;height:18px;padding:0 5px;border-radius:9px;display:grid;place-items:center}
+.rail-foot{margin-top:auto;padding:14px 16px;border-top:1px solid rgba(255,255,255,.09);font-family:var(--f-ui);font-size:11.5px;color:#9FB4CC;display:flex;align-items:center;gap:9px}
+.dot-on{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(30,107,69,.25)}
+
+/* ===== Main ===== */
+.main{display:flex;flex-direction:column;min-width:0;background:var(--paper)}
+.topbar{
+  height:60px;flex:none;background:var(--paper-panel);border-bottom:1px solid var(--hair);
+  display:flex;align-items:center;gap:18px;padding:0 22px;
+}
+.crumb{font-family:var(--f-ui);font-size:12px;color:var(--slate);display:flex;align-items:center;gap:7px}
+.crumb b{color:var(--navy-900);font-weight:600}
+.topttl{font-family:var(--f-ui);font-weight:700;font-size:16px;color:var(--navy-900);letter-spacing:.1px}
+.topright{margin-left:auto;display:flex;align-items:center;gap:16px}
+.metric{font-family:var(--f-ui);font-size:11px;color:var(--slate);text-align:right;line-height:1.25}
+.metric b{display:block;font-size:14px;color:var(--navy-900);font-weight:700}
+.tsep{width:1px;height:30px;background:var(--hair)}
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-ui);font-size:11.5px;font-weight:600;padding:5px 9px;border-radius:4px;border:1px solid var(--hair)}
+.chip.live{color:var(--green);border-color:rgba(30,107,69,.35);background:rgba(30,107,69,.07)}
+.chip.live .dot-on{width:7px;height:7px}
+.user{width:34px;height:34px;border-radius:5px;background:var(--navy-900);color:#fff;display:grid;place-items:center;font-family:var(--f-ui);font-weight:700;font-size:13px}
+
+.view{flex:1;min-height:0;display:none}
+.view.active{display:flex}
+
+/* map + panel split */
+.mapwrap{position:relative;flex:1;min-width:0;border-right:1px solid var(--hair)}
+.leaf{position:absolute;inset:0}
+.leaflet-tile-pane{filter:saturate(.5) brightness(1.03) contrast(.94)}
+.leaflet-container{background:#E9E7DF;font-family:var(--f-data)}
+.leaflet-control-attribution{font-family:var(--f-data);font-size:9px;background:rgba(245,245,241,.82)}
+
+/* map overlays */
+.legend{
+  position:absolute;left:16px;bottom:16px;z-index:500;background:var(--paper-panel);
+  border:1px solid var(--hair);border-radius:5px;padding:11px 13px 12px;min-width:186px;
+  box-shadow:0 2px 10px rgba(14,42,71,.12);
+}
+.legend h4{margin:0 0 8px;font-family:var(--f-ui);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--navy-900)}
+.legend .lrow{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--slate-ink);margin:5px 0}
+.lswatch{width:16px;height:4px;border-radius:2px;flex:none}
+.mapstamp{
+  position:absolute;right:16px;top:14px;z-index:500;background:rgba(14,42,71,.9);color:#fff;
+  font-family:var(--f-ui);font-size:11px;font-weight:600;padding:6px 10px;border-radius:4px;letter-spacing:.02em;
+  display:flex;align-items:center;gap:8px;
+}
+.mapstamp span{color:#9FB4CC;font-weight:500}
+
+/* right report panel */
+.rpanel{width:492px;flex:none;background:var(--paper);display:flex;flex-direction:column;min-height:0}
+.rp-head{padding:18px 22px 14px;border-bottom:1px solid var(--hair)}
+.rp-head h2{margin:0;font-family:var(--f-ui);font-size:16px;font-weight:700;color:var(--navy-900)}
+.rp-head p{margin:4px 0 0;font-size:12px;color:var(--slate)}
+.summ{display:flex;border-top:1px solid var(--hair-soft);margin-top:14px}
+.summ .s{flex:1;padding:11px 0 3px;text-align:left;border-right:1px solid var(--hair-soft)}
+.summ .s:last-child{border-right:0}
+.summ .s .n{font-family:var(--f-ui);font-weight:800;font-size:22px;line-height:1;color:var(--navy-900)}
+.summ .s .l{font-size:10.5px;color:var(--slate);margin-top:5px;display:flex;align-items:center;gap:5px;text-transform:uppercase;letter-spacing:.05em;font-family:var(--f-ui);font-weight:600}
+.pipdot{width:8px;height:8px;border-radius:2px;flex:none}
+
+.rp-scroll{flex:1;overflow:auto;min-height:0}
+.gtable{width:100%;border-collapse:collapse;font-family:var(--f-data)}
+.gtable thead th{
+  position:sticky;top:0;background:var(--paper);z-index:2;
+  font-family:var(--f-ui);font-size:10.5px;font-weight:600;color:var(--slate);text-transform:uppercase;letter-spacing:.05em;
+  text-align:left;padding:9px 10px;border-bottom:1.5px solid var(--navy-900);white-space:nowrap;
+}
+.gtable thead th.num,.gtable td.num{text-align:right;font-variant-numeric:tabular-nums}
+.gtable tbody td{padding:10px;border-bottom:1px solid var(--hair-soft);font-size:12.5px;vertical-align:middle}
+.gtable tbody tr{cursor:pointer}
+.gtable tbody tr:hover{background:rgba(14,42,71,.035)}
+.gtable tbody tr.sel{background:rgba(217,122,31,.09);box-shadow:inset 3px 0 0 var(--saffron)}
+.dname{font-weight:600;color:var(--ink)}
+.dsub{font-size:11px;color:var(--slate);margin-top:1px}
+.num.cnt{font-weight:600}
+
+/* risk badge */
+.rbadge{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-ui);font-weight:600;font-size:11.5px;padding:3px 8px 3px 7px;border-radius:3px;border:1px solid;white-space:nowrap}
+.rbadge svg{width:13px;height:13px;stroke-width:2.2;fill:none}
+.rb-clear{color:var(--green);border-color:rgba(30,107,69,.4);background:rgba(30,107,69,.08)}
+.rb-caution{color:var(--saffron);border-color:rgba(217,122,31,.42);background:rgba(217,122,31,.09)}
+.rb-blocked{color:var(--red);border-color:rgba(179,38,30,.42);background:rgba(179,38,30,.08)}
+
+/* ===== Corridor detail view ===== */
+.detail{flex:1;display:grid;grid-template-columns:1fr 468px;min-height:0}
+.detail-main{overflow:auto;padding:24px 28px 30px;min-height:0}
+.detail-side{border-left:1px solid var(--hair);display:flex;flex-direction:column;min-height:0;background:var(--paper)}
+.seg-head{display:flex;align-items:flex-start;gap:16px;padding-bottom:18px;border-bottom:1px solid var(--hair)}
+.seg-id{font-family:var(--f-ui);font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--saffron);text-transform:uppercase}
+.seg-name{font-family:var(--f-ui);font-size:24px;font-weight:800;color:var(--navy-900);margin:5px 0 4px;line-height:1.1}
+.seg-meta{font-size:12.5px;color:var(--slate)}
+.scorebox{margin-left:auto;text-align:right;flex:none;padding-left:20px;border-left:1px solid var(--hair)}
+.scorebox .sc{font-family:var(--f-ui);font-weight:800;font-size:52px;line-height:.9;color:var(--red)}
+.scorebox .scl{font-size:11px;color:var(--slate);font-family:var(--f-ui);letter-spacing:.05em;text-transform:uppercase;margin-top:6px}
+
+.sec-label{font-family:var(--f-ui);font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--slate);margin:24px 0 12px;display:flex;align-items:center;gap:10px}
+.sec-label::after{content:"";flex:1;height:1px;background:var(--hair)}
+
+.factor{display:grid;grid-template-columns:200px 1fr 96px;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--hair-soft)}
+.factor .fn{font-size:13px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:9px}
+.factor .fn svg{width:16px;height:16px;stroke:var(--slate);fill:none;stroke-width:1.9;flex:none}
+.factor .fn small{display:block;font-weight:400;color:var(--slate);font-size:11px;margin-top:1px}
+.bar{height:9px;background:rgba(91,100,114,.14);border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:2px}
+.factor .fv{text-align:right;font-family:var(--f-ui);font-variant-numeric:tabular-nums}
+.factor .fv b{font-size:16px;font-weight:800;color:var(--navy-900)}
+.factor .fv span{display:block;font-size:10.5px;font-weight:600;margin-top:1px}
+
+.trendbox{border:1px solid var(--hair);border-radius:5px;padding:16px 18px;margin-top:4px;background:var(--paper-panel)}
+.trend-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.trend-head h5{margin:0;font-family:var(--f-ui);font-size:13px;font-weight:700;color:var(--navy-900)}
+.trend-head span{font-size:11.5px;color:var(--slate)}
+
+.evrow{display:grid;grid-template-columns:74px 1fr auto;gap:14px;padding:11px 0;border-bottom:1px solid var(--hair-soft);align-items:center}
+.evrow .ed{font-family:var(--f-ui);font-size:12px;font-weight:700;color:var(--navy-900)}
+.evrow .ed small{display:block;font-weight:400;color:var(--slate);font-size:10.5px}
+.evrow .et{font-size:12.5px;color:var(--ink)}
+.evrow .et small{color:var(--slate)}
+
+.inset-head{padding:16px 20px 12px;border-bottom:1px solid var(--hair)}
+.inset-head h3{margin:0;font-family:var(--f-ui);font-size:13px;font-weight:700;color:var(--navy-900);letter-spacing:.02em}
+.inset-head p{margin:3px 0 0;font-size:11.5px;color:var(--slate)}
+.inset-map{height:320px;position:relative;border-bottom:1px solid var(--hair);flex:none}
+.recbox{padding:16px 20px}
+.recbox h4{margin:0 0 8px;font-family:var(--f-ui);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--slate)}
+.rec{display:flex;gap:11px;padding:10px 0;border-bottom:1px solid var(--hair-soft);font-size:12.5px;color:var(--ink);line-height:1.4}
+.rec svg{width:16px;height:16px;flex:none;margin-top:1px;stroke-width:2;fill:none}
+
+/* keyvals */
+.kv{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--hair-soft);font-size:12.5px}
+.kv .k{color:var(--slate)}
+.kv .v{font-weight:600;color:var(--ink);font-family:var(--f-ui)}
+
+/* ===== Fleet consignment list ===== */
+.cn-head{padding:16px 20px 12px;border-bottom:1px solid var(--hair);display:flex;align-items:center}
+.cn-head h2{margin:0;font-family:var(--f-ui);font-size:15px;font-weight:700;color:var(--navy-900)}
+.cn-head .sort{margin-left:auto;font-size:11.5px;color:var(--slate);font-family:var(--f-ui);display:flex;align-items:center;gap:6px}
+.cn-head .sort b{color:var(--navy-900);font-weight:600}
+.cn-list{flex:1;overflow:auto;min-height:0}
+.cnrow{padding:13px 20px;border-bottom:1px solid var(--hair-soft);cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center}
+.cnrow:hover{background:rgba(14,42,71,.035)}
+.cnid{font-family:var(--f-ui);font-weight:700;font-size:13px;color:var(--navy-900);display:flex;align-items:center;gap:8px}
+.tier{font-family:var(--f-ui);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 6px;border-radius:3px}
+.tier-crit{background:var(--red);color:#fff}
+.tier-prio{background:var(--saffron);color:#fff}
+.tier-std{background:rgba(91,100,114,.16);color:var(--slate-ink)}
+.cnroute{font-size:12px;color:var(--slate);grid-column:1;display:flex;align-items:center;gap:6px}
+.cnexp{grid-column:2;grid-row:1/3;text-align:right;font-family:var(--f-ui)}
+.cnexp .en{font-weight:800;font-size:18px;line-height:1;font-variant-numeric:tabular-nums}
+.cnexp .el{font-size:9.5px;color:var(--slate);text-transform:uppercase;letter-spacing:.05em;margin-top:3px;font-weight:600}
+
+/* vehicle marker */
+.veh{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 1px 5px rgba(14,42,71,.5)}
+.veh svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2.2}
+.veh.p-crit{background:var(--red)}.veh.p-prio{background:var(--saffron)}.veh.p-std{background:var(--navy-700)}
+
+.dlabel{font-family:var(--f-ui);font-size:11px;font-weight:600;color:var(--navy-900);background:rgba(245,245,241,.82);padding:1px 5px;border-radius:3px;border:1px solid var(--hair);white-space:nowrap}
+.leaflet-marker-icon.dlbl{background:none;border:none}
+
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-thumb{background:rgba(91,100,114,.34);border-radius:6px;border:3px solid var(--paper)}
+::-webkit-scrollbar-track{background:transparent}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ NAV RAIL ============ -->
+  <nav class="rail">
+    <div class="brand">
+      <div class="crest">NE</div>
+      <div class="brand-tx">
+        <b>NER Connectivity</b>
+        <span>MDoNER · Control Room</span>
+      </div>
+    </div>
+    <div class="rail-sec">Monitoring</div>
+    <ul class="navlist" id="nav">
+      <li class="navitem active" data-view="overview">
+        <svg viewBox="0 0 24 24"><polygon points="1 6 8 3 16 6 23 3 23 18 16 21 8 18 1 21"/><line x1="8" y1="3" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="21"/></svg>
+        <span>Overview</span></li>
+      <li class="navitem" data-view="corridor">
+        <svg viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M9 19h6a4 4 0 0 0 4-4V8"/></svg>
+        <span>Corridor Detail</span></li>
+      <li class="navitem" data-view="fleet">
+        <svg viewBox="0 0 24 24"><rect x="1" y="6" width="14" height="10"/><path d="M15 9h4l3 3v4h-7z"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+        <span>Fleet</span></li>
+    </ul>
+    <div class="rail-sec">Operations</div>
+    <ul class="navlist">
+      <li class="navitem" data-view="overview">
+        <svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><polyline points="14 3 14 8 19 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+        <span>Reports Feed</span></li>
+      <li class="navitem" data-view="overview">
+        <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+        <span>Alerts</span><span class="badge">3</span></li>
+      <li class="navitem" data-view="overview">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 0 1-4 0v-.1A1.6 1.6 0 0 0 7 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0-1.1-2.7H1a2 2 0 0 1 0-4h.1A1.6 1.6 0 0 0 2.6 7a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H7a1.6 1.6 0 0 0 1-1.5V1a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V7a1.6 1.6 0 0 0 1.5 1H23a2 2 0 0 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
+        <span>Settings</span></li>
+    </ul>
+    <div class="rail-foot">
+      <span class="dot-on"></span>
+      <div>Data feed online · sync 42s ago<br><span style="color:#6E86A3">Operator: R. Baruah · Dist. Control</span></div>
+    </div>
+  </nav>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="crumb"><b>North Eastern Region</b> <span id="crumbtail">/ District Connectivity</span></div>
+        <div class="topttl" id="toptitle">District Connectivity Overview</div>
+      </div>
+      <div class="topright">
+        <div class="metric">Active advisories<b style="color:var(--red)">3 critical</b></div>
+        <div class="tsep"></div>
+        <div class="metric">Segments monitored<b>1,284</b></div>
+        <div class="tsep"></div>
+        <div class="chip live"><span class="dot-on"></span>Live · 10 Sep 2026, 14:20 IST</div>
+        <div class="user">RB</div>
+      </div>
+    </div>
+
+    <!-- ===== VIEW 1 : OVERVIEW ===== -->
+    <section class="view active" id="view-overview">
+      <div class="mapwrap">
+        <div class="leaf" id="map-ov"></div>
+        <div class="mapstamp">NER Road Network <span>· PMGSY + NH · risk model v3.2</span></div>
+        <div class="legend">
+          <h4>Segment risk</h4>
+          <div class="lrow"><span class="lswatch" style="background:var(--green)"></span>Clear — low disruption risk</div>
+          <div class="lrow"><span class="lswatch" style="background:var(--saffron)"></span>Caution — elevated risk</div>
+          <div class="lrow"><span class="lswatch" style="background:var(--red)"></span>Blocked — high / impassable</div>
+        </div>
+      </div>
+      <aside class="rpanel">
+        <div class="rp-head">
+          <h2>District Connectivity Status</h2>
+          <p>Segment-level accessibility across 11 monitored districts · updated 14:20 IST</p>
+          <div class="summ">
+            <div class="s"><div class="n" style="color:var(--green)">148</div><div class="l"><span class="pipdot" style="background:var(--green)"></span>Clear</div></div>
+            <div class="s"><div class="n" style="color:var(--saffron)">27</div><div class="l"><span class="pipdot" style="background:var(--saffron)"></span>Caution</div></div>
+            <div class="s"><div class="n" style="color:var(--red)">9</div><div class="l"><span class="pipdot" style="background:var(--red)"></span>Blocked</div></div>
+          </div>
+        </div>
+        <div class="rp-scroll">
+          <table class="gtable" id="dtable">
+            <thead><tr>
+              <th>District</th><th>Status</th>
+              <th class="num">Clr</th><th class="num">Cau</th><th class="num">Blk</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===== VIEW 2 : CORRIDOR DETAIL ===== -->
+    <section class="view" id="view-corridor">
+      <div class="detail">
+        <div class="detail-main">
+          <div class="seg-head">
+            <div>
+              <div class="seg-id">NH6 · Segment 14</div>
+              <div class="seg-name">Shillong — Silchar Corridor</div>
+              <div class="seg-meta">East Khasi Hills → Cachar · 148 km · 2-lane · monitored since 2023 · chainage 214–362</div>
+            </div>
+            <div class="scorebox">
+              <div class="sc">78</div>
+              <div class="scl">Risk index · High</div>
+              <div style="margin-top:9px" id="segbadge"></div>
+            </div>
+          </div>
+
+          <div class="sec-label">Contributing factors <span class="rbadge rb-blocked" style="margin-left:0"><svg viewBox="0 0 24 24"><polygon points="7.9 1.5 16.1 1.5 22.5 7.9 22.5 16.1 16.1 22.5 7.9 22.5 1.5 16.1 1.5 7.9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16"/></svg>Model output</span></div>
+          <div id="factors"></div>
+
+          <div class="sec-label">7-day risk trend</div>
+          <div class="trendbox">
+            <div class="trend-head">
+              <h5>Composite risk index — past 168 hours</h5>
+              <span>Threshold breach 08 Sep · closure declared 09 Sep 05:40</span>
+            </div>
+            <div id="spark"></div>
+          </div>
+
+          <div class="sec-label">Recorded disruption events (5-yr)</div>
+          <div id="events"></div>
+        </div>
+
+        <aside class="detail-side">
+          <div class="inset-head">
+            <h3>Segment location</h3>
+            <p>Isolated view · NH6 Shillong–Silchar, chainage 214–362</p>
+          </div>
+          <div class="inset-map"><div class="leaf" id="map-seg"></div></div>
+          <div class="recbox">
+            <h4>Current disposition</h4>
+            <div class="kv"><span class="k">Operational status</span><span class="v" style="color:var(--red)">Closed — landslide</span></div>
+            <div class="kv"><span class="k">Closed since</span><span class="v">09 Sep, 05:40 IST</span></div>
+            <div class="kv"><span class="k">Est. reopening</span><span class="v">12 Sep (provisional)</span></div>
+            <div class="kv"><span class="k">Diversion</span><span class="v">NH106 via Jowai (+64 km)</span></div>
+            <div class="kv"><span class="k">Affected consignments</span><span class="v">6 active · 2 critical</span></div>
+          </div>
+          <div class="recbox" style="border-top:1px solid var(--hair)">
+            <h4>Recommended actions</h4>
+            <div class="rec"><svg viewBox="0 0 24 24" style="stroke:var(--saffron)"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><div>Broadcast advisory to all fleet operators on NH6 · Cachar sector</div></div>
+            <div class="rec"><svg viewBox="0 0 24 24" style="stroke:var(--navy-700)"><circle cx="6" cy="19" r="2.4"/><circle cx="18" cy="5" r="2.4"/><path d="M8.4 19h6.1a4 4 0 0 0 4-4V8"/></svg><div>Reroute critical consignments via NH106 Jowai diversion</div></div>
+            <div class="rec"><svg viewBox="0 0 24 24" style="stroke:var(--green)"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><polyline points="22 4 12 14.1 9 11.1"/></svg><div>Dispatch clearance team — flagged to NHIDCL field unit</div></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ===== VIEW 3 : FLEET ===== -->
+    <section class="view" id="view-fleet">
+      <div class="mapwrap">
+        <div class="leaf" id="map-fleet"></div>
+        <div class="mapstamp">Live Consignment Tracking <span>· 14 vehicles · simulated GPS feed</span></div>
+        <div class="legend">
+          <h4>Priority tier</h4>
+          <div class="lrow"><span class="lswatch" style="background:var(--red);height:12px;width:12px;border-radius:50%"></span>Critical — medical / relief</div>
+          <div class="lrow"><span class="lswatch" style="background:var(--saffron);height:12px;width:12px;border-radius:50%"></span>Priority — fuel / essential</div>
+          <div class="lrow"><span class="lswatch" style="background:var(--navy-700);height:12px;width:12px;border-radius:50%"></span>Standard — general cargo</div>
+        </div>
+      </div>
+      <aside class="rpanel">
+        <div class="cn-head">
+          <h2>Active Consignments</h2>
+          <div class="sort">Sorted by <b>risk exposure ↓</b></div>
+        </div>
+        <div class="cn-list" id="cnlist"></div>
+      </aside>
+    </section>
+
+  </div>
+</div>
+
+<script>
+/* ---------- shared data ---------- */
+const RISK = {
+  clear:{c:'#1E6B45',label:'Clear',cls:'rb-clear'},
+  caution:{c:'#D97A1F',label:'Caution',cls:'rb-caution'},
+  blocked:{c:'#B3261E',label:'Blocked',cls:'rb-blocked'}
+};
+const ICONS = {
+  clear:'<svg viewBox="0 0 24 24"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><polyline points="22 4 12 14.1 9 11.1"/></svg>',
+  caution:'<svg viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12" y2="17"/></svg>',
+  blocked:'<svg viewBox="0 0 24 24"><polygon points="7.9 1.5 16.1 1.5 22.5 7.9 22.5 16.1 16.1 22.5 7.9 22.5 1.5 16.1 1.5 7.9"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
+};
+function badge(r){const k=RISK[r];return `<span class="rbadge ${k.cls}">${ICONS[r]}${k.label}</span>`;}
+
+// real NER city coordinates -> plausible corridors
+const CITY = {
+  guwahati:[26.14,91.73], shillong:[25.57,91.88], silchar:[24.83,92.78],
+  imphal:[24.82,93.94], aizawl:[23.73,92.72], kohima:[25.67,94.11],
+  dimapur:[25.91,93.72], itanagar:[27.08,93.61], agartala:[23.83,91.28],
+  dibrugarh:[27.48,94.91], tezpur:[26.63,92.79], jorhat:[26.75,94.22], jowai:[25.45,92.20]
+};
+const CORRIDORS = [
+  {id:'NH6-01',name:'Guwahati–Shillong',risk:'clear',pts:[[26.14,91.73],[26.0,91.79],[25.78,91.84],[25.57,91.88]]},
+  {id:'NH6-14',name:'Shillong–Silchar',risk:'blocked',pts:[[25.57,91.88],[25.35,92.06],[25.05,92.42],[24.83,92.78]]},
+  {id:'NH2-07',name:'Silchar–Imphal',risk:'caution',pts:[[24.83,92.78],[24.66,93.18],[24.78,93.6],[24.82,93.94]]},
+  {id:'NH2-03',name:'Dimapur–Kohima–Imphal',risk:'caution',pts:[[25.91,93.72],[25.67,94.11],[25.2,94.02],[24.82,93.94]]},
+  {id:'NH15-05',name:'Guwahati–Tezpur–Itanagar',risk:'clear',pts:[[26.14,91.73],[26.42,92.28],[26.63,92.79],[26.9,93.28],[27.08,93.61]]},
+  {id:'NH306-02',name:'Silchar–Aizawl',risk:'blocked',pts:[[24.83,92.78],[24.3,92.74],[23.98,92.7],[23.73,92.72]]},
+  {id:'NH8-09',name:'Guwahati–Agartala',risk:'caution',pts:[[26.14,91.73],[25.5,91.52],[24.6,91.4],[23.83,91.28]]},
+  {id:'NH37-11',name:'Jorhat–Dibrugarh',risk:'clear',pts:[[26.75,94.22],[27.05,94.52],[27.48,94.91]]},
+  {id:'NH36-04',name:'Dimapur–Jorhat',risk:'clear',pts:[[25.91,93.72],[26.3,93.95],[26.75,94.22]]},
+];
+const DIST_LABELS = [
+  {n:'Kamrup Metro',ll:[26.14,91.73]},{n:'East Khasi Hills',ll:[25.57,91.88]},
+  {n:'Cachar',ll:[24.83,92.78]},{n:'Imphal West',ll:[24.82,93.94]},
+  {n:'Aizawl',ll:[23.73,92.72]},{n:'Dimapur',ll:[25.91,93.72]},
+  {n:'Papum Pare',ll:[27.08,93.61]},{n:'West Tripura',ll:[23.83,91.28]},
+  {n:'Dibrugarh',ll:[27.48,94.91]},{n:'Kohima',ll:[25.67,94.11]}
+];
+const DISTRICTS = [
+  {n:'Cachar',s:'Assam',status:'blocked',clr:9,cau:4,blk:3},
+  {n:'East Khasi Hills',s:'Meghalaya',status:'blocked',clr:12,cau:3,blk:2},
+  {n:'Aizawl',s:'Mizoram',status:'caution',clr:8,cau:5,blk:1},
+  {n:'Imphal West',s:'Manipur',status:'caution',clr:14,cau:4,blk:1},
+  {n:'Dimapur',s:'Nagaland',status:'caution',clr:11,cau:3,blk:1},
+  {n:'West Jaintia Hills',s:'Meghalaya',status:'caution',clr:9,cau:3,blk:1},
+  {n:'Kamrup Metro',s:'Assam',status:'clear',clr:22,cau:1,blk:0},
+  {n:'Papum Pare',s:'Arunachal',status:'clear',clr:13,cau:1,blk:0},
+  {n:'Dibrugarh',s:'Assam',status:'clear',clr:17,cau:0,blk:0},
+  {n:'Kohima',s:'Nagaland',status:'clear',clr:10,cau:0,blk:0},
+  {n:'West Tripura',s:'Tripura',status:'clear',clr:11,cau:0,blk:0},
+];
+const CONSIGN = [
+  {id:'CNS-4471',tier:'crit',tl:'Critical',cargo:'Medical · vaccine cold-chain',route:'Guwahati → Imphal',cor:'NH2-07',status:'blocked',sl:'Held — segment closed',exp:87},
+  {id:'CNS-4468',tier:'crit',tl:'Critical',cargo:'Disaster relief · shelters',route:'Silchar → Aizawl',cor:'NH306-02',status:'blocked',sl:'Rerouting via NH54',exp:81},
+  {id:'CNS-4452',tier:'prio',tl:'Priority',cargo:'Fuel · diesel bowser',route:'Guwahati → Agartala',cor:'NH8-09',status:'caution',sl:'In transit · advisory',exp:66},
+  {id:'CNS-4460',tier:'prio',tl:'Priority',cargo:'Essential · foodgrain',route:'Dimapur → Imphal',cor:'NH2-03',status:'caution',sl:'In transit · on schedule',exp:58},
+  {id:'CNS-4447',tier:'prio',tl:'Priority',cargo:'Medical · oxygen',route:'Guwahati → Itanagar',cor:'NH15-05',status:'clear',sl:'In transit · on schedule',exp:34},
+  {id:'CNS-4439',tier:'std',tl:'Standard',cargo:'General · construction',route:'Jorhat → Dibrugarh',cor:'NH37-11',status:'clear',sl:'In transit · on schedule',exp:22},
+  {id:'CNS-4431',tier:'std',tl:'Standard',cargo:'General · textiles',route:'Guwahati → Shillong',cor:'NH6-01',status:'clear',sl:'Delivered 13:52',exp:14},
+  {id:'CNS-4428',tier:'std',tl:'Standard',cargo:'General · agri-equipment',route:'Dimapur → Jorhat',cor:'NH36-04',status:'clear',sl:'In transit · on schedule',exp:11},
+];
+
+/* ---------- map helpers ---------- */
+const TILE='https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+const ATTR='© OpenStreetMap contributors';
+function baseMap(id,center,zoom){
+  const m=L.map(id,{zoomControl:true,attributionControl:true,center:center,zoom:zoom});
+  L.tileLayer(TILE,{attribution:ATTR,maxZoom:15}).addTo(m);
+  return m;
+}
+function drawCorridors(map,which){
+  (which||CORRIDORS).forEach(c=>{
+    L.polyline(c.pts,{color:'#FBFBF9',weight:8,opacity:.9,lineCap:'round'}).addTo(map);
+    L.polyline(c.pts,{color:RISK[c.risk].c,weight:4.5,opacity:1,lineCap:'round'}).addTo(map);
+  });
+}
+function districtLabels(map){
+  DIST_LABELS.forEach(d=>{
+    L.marker(d.ll,{icon:L.divIcon({className:'dlbl',html:`<span class="dlabel">${d.n}</span>`,iconSize:[0,0]}),interactive:false}).addTo(map);
+  });
+}
+
+let maps={};
+function ensureOverview(){
+  if(maps.ov)return maps.ov.invalidateSize();
+  const m=baseMap('map-ov',[25.6,92.6],7);
+  drawCorridors(m); districtLabels(m);
+  maps.ov=m;
+}
+function ensureSeg(){
+  if(maps.seg)return maps.seg.invalidateSize();
+  const seg=CORRIDORS.find(c=>c.id==='NH6-14');
+  const m=baseMap('map-seg',[25.2,92.33],9);
+  L.polyline(seg.pts,{color:'#FBFBF9',weight:9,opacity:.95,lineCap:'round'}).addTo(m);
+  L.polyline(seg.pts,{color:RISK.blocked.c,weight:5,opacity:1,lineCap:'round'}).addTo(m);
+  L.marker([25.57,91.88],{icon:L.divIcon({className:'dlbl',html:'<span class="dlabel">Shillong</span>',iconSize:[0,0]})}).addTo(m);
+  L.marker([24.83,92.78],{icon:L.divIcon({className:'dlbl',html:'<span class="dlabel">Silchar</span>',iconSize:[0,0]})}).addTo(m);
+  L.circleMarker([25.05,92.42],{radius:9,color:'#fff',weight:2,fillColor:RISK.blocked.c,fillOpacity:1}).addTo(m)
+    .bindTooltip('Landslide · chainage 288',{permanent:false});
+  m.fitBounds(seg.pts,{padding:[34,34]});
+  maps.seg=m;
+}
+const vehicles=[];
+function ensureFleet(){
+  if(maps.fleet){maps.fleet.invalidateSize();return;}
+  const m=baseMap('map-fleet',[25.6,92.6],7);
+  drawCorridors(m); districtLabels(m);
+  maps.fleet=m;
+  // place a vehicle per active consignment on its corridor
+  const active=CONSIGN.filter(c=>!/Delivered/.test(c.sl));
+  active.forEach((c,i)=>{
+    const cor=CORRIDORS.find(x=>x.id===c.cor); if(!cor)return;
+    const pts=cor.pts;
+    const cls=c.tier==='crit'?'p-crit':c.tier==='prio'?'p-prio':'p-std';
+    const truck='<svg viewBox="0 0 24 24"><rect x="1" y="7" width="12" height="8"/><path d="M13 10h4l3 3v2h-7z"/><circle cx="6" cy="17" r="1.6"/><circle cx="17" cy="17" r="1.6"/></svg>';
+    const mk=L.marker(pts[0],{icon:L.divIcon({className:'vehwrap',html:`<div class="veh ${cls}">${truck}</div>`,iconSize:[26,26],iconAnchor:[13,13]})}).addTo(m);
+    mk.bindTooltip(`${c.id} · ${c.tl}`,{direction:'top'});
+    vehicles.push({mk,pts,t:Math.random(),spd:0.0016+Math.random()*0.0022,dir:1});
+  });
+  startAnim();
+}
+function lerp(a,b,t){return[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];}
+function posAlong(pts,t){
+  const seg=(pts.length-1)*t; const i=Math.min(Math.floor(seg),pts.length-2);
+  return lerp(pts[i],pts[i+1],seg-i);
+}
+let animId=null;
+function startAnim(){
+  if(animId)return;
+  animId=setInterval(()=>{
+    if(!document.getElementById('view-fleet').classList.contains('active'))return;
+    vehicles.forEach(v=>{
+      v.t+=v.spd*v.dir;
+      if(v.t>=1){v.t=1;v.dir=-1;} if(v.t<=0){v.t=0;v.dir=1;}
+      v.mk.setLatLng(posAlong(v.pts,v.t));
+    });
+  },60);
+}
+
+/* ---------- render panels ---------- */
+function renderDTable(){
+  const tb=document.querySelector('#dtable tbody');
+  tb.innerHTML=DISTRICTS.map((d,i)=>`
+    <tr class="${i===0?'sel':''}" data-i="${i}">
+      <td><div class="dname">${d.n}</div><div class="dsub">${d.s}</div></td>
+      <td>${badge(d.status)}</td>
+      <td class="num cnt" style="color:var(--green)">${d.clr}</td>
+      <td class="num cnt" style="color:${d.cau?'var(--saffron)':'var(--slate)'}">${d.cau||'—'}</td>
+      <td class="num cnt" style="color:${d.blk?'var(--red)':'var(--slate)'}">${d.blk||'—'}</td>
+    </tr>`).join('');
+  tb.querySelectorAll('tr').forEach(tr=>tr.onclick=()=>{
+    tb.querySelectorAll('tr').forEach(x=>x.classList.remove('sel'));
+    tr.classList.add('sel');
+    if(DISTRICTS[+tr.dataset.i].status==='blocked') go('corridor');
+  });
+}
+const FACTORS=[
+  {n:'Rainfall intensity',sub:'72-hr accumulated · IMD grid',v:88,cat:'Extreme',c:'#B3261E',icon:'<svg viewBox="0 0 24 24"><path d="M16 13a4 4 0 0 0 1-7.87A5.5 5.5 0 0 0 5.5 8 4.5 4.5 0 0 0 6 17"/><line x1="8" y1="19" x2="8" y2="22"/><line x1="12" y1="20" x2="12" y2="23"/><line x1="16" y1="19" x2="16" y2="22"/></svg>'},
+  {n:'Terrain susceptibility',sub:'slope · lithology · NRSC index',v:74,cat:'High',c:'#D97A1F',icon:'<svg viewBox="0 0 24 24"><path d="m8 21 4-9 3 5 2-3 4 7z"/><path d="m2 21 4-7 2 3"/></svg>'},
+  {n:'Historical events',sub:'5-yr closures on segment',v:61,cat:'Elevated',c:'#D97A1F',icon:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>'},
+  {n:'Soil saturation',sub:'antecedent moisture model',v:69,cat:'High',c:'#D97A1F',icon:'<svg viewBox="0 0 24 24"><path d="M12 2.7S5 10 5 15a7 7 0 0 0 14 0c0-5-7-12.3-7-12.3z"/></svg>'},
+];
+function renderFactors(){
+  document.getElementById('factors').innerHTML=FACTORS.map(f=>`
+    <div class="factor">
+      <div class="fn">${f.icon}<div>${f.n}<small>${f.sub}</small></div></div>
+      <div class="bar"><i style="width:${f.v}%;background:${f.c}"></i></div>
+      <div class="fv"><b>${f.v}</b><span style="color:${f.c}">${f.cat}</span></div>
+    </div>`).join('');
+  document.getElementById('segbadge').innerHTML=badge('blocked');
+}
+function renderSpark(){
+  const data=[41,44,48,52,58,63,60,66,71,74,72,78,83,88,86,78];
+  const w=560,h=90,pad=6,max=100;
+  const step=(w-pad*2)/(data.length-1);
+  const pts=data.map((d,i)=>[pad+i*step, h-pad-(d/max)*(h-pad*2)]);
+  const line=pts.map(p=>p.join(',')).join(' ');
+  const area=`${pad},${h-pad} ${line} ${w-pad},${h-pad}`;
+  // threshold at 70
+  const ty=h-pad-(70/max)*(h-pad*2);
+  const brk=pts.findIndex((p,i)=>data[i]>=70);
+  document.getElementById('spark').innerHTML=`
+   <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:96px;display:block">
+     <polygon points="${area}" fill="rgba(179,38,30,.08)"/>
+     <line x1="${pad}" y1="${ty}" x2="${w-pad}" y2="${ty}" stroke="#5B6472" stroke-width="1" stroke-dasharray="4 4"/>
+     <text x="${w-pad}" y="${ty-5}" text-anchor="end" font-family="Public Sans" font-size="10" fill="#5B6472">closure threshold · 70</text>
+     <polyline points="${line}" fill="none" stroke="#B3261E" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+     ${pts.map((p,i)=>i===pts.length-1?`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="#B3261E"/>`:'').join('')}
+     ${brk>=0?`<line x1="${pts[brk][0]}" y1="${pad}" x2="${pts[brk][0]}" y2="${h-pad}" stroke="#B3261E" stroke-width="1" stroke-dasharray="2 3" opacity=".5"/>`:''}
+   </svg>`;
+}
+const EVENTS=[
+  {d:'09 Sep',y:'2026',t:'Landslide — carriageway blocked',sub:'chainage 288 · closure ongoing',r:'blocked'},
+  {d:'22 Jun',y:'2025',t:'Flash flood — approach submerged',sub:'chainage 246 · closed 3 days',r:'blocked'},
+  {d:'14 Aug',y:'2024',t:'Debris slide — single lane',sub:'chainage 291 · restricted 5 days',r:'caution'},
+  {d:'03 Jul',y:'2023',t:'Landslide — carriageway blocked',sub:'chainage 288 · closed 6 days',r:'blocked'},
+];
+function renderEvents(){
+  document.getElementById('events').innerHTML=EVENTS.map(e=>`
+    <div class="evrow">
+      <div class="ed">${e.d}<small>${e.y}</small></div>
+      <div class="et">${e.t}<br><small>${e.sub}</small></div>
+      <div>${badge(e.r)}</div>
+    </div>`).join('');
+}
+function renderConsign(){
+  const rows=[...CONSIGN].sort((a,b)=>b.exp-a.exp);
+  document.getElementById('cnlist').innerHTML=rows.map(c=>{
+    const tc=c.tier==='crit'?'tier-crit':c.tier==='prio'?'tier-prio':'tier-std';
+    const ec=c.exp>=75?'var(--red)':c.exp>=45?'var(--saffron)':'var(--green)';
+    return `<div class="cnrow">
+      <div class="cnid">${c.id}<span class="tier ${tc}">${c.tl}</span></div>
+      <div class="cnexp"><div class="en" style="color:${ec}">${c.exp}</div><div class="el">Risk exp.</div></div>
+      <div class="cnroute">${c.route} · ${c.cargo}</div>
+      <div style="grid-column:1">${badge(c.status)} <span style="font-size:11.5px;color:var(--slate);margin-left:4px">${c.sl}</span></div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- view switching ---------- */
+const TITLES={
+  overview:['District Connectivity Overview','/ District Connectivity'],
+  corridor:['Corridor Risk Detail','/ NH6 · Shillong–Silchar · Seg 14'],
+  fleet:['Live Fleet & Consignment View','/ Live Tracking']
+};
+function go(v){
+  document.querySelectorAll('.view').forEach(s=>s.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.querySelectorAll('#nav .navitem').forEach(n=>n.classList.toggle('active',n.dataset.view===v));
+  document.getElementById('toptitle').textContent=TITLES[v][0];
+  document.getElementById('crumbtail').textContent=TITLES[v][1];
+  if(v==='overview')setTimeout(ensureOverview,60);
+  if(v==='corridor')setTimeout(ensureSeg,60);
+  if(v==='fleet')setTimeout(ensureFleet,60);
+}
+document.getElementById('nav').addEventListener('click',e=>{
+  const it=e.target.closest('.navitem'); if(it)go(it.dataset.view);
+});
+
+/* ---------- init ---------- */
+renderDTable(); renderFactors(); renderSpark(); renderEvents(); renderConsign();
+ensureOverview();
+</script>
+</body>
+</html>

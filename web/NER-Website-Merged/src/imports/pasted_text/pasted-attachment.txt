@@ -1,0 +1,1247 @@
+Create a **SEPARATE CONTROL ROOM DASHBOARD** for the existing website:
+
+**AI-Based Smart Logistics and Accessibility Intelligence Platform for North Eastern Region (NER)**
+
+This must be a **dedicated dashboard for the CONTROL OFFICER / REGIONAL CONTROL ROOM**.
+
+IMPORTANT:
+
+The Control Room Dashboard must be visually consistent with the existing **District Officer Dashboard**, but it must NOT be a copy of the District Officer Dashboard.
+
+Create a different dashboard layout specifically optimized for:
+
+**REGIONAL MONITORING + REAL-TIME SITUATIONAL AWARENESS + RISK DETECTION + LOGISTICS MONITORING + STRATEGIC DECISION MAKING**
+
+---
+
+# 1. DESIGN SYSTEM — DO NOT CHANGE
+
+Use the EXACT existing design system from the District Officer Dashboard.
+
+Do not modify:
+
+### Colors
+
+Deep Navy Blue:
+#17324D
+
+Teal:
+#2F6F7E
+
+Muted Gold:
+#D7A73A
+
+Background:
+#F5F7F9
+
+Surface:
+#FFFFFF
+
+Secondary Surface:
+#EEF2F5
+
+Border:
+#D8E0E6
+
+Primary Text:
+#17212B
+
+Secondary Text:
+#5F6B76
+
+Muted Text:
+#87929C
+
+Semantic:
+
+Green = Safe
+
+Amber = Moderate
+
+Orange = High
+
+Red = Critical
+
+Blue = Information
+
+Do not introduce a new color palette.
+
+---
+
+# 2. TYPOGRAPHY — EXACT SAME
+
+Use:
+
+**Inter**
+
+Maintain exactly the same typography scale:
+
+Page Title:
+28px Semibold
+
+Section Heading:
+20px Semibold
+
+Card Heading:
+16px Semibold
+
+Body:
+14px
+
+Table:
+13–14px
+
+Metadata:
+12px
+
+KPI:
+28–32px Bold
+
+Buttons:
+14px Medium
+
+Navigation:
+14px
+
+Do not create a new typography system.
+
+---
+
+# 3. GLOBAL SHELL
+
+Use the same:
+
+* Header
+* Sidebar
+* Logo
+* Profile
+* Notification system
+* Icons
+* Buttons
+* Cards
+* Borders
+* Radius
+* Shadows
+* Spacing
+
+from the existing platform.
+
+However, the **dashboard content area must be redesigned specifically for the Control Room**.
+
+Sidebar:
+
+CONTROL OFFICER
+
+• Command Center
+• Regional Map
+• Live Logistics
+• Risk Intelligence
+• Incidents
+• Districts
+• Routes
+• AI Predictions
+• Alerts
+• Analytics
+• Reports
+• Settings
+
+Active navigation item:
+
+**Command Center**
+
+---
+
+# 4. CONTROL ROOM DASHBOARD PURPOSE
+
+The dashboard should immediately answer:
+
+**WHAT IS HAPPENING ACROSS THE NORTHEAST REGION RIGHT NOW?**
+
+The Control Officer should be able to understand the regional situation within a few seconds.
+
+Prioritize:
+
+1. Critical incidents
+2. Regional risk
+3. Affected routes
+4. Logistics disruption
+5. District status
+6. AI predictions
+7. Alerts
+8. Required actions
+
+Do NOT prioritize individual field tasks.
+
+Do NOT make this look like a Field Officer dashboard.
+
+Do NOT make it look like a District Officer dashboard with more cards.
+
+---
+
+# 5. DASHBOARD HEADER
+
+Create:
+
+**Regional Control Center**
+
+Subtitle:
+
+**North Eastern Region**
+
+On the right:
+
+● System Operational
+
+Last Updated:
+Just now
+
+Notification Bell
+
+Control Officer Profile
+
+Use the same header styling as the existing platform.
+
+---
+
+# 6. TOP REGIONAL KPI STRIP
+
+Create a horizontal KPI strip.
+
+Use the SAME KPI CARD COMPONENT already established.
+
+Show:
+
+### Active Incidents
+
+27
+
+### Critical Incidents
+
+06
+
+### Affected Routes
+
+14
+
+### At-Risk Logistics
+
+18
+
+### Districts on Alert
+
+04
+
+### Regional Accessibility
+
+68 / 100
+
+Keep cards compact enough that the main regional map remains the visual focus.
+
+---
+
+# 7. MAIN CONTROL ROOM LAYOUT
+
+Use a **three-zone command-center layout**.
+
+### LEFT / CENTER — REGIONAL MAP
+
+Large primary map.
+
+### RIGHT — CRITICAL SITUATION PANEL
+
+Critical incidents + alerts + actions.
+
+### BOTTOM — REGIONAL INTELLIGENCE
+
+District status + logistics + AI predictions.
+
+The map should be the main visual anchor.
+
+Do NOT make every card equal in visual importance.
+
+---
+
+# 8. LARGE REGIONAL MAP
+
+Create a large interactive map covering the **North Eastern Region**.
+
+Title:
+
+**Regional Situation Map**
+
+Show:
+
+• District boundaries
+• Active incidents
+• Critical incidents
+• Route disruptions
+• Logistics movement
+• Risk zones
+• Accessibility status
+
+Map markers:
+
+Green:
+Safe
+
+Amber:
+Moderate
+
+Orange:
+High
+
+Red:
+Critical
+
+Blue:
+Information
+
+Use the SAME map visual style as the District Officer dashboard.
+
+---
+
+# 9. MAP CONTROL BAR
+
+Inside/above the map, add compact controls:
+
+Search
+
+Layers
+
+Risk
+
+Incidents
+
+Routes
+
+Logistics
+
+Weather
+
+Time
+
+Use small professional controls.
+
+Do not overcrowd the map.
+
+---
+
+# 10. MAP LEGEND
+
+Add a compact legend:
+
+● Safe
+
+● Moderate
+
+● High
+
+● Critical
+
+● Logistics
+
+● Incident
+
+Use icons + labels.
+
+---
+
+# 11. CRITICAL SITUATION PANEL
+
+Place a prominent panel beside the regional map.
+
+Title:
+
+**Critical Situation**
+
+Show the most important current events.
+
+Example:
+
+### CRITICAL
+
+Flood reported near NH-29
+
+District:
+Dimapur
+
+Affected Routes:
+03
+
+Logistics Impact:
+HIGH
+
+Reported:
+12 min ago
+
+Button:
+
+**View Incident**
+
+---
+
+Second:
+
+### HIGH
+
+Landslide affecting regional route
+
+District:
+Kohima
+
+Affected Routes:
+01
+
+Reported:
+24 min ago
+
+Button:
+
+**View Details**
+
+---
+
+Third:
+
+### HIGH
+
+Logistics movement delayed
+
+Route:
+NH-29
+
+Estimated Delay:
+2–4 hours
+
+Button:
+
+**View Logistics**
+
+Only show the most important 3–5 events.
+
+Button at bottom:
+
+**View All Critical Events**
+
+---
+
+# 12. REGIONAL RISK SUMMARY
+
+Create a horizontal section below the map.
+
+Title:
+
+**Regional Risk Intelligence**
+
+Create compact cards:
+
+### Overall Risk
+
+78 / 100
+
+CRITICAL
+
+↑ Increasing
+
+### Flood Risk
+
+82 / 100
+
+HIGH
+
+### Landslide Risk
+
+71 / 100
+
+HIGH
+
+### Route Risk
+
+76 / 100
+
+CRITICAL
+
+### Logistics Risk
+
+68 / 100
+
+HIGH
+
+Each card must use the existing risk-card design.
+
+Label:
+
+**AI-generated risk estimate**
+
+---
+
+# 13. DISTRICT STATUS
+
+Create a section:
+
+**District Situation**
+
+Show a compact regional comparison table.
+
+Columns:
+
+District
+
+Risk
+
+Accessibility
+
+Active Incidents
+
+Critical Alerts
+
+Affected Routes
+
+Logistics Impact
+
+Status
+
+Example:
+
+Dimapur
+HIGH
+72
+04
+02
+03
+HIGH
+
+Kohima
+MODERATE
+81
+02
+00
+01
+MODERATE
+
+Use the SAME table component as District Officer.
+
+Do not create a new table style.
+
+Button:
+
+**View All Districts**
+
+---
+
+# 14. LIVE LOGISTICS PANEL
+
+Create:
+
+**Live Logistics**
+
+Show important logistics movement.
+
+Columns:
+
+Vehicle
+
+Route
+
+Destination
+
+Status
+
+Risk
+
+ETA
+
+Example:
+
+TRK-1042
+
+NH-29
+
+Kohima
+
+Delayed
+
+HIGH
+
++2h
+
+Use small live indicators.
+
+Show:
+
+**● LIVE**
+
+and:
+
+Last updated:
+10 sec ago
+
+When information updates, animate only the updated item.
+
+Do not flash the entire dashboard.
+
+Button:
+
+**View Live Logistics**
+
+---
+
+# 15. AI PREDICTIONS
+
+Create a dedicated intelligence section:
+
+**AI Predictions**
+
+Show the most important upcoming risks.
+
+Example:
+
+### Flood Risk Prediction
+
+Expected Impact:
+HIGH
+
+Time Window:
+Next 6 hours
+
+Affected Area:
+Dimapur
+
+Confidence:
+87%
+
+---
+
+### Route Disruption Prediction
+
+Probability:
+78%
+
+Route:
+NH-29
+
+Expected Impact:
+HIGH
+
+---
+
+### Logistics Delay Prediction
+
+Estimated Delay:
+2–4 hours
+
+Confidence:
+81%
+
+Clearly label:
+
+**AI-generated prediction**
+
+Button:
+
+**View All Predictions**
+
+---
+
+# 16. PRIORITY ACTIONS
+
+Create a compact section:
+
+**Priority Actions**
+
+Examples:
+
+1. Review critical flood incident
+2. Monitor NH-29 route disruption
+3. Review delayed logistics movement
+4. Monitor Dimapur risk escalation
+5. Review AI flood prediction
+
+Each action should have:
+
+Priority icon
+
+Description
+
+Time
+
+Action button
+
+Example:
+
+**CRITICAL**
+
+Review flood incident
+
+Dimapur
+
+12 min ago
+
+**Review**
+
+---
+
+# 17. ALERT SUMMARY
+
+Create:
+
+**Alert Summary**
+
+Show:
+
+Critical:
+06
+
+High:
+11
+
+Moderate:
+18
+
+Information:
+24
+
+Use the existing status badge system.
+
+Button:
+
+**View Alerts**
+
+---
+
+# 18. REGIONAL ACCESSIBILITY
+
+Create a dedicated card:
+
+**Regional Accessibility**
+
+Score:
+
+68 / 100
+
+Status:
+
+HIGH IMPACT
+
+Show a simple visual score indicator.
+
+Below:
+
+Routes Fully Accessible:
+62%
+
+Partially Accessible:
+24%
+
+Restricted:
+14%
+
+Use the same accessibility visualization already used in District Officer.
+
+---
+
+# 19. QUICK ACTIONS
+
+Create a small command-center action bar.
+
+Actions:
+
+**View Critical Incidents**
+
+**Regional Map**
+
+**Live Logistics**
+
+**Risk Intelligence**
+
+**AI Predictions**
+
+**Generate Report**
+
+Use the same button component.
+
+Do not use oversized colorful buttons.
+
+---
+
+# 20. REAL-TIME ANIMATIONS
+
+The Control Room dashboard should feel **live**, but professional.
+
+Use subtle animations only where they communicate a state change.
+
+### NEW CRITICAL INCIDENT
+
+New incident:
+
+Bell icon
+→
+notification indicator appears
+→
+critical incident card slides/fades into the Critical Situation panel
+
+Use a subtle pulse for the new incident marker on the map.
+
+Do not continuously animate all markers.
+
+---
+
+### LIVE LOGISTICS
+
+When vehicle position changes:
+
+Old location
+→
+smooth movement
+→
+new location
+
+Do not make vehicles jump between locations.
+
+---
+
+### RISK SCORE UPDATE
+
+Example:
+
+72
+→
+Analyzing...
+→
+78
+
+Use a smooth number transition.
+
+Show:
+
++6
+
+Risk increased
+
+---
+
+### DATA REFRESH
+
+Display:
+
+**↻ Updating regional data...**
+
+Then:
+
+**✓ Updated just now**
+
+Use the same synchronization icon used elsewhere in the platform.
+
+---
+
+# 21. AI PROCESSING ANIMATION
+
+When AI intelligence is being generated:
+
+Show:
+
+**Analyzing regional conditions...**
+
+Use a subtle animated AI icon.
+
+Then:
+
+**Analysis Complete**
+
+Show:
+
+Risk:
+HIGH
+
+Confidence:
+89%
+
+Do not use glowing/neon AI effects.
+
+---
+
+# 22. LOADING STATES
+
+Use skeleton loaders.
+
+Do not use generic spinners everywhere.
+
+Skeleton loading for:
+
+* KPI cards
+* Regional map
+* Critical incidents
+* District table
+* Logistics
+* Risk cards
+* AI predictions
+
+Map loading:
+
+Display a clean map skeleton.
+
+Table loading:
+
+Display skeleton rows.
+
+AI loading:
+
+Use subtle processing animation.
+
+---
+
+# 23. TRANSITIONS
+
+Use the SAME transition system as the District Officer and Field Officer modules.
+
+Hover:
+
+150–200ms
+
+Page transition:
+
+200–300ms
+
+Modal:
+
+200–300ms
+
+Tabs:
+
+Smooth transition
+
+Sidebar:
+
+Smooth active state
+
+Cards:
+
+Subtle hover elevation
+
+Panels:
+
+Smooth open/close
+
+No dramatic animations.
+
+---
+
+# 24. CRITICAL ALERT BEHAVIOR
+
+Critical alerts should immediately receive visual priority.
+
+When a critical event appears:
+
+1. Notification indicator changes
+2. Critical event card appears
+3. Map location subtly pulses
+4. Risk information updates
+5. Affected route becomes highlighted
+6. Logistics impact updates if applicable
+
+Keep all animations subtle and professional.
+
+---
+
+# 25. CONTROL ROOM VISUAL HIERARCHY
+
+Use this priority:
+
+### LEVEL 1 — IMMEDIATE
+
+Critical Incidents
+
+Critical Alerts
+
+Regional Map
+
+Major Route Disruptions
+
+### LEVEL 2 — IMPORTANT
+
+Regional Risk
+
+Affected Logistics
+
+District Status
+
+### LEVEL 3 — INTELLIGENCE
+
+AI Predictions
+
+Risk Trends
+
+Analytics
+
+### LEVEL 4 — SUPPORT
+
+Reports
+
+Quick Actions
+
+System Status
+
+This hierarchy is extremely important.
+
+---
+
+# 26. DESKTOP-FIRST CONTROL ROOM
+
+Primary design:
+
+**1440 × 900 desktop**
+
+Create the dashboard so the Control Officer can see the most important regional information without excessive scrolling.
+
+Above-the-fold should contain:
+
+Header
+
+KPI strip
+
+Large regional map
+
+Critical situation panel
+
+Important risk information
+
+Do not put every feature above the fold.
+
+---
+
+# 27. RESPONSIVE
+
+Support:
+
+Desktop
+
+Tablet
+
+Mobile
+
+Desktop is the priority.
+
+On tablet:
+
+Collapse secondary panels.
+
+On mobile:
+
+Sidebar becomes drawer.
+
+Map becomes full-width.
+
+Critical alerts move above secondary analytics.
+
+Cards stack vertically.
+
+Tables become cards.
+
+Maintain the same design system.
+
+---
+
+# 28. COMPONENT CONSISTENCY
+
+Reuse existing components wherever possible.
+
+Do not create visually different versions of:
+
+* KPI cards
+* Buttons
+* Tables
+* Badges
+* Cards
+* Headers
+* Sidebar
+* Icons
+* Modals
+* Toasts
+* Loading states
+
+Only change their arrangement and content.
+
+---
+
+# 29. PROTOTYPE INTERACTIONS
+
+Make the dashboard interactive.
+
+### Interaction 1
+
+Click Critical Incident
+
+→ Incident Details
+
+### Interaction 2
+
+Click Map Marker
+
+→ Incident Information Panel
+
+### Interaction 3
+
+Click District
+
+→ District Overview
+
+### Interaction 4
+
+Click Logistics
+
+→ Live Logistics Details
+
+### Interaction 5
+
+Click AI Prediction
+
+→ Prediction Details
+
+### Interaction 6
+
+Click Risk Score
+
+→ Risk Intelligence
+
+### Interaction 7
+
+Click Critical Alert
+
+→ Alert Details
+
+### Interaction 8
+
+Click What-If / Simulation
+
+→ Simulation Panel
+
+Use smooth transitions for every interaction.
+
+---
+
+# 30. FINAL CONTROL ROOM IDENTITY
+
+The three dashboards should now clearly have different purposes while remaining visually consistent.
+
+**FIELD OFFICER**
+
+REPORT & EXECUTE
+
+Ground-level operations
+
+↓
+
+Tasks
+
+↓
+
+Evidence
+
+↓
+
+Incident reporting
+
+↓
+
+Route inspection
+
+**DISTRICT OFFICER**
+
+VERIFY & MANAGE
+
+District-level operations
+
+↓
+
+Incident verification
+
+↓
+
+Field officers
+
+↓
+
+Routes
+
+↓
+
+Logistics
+
+↓
+
+District decisions
+
+**CONTROL OFFICER**
+
+MONITOR & DECIDE
+
+Regional command
+
+↓
+
+Regional situation
+
+↓
+
+Critical incidents
+
+↓
+
+District comparison
+
+↓
+
+Route disruption
+
+↓
+
+Logistics impact
+
+↓
+
+AI predictions
+
+↓
+
+Strategic decisions
+
+---
+
+# FINAL NON-NEGOTIABLE RULE
+
+Create a **SEPARATE CONTROL ROOM DASHBOARD**.
+
+It must have a **different dashboard layout and information hierarchy** from the District Officer Dashboard.
+
+BUT it must use the **EXACT SAME DESIGN SYSTEM**.
+
+Do not change:
+
+COLOR
+FONT
+FONT SIZE
+ICON STYLE
+CARD STYLE
+BUTTON STYLE
+SPACING
+BORDER
+RADIUS
+SHADOW
+HEADER
+SIDEBAR
+MAP STYLE
+STATUS COLORS
+TABLE STYLE
+LOADING STYLE
+ANIMATION STYLE
+TRANSITION STYLE
+
+Only change:
+
+**LAYOUT + INFORMATION PRIORITY + CONTROL-ROOM-SPECIFIC CONTENT**
+
+The final dashboard should immediately feel like a **Regional Government Operations & Intelligence Command Center**, not a normal SaaS dashboard.
+
+Primary visual focus:
+
+**REGIONAL MAP + CRITICAL SITUATION + REAL-TIME RISK + LOGISTICS + AI INTELLIGENCE**
