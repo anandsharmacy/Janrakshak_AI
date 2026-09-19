@@ -1,0 +1,1191 @@
+{
+  "git_sha": "nogit",
+  "config_sha256_16": "5c8ab2326f9c5b5c",
+  "decision_openings": 1,
+  "selected_model": "composite/passed",
+  "composite_steps": [
+    "aug/gaussian_all_s0.1",
+    "aug/smote_k5_f0.5"
+  ],
+  "reproducibility": {
+    "ledger_average_precision": 0.37600301127272495,
+    "recomputed_average_precision": 0.37600301127272495,
+    "abs_difference": 0.0,
+    "bit_identical": true,
+    "config_sha256_16": "5c8ab2326f9c5b5c",
+    "seed": 42,
+    "determinism_settings": {
+      "lightgbm_deterministic": true,
+      "force_row_wise": true,
+      "numpy_seed": 42,
+      "fold_order": "fixed (parquet, no shuffle on load)"
+    },
+    "caveat": "Bit-exactness holds for this machine and these pinned library versions. LightGBM/OpenMP version changes or a different CPU architecture can alter floating-point summation order; pin requirements.txt for cross-machine reproduction."
+  },
+  "test_metrics": {
+    "n": 8277,
+    "n_pos": 1344,
+    "base_rate": 0.16237767306995288,
+    "average_precision": 0.37600301127272495,
+    "roc_auc": 0.7878677632166382,
+    "brier": 0.11736268721567973,
+    "ece": 0.046897725405868736,
+    "precision@10": 1.0,
+    "recall@10": 0.00744047619047619,
+    "precision@50": 0.84,
+    "recall@50": 0.03125,
+    "precision@100": 0.81,
+    "recall@100": 0.060267857142857144,
+    "precision@200": 0.685,
+    "recall@200": 0.10193452380952381,
+    "lift@1pct": 4.9713048623063685,
+    "lift@5pct": 2.6776009316770186,
+    "lift@10pct": 1.8966339932712215,
+    "steep_n": 4586,
+    "steep_base_rate": 0.2564326210204972,
+    "steep_AP": 0.3689274934610299,
+    "steep_AP_over_base": 1.4386917389560228,
+    "steep_roc_auc": 0.6241873142218763,
+    "steep_lift@10pct": 1.3538120488370018
+  },
+  "classwise": [
+    {
+      "class": "0 \u2014 no disruption",
+      "precision": 0.9743589743589743,
+      "recall": 0.5481032741958748,
+      "f1": 0.701560048001477,
+      "support": 6933,
+      "predicted_count": 3900
+    },
+    {
+      "class": "1 \u2014 disruption",
+      "precision": 0.28421293123143704,
+      "recall": 0.9255952380952381,
+      "f1": 0.4348890054186331,
+      "support": 1344,
+      "predicted_count": 4377
+    }
+  ],
+  "confusion": {
+    "tn": 3800,
+    "fp": 3133,
+    "fn": 100,
+    "tp": 1244
+  },
+  "leakage_audit": {
+    "n_test_rows": 8277,
+    "n_dev_rows": 94969,
+    "exact_row_overlap": 0,
+    "shared_positive_event_ids": [],
+    "n_shared_segments": 1,
+    "n_test_segments": 4392,
+    "shared_segment_detail": [
+      {
+        "segment_id": "SEG291652",
+        "train_rows": 15,
+        "train_positive_rows": 15,
+        "train_distinct_events": 5,
+        "test_rows": 3,
+        "test_positive_rows": 3,
+        "test_tiers": [
+          "gold"
+        ],
+        "min_days_between": 671
+      }
+    ],
+    "n_shared_blocks": 1,
+    "shared_blocks": [
+      "BLK_005_006"
+    ],
+    "n_test_blocks": 6,
+    "test_blocks": [
+      "BLK_004_006",
+      "BLK_004_007",
+      "BLK_005_004",
+      "BLK_005_006",
+      "BLK_006_008",
+      "BLK_009_005"
+    ],
+    "test_rows_on_shared_segments": 3
+  },
+  "generalization": [
+    {
+      "split": "train (in-sample)",
+      "n": 80688,
+      "n_pos": 6801,
+      "base_rate": 0.0842876264128495,
+      "AP": 0.7730646204293179,
+      "AP_over_base": 9.17174505119847,
+      "roc_auc": 0.9654721203074148,
+      "note": "rows the final model fitted on"
+    },
+    {
+      "split": "early-stopping",
+      "n": 14281,
+      "n_pos": 1242,
+      "base_rate": 0.0869686996708914,
+      "AP": 0.7291499283576341,
+      "AP_over_base": 8.384050021638787,
+      "roc_auc": 0.9527787873836685,
+      "note": "event-grouped holdout that chose the round count"
+    },
+    {
+      "split": "dev spatial-CV OOF",
+      "n": 94969,
+      "n_pos": 8043,
+      "base_rate": 0.08469079383798923,
+      "AP": 0.3790762296113048,
+      "AP_over_base": 4.476002791241577,
+      "roc_auc": 0.8563966379900452,
+      "note": "each row scored by a model that never saw it"
+    },
+    {
+      "split": "LOCKED TEST",
+      "n": 8277,
+      "n_pos": 1344,
+      "base_rate": 0.16237767306995288,
+      "AP": 0.37600301127272495,
+      "AP_over_base": 2.31560783058359,
+      "roc_auc": 0.7878677632166382,
+      "note": "opened once, under pre-registration"
+    }
+  ],
+  "label_source_shift": [
+    {
+      "split": "dev",
+      "label_source": "coolr_glc",
+      "n_positives": 7263,
+      "share_of_positives": 0.9030212607236106,
+      "mean_rain_7d_mm": 100.99161896739773
+    },
+    {
+      "split": "dev",
+      "label_source": "corridor_landslides",
+      "n_positives": 660,
+      "share_of_positives": 0.08205893323386795,
+      "mean_rain_7d_mm": 76.67249716484875
+    },
+    {
+      "split": "dev",
+      "label_source": "reliefweb_events",
+      "n_positives": 120,
+      "share_of_positives": 0.014919806042521447,
+      "mean_rain_7d_mm": 0.08708973666665164
+    },
+    {
+      "split": "locked test",
+      "label_source": "coolr_glc",
+      "n_positives": 741,
+      "share_of_positives": 0.5513392857142857,
+      "mean_rain_7d_mm": 84.67488948340083
+    },
+    {
+      "split": "locked test",
+      "label_source": "corridor_landslides",
+      "n_positives": 480,
+      "share_of_positives": 0.35714285714285715,
+      "mean_rain_7d_mm": 48.11021420937451
+    },
+    {
+      "split": "locked test",
+      "label_source": "reliefweb_events",
+      "n_positives": 120,
+      "share_of_positives": 0.08928571428571429,
+      "mean_rain_7d_mm": 13.193679333582804
+    },
+    {
+      "split": "locked test",
+      "label_source": "verified_segment_label",
+      "n_positives": 3,
+      "share_of_positives": 0.002232142857142857,
+      "mean_rain_7d_mm": 43.99863066666512
+    }
+  ],
+  "rainfall_signal": [
+    {
+      "feature": "rain_1d_mm",
+      "dev_roc": 0.5885858077177256,
+      "dev_mean_pos": 15.088314142886963,
+      "dev_mean_neg": 9.294259827517644,
+      "test_roc": 0.5161025727541846,
+      "test_mean_pos": 13.756445698660782,
+      "test_mean_neg": 11.343919364915491
+    },
+    {
+      "feature": "rain_3d_mm",
+      "dev_roc": 0.6394777448271887,
+      "dev_mean_pos": 44.394704411171105,
+      "dev_mean_neg": 27.762429957310065,
+      "test_roc": 0.5011419891409615,
+      "test_mean_pos": 31.484709514062484,
+      "test_mean_neg": 33.0529247684082
+    },
+    {
+      "feature": "rain_7d_mm",
+      "dev_roc": 0.6475043672506099,
+      "dev_mean_pos": 97.4905417701616,
+      "dev_mean_neg": 64.911313793703,
+      "test_roc": 0.4594936741464219,
+      "test_mean_pos": 65.14303075872746,
+      "test_mean_neg": 76.18690386711458
+    },
+    {
+      "feature": "rain_15d_mm",
+      "dev_roc": 0.6422491252032347,
+      "dev_mean_pos": 194.36547015470734,
+      "dev_mean_neg": 137.9219636716785,
+      "test_roc": 0.42932878383576134,
+      "test_mean_pos": 133.5691203618748,
+      "test_mean_neg": 162.19003615708453
+    },
+    {
+      "feature": "rain_30d_mm",
+      "dev_roc": 0.6430738172562451,
+      "dev_mean_pos": 386.7977210065399,
+      "dev_mean_neg": 270.831280684443,
+      "test_roc": 0.41275979957827647,
+      "test_mean_pos": 252.54583900330363,
+      "test_mean_neg": 318.46505717058164
+    },
+    {
+      "feature": "api_mm",
+      "dev_roc": 0.6468618424890586,
+      "dev_mean_pos": 151.30351448688083,
+      "dev_mean_neg": 104.95383711008826,
+      "test_roc": 0.4214075152994992,
+      "test_mean_pos": 101.38160175546298,
+      "test_mean_neg": 123.5511339924944
+    },
+    {
+      "feature": "id_ratio_3d",
+      "dev_roc": 0.6394777448271887,
+      "dev_mean_pos": 0.6215788124968187,
+      "dev_mean_neg": 0.3887071323882631,
+      "test_roc": 0.5011419891409615,
+      "test_mean_pos": 0.4408234858442658,
+      "test_mean_neg": 0.4627803698569978
+    }
+  ],
+  "bias_analysis": [
+    {
+      "group_type": "overall",
+      "group": "all",
+      "n": 8277,
+      "n_pos": 1344,
+      "base_rate": 0.16237767306995288,
+      "AP": 0.37600301127272495,
+      "AP_over_base": 2.31560783058359,
+      "roc_auc": 0.7878677632166382,
+      "mean_score": 0.11565554917973761
+    },
+    {
+      "group_type": "label_tier",
+      "group": "gold",
+      "n": 6936,
+      "n_pos": 3,
+      "base_rate": 0.00043252595155709344,
+      "AP": 0.1208791208791209,
+      "AP_over_base": 279.4725274725275,
+      "roc_auc": 0.9977643155920958,
+      "mean_score": 0.09525159239612631
+    },
+    {
+      "group_type": "label_tier",
+      "group": "silver",
+      "n": 7194,
+      "n_pos": 261,
+      "base_rate": 0.03628023352793995,
+      "AP": 0.19902681383426535,
+      "AP_over_base": 5.485819535339865,
+      "roc_auc": 0.82685728148955,
+      "mean_score": 0.10117900274163807
+    },
+    {
+      "group_type": "label_tier",
+      "group": "bronze",
+      "n": 8013,
+      "n_pos": 1080,
+      "base_rate": 0.1347809809060277,
+      "AP": 0.3105810101502999,
+      "AP_over_base": 2.3043385503095863,
+      "roc_auc": 0.7778622503218637,
+      "mean_score": 0.11068714271417333
+    },
+    {
+      "group_type": "hazard",
+      "group": "landslide",
+      "n": 7797,
+      "n_pos": 864,
+      "base_rate": 0.11081185071181224,
+      "AP": 0.29245541602559816,
+      "AP_over_base": 2.6392070355921167,
+      "roc_auc": 0.7967952018259425,
+      "mean_score": 0.10934098860253973
+    },
+    {
+      "group_type": "hazard",
+      "group": "landslide+flood",
+      "n": 7293,
+      "n_pos": 360,
+      "base_rate": 0.04936240230357877,
+      "AP": 0.0985002783585146,
+      "AP_over_base": 1.9954514724129084,
+      "roc_auc": 0.7563708992419508,
+      "mean_score": 0.09904060026174304
+    },
+    {
+      "group_type": "hazard",
+      "group": "flood",
+      "n": 7053,
+      "n_pos": 120,
+      "base_rate": 0.017014036580178648,
+      "AP": 0.3642699797327069,
+      "AP_over_base": 21.409968058789847,
+      "roc_auc": 0.8180807971537093,
+      "mean_score": 0.0993404337599111
+    },
+    {
+      "group_type": "spatial_block",
+      "group": "BLK_004_006",
+      "n": 1978,
+      "n_pos": 126,
+      "base_rate": 0.06370070778564206,
+      "AP": 0.19176612161940096,
+      "AP_over_base": 3.010423718755358,
+      "roc_auc": 0.6305538414069731,
+      "mean_score": 0.18016501770139162
+    },
+    {
+      "group_type": "spatial_block",
+      "group": "BLK_004_007",
+      "n": 646,
+      "n_pos": 60,
+      "base_rate": 0.09287925696594428,
+      "AP": 0.12983739877461498,
+      "AP_over_base": 1.3979159934733545,
+      "roc_auc": 0.6434300341296928,
+      "mean_score": 0.17651742211919347
+    },
+    {
+      "group_type": "spatial_block",
+      "group": "BLK_005_004",
+      "n": 3374,
+      "n_pos": 120,
+      "base_rate": 0.03556609365737996,
+      "AP": 0.43731381637602584,
+      "AP_over_base": 12.295806803772594,
+      "roc_auc": 0.8873489039131325,
+      "mean_score": 0.022238584601227872
+    },
+    {
+      "group_type": "spatial_block",
+      "group": "BLK_006_008",
+      "n": 1265,
+      "n_pos": 969,
+      "base_rate": 0.7660079051383399,
+      "AP": 0.8563087534660228,
+      "AP_over_base": 1.1178850083947562,
+      "roc_auc": 0.6611528323989624,
+      "mean_score": 0.21104723685329843
+    },
+    {
+      "group_type": "spatial_block",
+      "group": "BLK_009_005",
+      "n": 1011,
+      "n_pos": 66,
+      "base_rate": 0.06528189910979229,
+      "AP": 0.09141084023357184,
+      "AP_over_base": 1.400247870850623,
+      "roc_auc": 0.6723905723905723,
+      "mean_score": 0.14175319409522127
+    },
+    {
+      "group_type": "slope_deg",
+      "group": "[0, 2.5)",
+      "n": 3057,
+      "n_pos": 39,
+      "base_rate": 0.012757605495583905,
+      "AP": 0.06343381784553916,
+      "AP_over_base": 4.972235414200338,
+      "roc_auc": 0.7700973645307642,
+      "mean_score": 0.014551447236785935
+    },
+    {
+      "group_type": "slope_deg",
+      "group": "[2.5, 10)",
+      "n": 634,
+      "n_pos": 129,
+      "base_rate": 0.20347003154574134,
+      "AP": 0.5637816020214216,
+      "AP_over_base": 2.7708336099347384,
+      "roc_auc": 0.8175761762222733,
+      "mean_score": 0.0923381304290811
+    },
+    {
+      "group_type": "slope_deg",
+      "group": "[10, 20)",
+      "n": 1515,
+      "n_pos": 219,
+      "base_rate": 0.14455445544554454,
+      "AP": 0.2704440853006096,
+      "AP_over_base": 1.8708803161206555,
+      "roc_auc": 0.6680125711708665,
+      "mean_score": 0.1678675976556172
+    },
+    {
+      "group_type": "slope_deg",
+      "group": "[20, 90)",
+      "n": 3071,
+      "n_pos": 957,
+      "base_rate": 0.31162487788993815,
+      "AP": 0.39696884340561067,
+      "AP_over_base": 1.2738676260173776,
+      "roc_auc": 0.5773126165909906,
+      "mean_score": 0.19535507040623123
+    },
+    {
+      "group_type": "season",
+      "group": "monsoon",
+      "n": 6172,
+      "n_pos": 1055,
+      "base_rate": 0.17093324692158132,
+      "AP": 0.2873500300068866,
+      "AP_over_base": 1.681065767964459,
+      "roc_auc": 0.7180185553776233,
+      "mean_score": 0.1234396323140472
+    },
+    {
+      "group_type": "season",
+      "group": "dry",
+      "n": 2105,
+      "n_pos": 289,
+      "base_rate": 0.13729216152019003,
+      "AP": 0.7240011286080031,
+      "AP_over_base": 5.273433826020231,
+      "roc_auc": 0.9465630382756887,
+      "mean_score": 0.0928320997237002
+    },
+    {
+      "group_type": "highway",
+      "group": "unclassified",
+      "n": 3216,
+      "n_pos": 648,
+      "base_rate": 0.20149253731343283,
+      "AP": 0.356615686834658,
+      "AP_over_base": 1.7698704457720065,
+      "roc_auc": 0.6688522797200107,
+      "mean_score": 0.16146446161265612
+    },
+    {
+      "group_type": "highway",
+      "group": "residential",
+      "n": 2954,
+      "n_pos": 180,
+      "base_rate": 0.06093432633716994,
+      "AP": 0.35877981114153407,
+      "AP_over_base": 5.887975345067176,
+      "roc_auc": 0.9080839942321559,
+      "mean_score": 0.05797798142781963
+    },
+    {
+      "group_type": "highway",
+      "group": "track",
+      "n": 952,
+      "n_pos": 33,
+      "base_rate": 0.03466386554621849,
+      "AP": 0.09004074763135299,
+      "AP_over_base": 2.5975391437893345,
+      "roc_auc": 0.7910607709301942,
+      "mean_score": 0.09606627742338526
+    },
+    {
+      "group_type": "highway",
+      "group": "tertiary",
+      "n": 682,
+      "n_pos": 219,
+      "base_rate": 0.32111436950146627,
+      "AP": 0.5165573074256032,
+      "AP_over_base": 1.6086396514349837,
+      "roc_auc": 0.7683264790871525,
+      "mean_score": 0.14438292946965328
+    },
+    {
+      "group_type": "highway",
+      "group": "secondary",
+      "n": 284,
+      "n_pos": 192,
+      "base_rate": 0.676056338028169,
+      "AP": 0.8080960082725748,
+      "AP_over_base": 1.1953086789031835,
+      "roc_auc": 0.7168817934782609,
+      "mean_score": 0.22237543573483215
+    },
+    {
+      "group_type": "highway",
+      "group": "trunk",
+      "n": 97,
+      "n_pos": 45,
+      "base_rate": 0.4639175257731959,
+      "AP": 0.5612750019412901,
+      "AP_over_base": 1.209859448629003,
+      "roc_auc": 0.6521367521367522,
+      "mean_score": 0.05413597710816502
+    },
+    {
+      "group_type": "soil",
+      "group": "soil NODATA",
+      "n": 1489,
+      "n_pos": 96,
+      "base_rate": 0.06447280053727333,
+      "AP": 0.48380245909163483,
+      "AP_over_base": 7.503977724869212,
+      "roc_auc": 0.8183776022972002,
+      "mean_score": 0.03388192932603158
+    },
+    {
+      "group_type": "soil",
+      "group": "soil present",
+      "n": 6788,
+      "n_pos": 1248,
+      "base_rate": 0.18385385975250443,
+      "AP": 0.3663750598605684,
+      "AP_over_base": 1.9927515275108478,
+      "roc_auc": 0.7551414392992686,
+      "mean_score": 0.13359322153715783
+    },
+    {
+      "group_type": "period",
+      "group": "2007-2012",
+      "n": 2791,
+      "n_pos": 669,
+      "base_rate": 0.23969903260480116,
+      "AP": 0.41699157055640157,
+      "AP_over_base": 1.7396464475678874,
+      "roc_auc": 0.750447655636939,
+      "mean_score": 0.1251991198068433
+    },
+    {
+      "group_type": "period",
+      "group": "2013-2018",
+      "n": 2140,
+      "n_pos": 135,
+      "base_rate": 0.0630841121495327,
+      "AP": 0.3448613717414062,
+      "AP_over_base": 5.46669137427118,
+      "roc_auc": 0.8882312736676826,
+      "mean_score": 0.11186550433798921
+    },
+    {
+      "group_type": "period",
+      "group": "2019-2026",
+      "n": 3346,
+      "n_pos": 540,
+      "base_rate": 0.16138673042438734,
+      "AP": 0.41032647641542785,
+      "AP_over_base": 2.542504426085225,
+      "roc_auc": 0.8104089121195323,
+      "mean_score": 0.11011896530080442
+    }
+  ],
+  "counterfactual_rainfall": {
+    "AP_observed": 0.3742559618461208,
+    "AP_zero_rain": 0.4821154185977781,
+    "mean_score_observed": 0.12126171150953799,
+    "mean_score_zero_rain": 0.007330601198978579,
+    "positives_mean_drop": 0.22158218305109964,
+    "positives_median_retained_frac": 0.07057950754958114,
+    "negatives_mean_drop": 0.09306236059711846,
+    "highlight": {
+      "n": 3,
+      "score_observed": [
+        0.8214412031304259,
+        0.8022905459043312,
+        0.7995520960294322
+      ],
+      "score_zero_rain": [
+        0.10185006677710301,
+        0.099269214874901,
+        0.099269214874901
+      ],
+      "retained_frac": [
+        0.12398947896570459,
+        0.123732250593837,
+        0.12415603106773271
+      ],
+      "percentile_observed": [
+        0.9928718134589827,
+        0.9915428295276066,
+        0.9906971124803673
+      ],
+      "percentile_zero_rain": [
+        0.9910595626434698,
+        0.9903346623172647,
+        0.9903346623172647
+      ]
+    }
+  },
+  "feature_ablation": [
+    {
+      "group": "seasonal",
+      "n_cols": 4,
+      "AP": 0.3084385341311164,
+      "delta": -0.06581742771500443,
+      "pct_of_baseline": 82.41379311892807
+    },
+    {
+      "group": "hydrology",
+      "n_cols": 4,
+      "AP": 0.3342225159870193,
+      "delta": -0.04003344585910151,
+      "pct_of_baseline": 89.30319087994603
+    },
+    {
+      "group": "road",
+      "n_cols": 6,
+      "AP": 0.35311105485236965,
+      "delta": -0.021144906993751156,
+      "pct_of_baseline": 94.35014825429953
+    },
+    {
+      "group": "landcover_lithology",
+      "n_cols": 2,
+      "AP": 0.35611268632497634,
+      "delta": -0.018143275521144475,
+      "pct_of_baseline": 95.15217461556317
+    },
+    {
+      "group": "soil",
+      "n_cols": 8,
+      "AP": 0.35975957727460417,
+      "delta": -0.01449638457151664,
+      "pct_of_baseline": 96.12661225221123
+    },
+    {
+      "group": "rainfall_provenance",
+      "n_cols": 1,
+      "AP": 0.36404996427021863,
+      "delta": -0.010205997575902181,
+      "pct_of_baseline": 97.27298998109255
+    },
+    {
+      "group": "(none \u2014 baseline)",
+      "n_cols": 0,
+      "AP": 0.3742559618461208,
+      "delta": 0.0,
+      "pct_of_baseline": 100.0
+    },
+    {
+      "group": "terrain",
+      "n_cols": 6,
+      "AP": 0.3745871337740001,
+      "delta": 0.0003311719278792924,
+      "pct_of_baseline": 100.08848808346184
+    },
+    {
+      "group": "rainfall",
+      "n_cols": 14,
+      "AP": 0.4862288756207396,
+      "delta": 0.11197291377461877,
+      "pct_of_baseline": 129.91880562764624
+    }
+  ],
+  "perturbation_sweep": [
+    {
+      "sigma": 0.0,
+      "AP": 0.3742559618461208,
+      "pct_of_clean": 100.0,
+      "roc_auc": 0.7652010871058362
+    },
+    {
+      "sigma": 0.05,
+      "AP": 0.37595216135687354,
+      "pct_of_clean": 100.45321910234529,
+      "roc_auc": 0.7658326636582802
+    },
+    {
+      "sigma": 0.1,
+      "AP": 0.37366408638198656,
+      "pct_of_clean": 99.84185276268822,
+      "roc_auc": 0.764065215188917
+    },
+    {
+      "sigma": 0.25,
+      "AP": 0.3642986437700654,
+      "pct_of_clean": 97.3394363507429,
+      "roc_auc": 0.7555059309170084
+    },
+    {
+      "sigma": 0.5,
+      "AP": 0.3303493426378513,
+      "pct_of_clean": 88.26829130745493,
+      "roc_auc": 0.736177863976977
+    },
+    {
+      "sigma": 1.0,
+      "AP": 0.2969630620320691,
+      "pct_of_clean": 79.34758355410476,
+      "roc_auc": 0.7096237456471122
+    }
+  ],
+  "edge_cases": [
+    {
+      "case": "all test rows",
+      "n": 8277,
+      "n_pos": 1344,
+      "base_rate": 0.16237767306995288,
+      "AP": 0.3742559618461208,
+      "AP_over_base": 2.304848657887159,
+      "mean_score": 0.12126171150953799,
+      "recall": 0.8244047619047619,
+      "precision": 0.2939771822764659,
+      "note": ""
+    },
+    {
+      "case": "zero rain (1d = 0)",
+      "n": 4142,
+      "n_pos": 660,
+      "base_rate": 0.15934331240946403,
+      "AP": 0.3968939812227705,
+      "AP_over_base": 2.4908104094313868,
+      "mean_score": 0.10098622496808578,
+      "recall": 0.7560606060606061,
+      "precision": 0.3178343949044586,
+      "note": "cannot be rainfall-triggered on the day"
+    },
+    {
+      "case": "bone dry (7d = 0)",
+      "n": 1337,
+      "n_pos": 120,
+      "base_rate": 0.08975317875841436,
+      "AP": 0.18431236159200817,
+      "AP_over_base": 2.053546895404291,
+      "mean_score": 0.02195803125527883,
+      "recall": 0.125,
+      "precision": 0.12605042016806722,
+      "note": "no rain all week"
+    },
+    {
+      "case": "extreme rain (1d, top 1%)",
+      "n": 83,
+      "n_pos": 33,
+      "base_rate": 0.39759036144578314,
+      "AP": 0.481034550604649,
+      "AP_over_base": 1.2098747787935111,
+      "mean_score": 0.2541138385284035,
+      "recall": 0.9090909090909091,
+      "precision": 0.4225352112676056,
+      "note": ""
+    },
+    {
+      "case": "extreme rain (7d, top 1%)",
+      "n": 84,
+      "n_pos": 6,
+      "base_rate": 0.07142857142857142,
+      "AP": 0.10122245262892324,
+      "AP_over_base": 1.4171143368049255,
+      "mean_score": 0.20998761848210537,
+      "recall": 1.0,
+      "precision": 0.1016949152542373,
+      "note": ""
+    },
+    {
+      "case": "soil NODATA",
+      "n": 1489,
+      "n_pos": 96,
+      "base_rate": 0.06447280053727333,
+      "AP": 0.41892247906774044,
+      "AP_over_base": 6.4976622013736,
+      "mean_score": 0.04669390596001653,
+      "recall": 0.46875,
+      "precision": 0.1814516129032258,
+      "note": ""
+    },
+    {
+      "case": "bridges",
+      "n": 559,
+      "n_pos": 186,
+      "base_rate": 0.33273703041144903,
+      "AP": 0.5290187811874515,
+      "AP_over_base": 1.5899005305579859,
+      "mean_score": 0.12818416304629054,
+      "recall": 0.8064516129032258,
+      "precision": 0.49019607843137253,
+      "note": ""
+    },
+    {
+      "case": "very steep (slope >= 30)",
+      "n": 718,
+      "n_pos": 384,
+      "base_rate": 0.5348189415041783,
+      "AP": 0.6078979631966097,
+      "AP_over_base": 1.1366425457686609,
+      "mean_score": 0.1978139835034162,
+      "recall": 0.7942708333333334,
+      "precision": 0.5658627087198516,
+      "note": ""
+    },
+    {
+      "case": "flat (slope < 2.5)",
+      "n": 3057,
+      "n_pos": 39,
+      "base_rate": 0.012757605495583905,
+      "AP": 0.11179294271654915,
+      "AP_over_base": 8.762846817551045,
+      "mean_score": 0.01960425440029874,
+      "recall": 0.5128205128205128,
+      "precision": 0.0823045267489712,
+      "note": ""
+    },
+    {
+      "case": "dry season",
+      "n": 2105,
+      "n_pos": 289,
+      "base_rate": 0.13729216152019003,
+      "AP": 0.7149363978062134,
+      "AP_over_base": 5.207408710664634,
+      "mean_score": 0.09525405991047056,
+      "recall": 0.8442906574394463,
+      "precision": 0.48316831683168315,
+      "note": ""
+    },
+    {
+      "case": "monsoon",
+      "n": 6172,
+      "n_pos": 1055,
+      "base_rate": 0.17093324692158132,
+      "AP": 0.2745636472843311,
+      "AP_over_base": 1.6062623990889968,
+      "mean_score": 0.13013178711161785,
+      "recall": 0.818957345971564,
+      "precision": 0.2647058823529412,
+      "note": ""
+    }
+  ],
+  "unseen_categories": [
+    {
+      "column": "highway",
+      "AP": 0.35320077369307856,
+      "delta": -0.021055188153042248,
+      "error": ""
+    },
+    {
+      "column": "surface",
+      "AP": 0.3662507671727043,
+      "delta": -0.008005194673416538,
+      "error": ""
+    },
+    {
+      "column": "landcover_class",
+      "AP": 0.37259859398625944,
+      "delta": -0.0016573678598613695,
+      "error": ""
+    },
+    {
+      "column": "lithology_class",
+      "AP": 0.3509615958262792,
+      "delta": -0.023294366019841584,
+      "error": ""
+    }
+  ],
+  "monotonicity": [
+    {
+      "rain_multiplier": 1.25,
+      "n": 3000,
+      "exceed_flags_updated": true,
+      "violations": 77,
+      "violation_rate": 0.025666666666666667,
+      "max_violation": 0.09437932139974531,
+      "mean_score": 0.15305456131550094
+    },
+    {
+      "rain_multiplier": 1.5,
+      "n": 3000,
+      "exceed_flags_updated": true,
+      "violations": 58,
+      "violation_rate": 0.019333333333333334,
+      "max_violation": 0.07846692002114197,
+      "mean_score": 0.1868892616569064
+    },
+    {
+      "rain_multiplier": 2.0,
+      "n": 3000,
+      "exceed_flags_updated": true,
+      "violations": 42,
+      "violation_rate": 0.014,
+      "max_violation": 0.10021955196017718,
+      "mean_score": 0.25790806616781176
+    },
+    {
+      "rain_multiplier": 4.0,
+      "n": 3000,
+      "exceed_flags_updated": true,
+      "violations": 18,
+      "violation_rate": 0.006,
+      "max_violation": 0.034688463422085536,
+      "mean_score": 0.38902481658626886
+    },
+    {
+      "rain_multiplier": 1.25,
+      "n": 3000,
+      "exceed_flags_updated": false,
+      "violations": 0,
+      "violation_rate": 0.0,
+      "max_violation": 0.0,
+      "mean_score": 0.15249012508797455
+    },
+    {
+      "rain_multiplier": 1.5,
+      "n": 3000,
+      "exceed_flags_updated": false,
+      "violations": 0,
+      "violation_rate": 0.0,
+      "max_violation": 0.0,
+      "mean_score": 0.1843075378962857
+    },
+    {
+      "rain_multiplier": 2.0,
+      "n": 3000,
+      "exceed_flags_updated": false,
+      "violations": 0,
+      "violation_rate": 0.0,
+      "max_violation": 0.0,
+      "mean_score": 0.25129000507467547
+    },
+    {
+      "rain_multiplier": 4.0,
+      "n": 3000,
+      "exceed_flags_updated": false,
+      "violations": 0,
+      "violation_rate": 0.0,
+      "max_violation": 0.0,
+      "mean_score": 0.3740382682070446
+    }
+  ],
+  "risk_coverage": [
+    {
+      "coverage": 0.01,
+      "n_alerts": 83,
+      "precision": 0.8072289156626506,
+      "recall": 0.04985119047619048,
+      "lift": 4.9713048623063685,
+      "score_threshold": 0.5549132947976878
+    },
+    {
+      "coverage": 0.02,
+      "n_alerts": 166,
+      "precision": 0.7228915662650602,
+      "recall": 0.08928571428571429,
+      "lift": 4.451914802065405,
+      "score_threshold": 0.39888682745825604
+    },
+    {
+      "coverage": 0.05,
+      "n_alerts": 414,
+      "precision": 0.43478260869565216,
+      "recall": 0.13392857142857142,
+      "lift": 2.6776009316770186,
+      "score_threshold": 0.2335508908096666
+    },
+    {
+      "coverage": 0.1,
+      "n_alerts": 828,
+      "precision": 0.3079710144927536,
+      "recall": 0.18973214285714285,
+      "lift": 1.8966339932712215,
+      "score_threshold": 0.2335508908096666
+    },
+    {
+      "coverage": 0.2,
+      "n_alerts": 1655,
+      "precision": 0.3287009063444109,
+      "recall": 0.40476190476190477,
+      "lift": 2.024298662063013,
+      "score_threshold": 0.21547799696509864
+    },
+    {
+      "coverage": 0.3,
+      "n_alerts": 2483,
+      "precision": 0.319774466371325,
+      "recall": 0.5907738095238095,
+      "lift": 1.969325340889477,
+      "score_threshold": 0.18256772673733804
+    },
+    {
+      "coverage": 0.5,
+      "n_alerts": 4138,
+      "precision": 0.29217013049782503,
+      "recall": 0.8995535714285714,
+      "lift": 1.7993245313470967,
+      "score_threshold": 0.11136363636363636
+    },
+    {
+      "coverage": 1.0,
+      "n_alerts": 8277,
+      "precision": 0.16237767306995288,
+      "recall": 1.0,
+      "lift": 1.0,
+      "score_threshold": 1e-06
+    }
+  ],
+  "failure_counts": {
+    "n_fn": 100,
+    "n_fp": 3133
+  },
+  "runtime": {
+    "model_bytes": 727368,
+    "model_kb": 710.3,
+    "n_trees": 1199,
+    "total_leaves": 4796,
+    "mean_leaves_per_tree": 4.0,
+    "n_rows": 20000,
+    "repeats": 5,
+    "median_sec": 0.06658533401787281,
+    "p95_sec": 0.10800210000597871,
+    "per_row_us": 3.329,
+    "rows_per_sec": 300366,
+    "full_corridor_sec": 1.03,
+    "deployment_segments": 309042,
+    "predict_peak_mb": 7.15
+  },
+  "scalability": [
+    {
+      "n_rows": 1000,
+      "median_sec": 0.00531450001290068,
+      "per_row_us": 5.315,
+      "rows_per_sec": 188164,
+      "projected_corridor_sec": 1.642
+    },
+    {
+      "n_rows": 10000,
+      "median_sec": 0.031454833020688966,
+      "per_row_us": 3.145,
+      "rows_per_sec": 317916,
+      "projected_corridor_sec": 0.972
+    },
+    {
+      "n_rows": 50000,
+      "median_sec": 0.15520187499350868,
+      "per_row_us": 3.104,
+      "rows_per_sec": 322161,
+      "projected_corridor_sec": 0.959
+    },
+    {
+      "n_rows": 100000,
+      "median_sec": 0.3328665829903912,
+      "per_row_us": 3.329,
+      "rows_per_sec": 300420,
+      "projected_corridor_sec": 1.029
+    }
+  ],
+  "deployment_gates": [
+    {
+      "gate": "beats chance on held-out ground",
+      "threshold": "test AP / base rate > 2.0",
+      "measured": "2.32x",
+      "pass": true,
+      "why": "below this the ranking is not worth the pipeline"
+    },
+    {
+      "gate": "top-of-ranking precision",
+      "threshold": "precision@100 >= 0.50",
+      "measured": "0.810",
+      "pass": true,
+      "why": "operators act on the top of the list, not the whole list"
+    },
+    {
+      "gate": "recall at the operating threshold",
+      "threshold": ">= 0.80",
+      "measured": "0.926",
+      "pass": true,
+      "why": "a missed closure is the costly error for this product"
+    },
+    {
+      "gate": "STEEP-TERRAIN discrimination",
+      "threshold": "steep ROC-AUC >= 0.70",
+      "measured": "0.624",
+      "pass": false,
+      "why": "the roads that actually close are all steep; global AP is inflated by plains-vs-hills, which routing already knows"
+    },
+    {
+      "gate": "steep-terrain lift",
+      "threshold": ">= 2.0x",
+      "measured": "1.44x",
+      "pass": false,
+      "why": "operational value, not global value"
+    },
+    {
+      "gate": "probability calibration transfers",
+      "threshold": "worst terrain stratum within 1.5x on unseen region",
+      "measured": "2.20x",
+      "pass": false,
+      "why": "calibrated P becomes the routing penalty W = dist*(1 + lambda*P)"
+    },
+    {
+      "gate": "survives rainfall forecast error",
+      "threshold": ">= 80% of clean AP at sigma = 0.25",
+      "measured": "97.3%",
+      "pass": true,
+      "why": "deployment feeds a forecast, not an observation"
+    },
+    {
+      "gate": "rainfall is actually driving the prediction",
+      "threshold": "positives lose >= 30% of score under zero rainfall",
+      "measured": "92.9%",
+      "pass": true,
+      "why": "otherwise it is a terrain map with a weather-shaped label"
+    },
+    {
+      "gate": "daily corridor scoring fits the batch window",
+      "threshold": "< 300 s for 309,042 segments",
+      "measured": "1.03 s",
+      "pass": true,
+      "why": "once-daily batch job"
+    },
+    {
+      "gate": "artifact size is deployable",
+      "threshold": "< 50 MB",
+      "measured": "0.69 MB",
+      "pass": true,
+      "why": "ships inside a container image"
+    },
+    {
+      "gate": "reproducible from config + seed",
+      "threshold": "retrain reproduces the recorded test AP",
+      "measured": "bit-identical",
+      "pass": true,
+      "why": "an unreproducible model cannot be audited or rolled back"
+    }
+  ],
+  "optimization_advice": [
+    {
+      "technique": "quantization (int8 leaf values)",
+      "recommended": false,
+      "reason": "model is 0.69 MB and the full corridor scores in 1.03 s. LightGBM inference is memory-bandwidth-bound on tree traversal, not arithmetic-bound, so quantizing leaves saves neither meaningfully.",
+      "revisit_if": "artifact must fit under ~1 MB (edge/embedded deployment)"
+    },
+    {
+      "technique": "pruning / tree-count reduction",
+      "recommended": false,
+      "reason": "early stopping already selected the round count on an event-grouped holdout; cutting further trades measured accuracy for latency the product does not need.",
+      "revisit_if": "per-request latency ever becomes user-facing (< 50 ms budget)"
+    },
+    {
+      "technique": "ONNX / Treelite / TensorRT export",
+      "recommended": false,
+      "reason": "adds a second artifact, a conversion step and a numerical-equivalence risk to version and test, for a job with ~300x headroom in its batch window.",
+      "revisit_if": "the serving language stops being Python, or per-row latency must drop below ~1 us"
+    },
+    {
+      "technique": "GPU inference",
+      "recommended": false,
+      "reason": "1.03 s on one CPU core for the entire corridor.",
+      "revisit_if": "corridor grows >100x or cadence becomes sub-minute"
+    },
+    {
+      "technique": "batch the daily scoring job + cache static features",
+      "recommended": true,
+      "reason": "static terrain/soil/road columns never change; only the rainfall block needs recomputing daily. This is where the real pipeline cost sits \u2014 feature assembly, not model inference.",
+      "revisit_if": "n/a \u2014 do this"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+gate,threshold,v1_measured,v1_pass,v2_measured,v2_pass
+beats chance on held-out ground,test AP / base rate > 2.0,2.32x,True,2.20x,True
+top-of-ranking precision,precision@100 >= 0.50,0.810,True,0.290,False
+recall at the operating threshold,>= 0.80,0.926,True,0.955,True
+STEEP-TERRAIN discrimination,steep ROC-AUC >= 0.70,0.624,False,0.630,False
+steep-terrain lift,>= 2.0x,1.44x,False,1.43x,False
+probability calibration transfers,worst terrain stratum within 1.5x on unseen region,2.20x,False,2.65x,False
+survives rainfall forecast error,>= 80% of clean AP at sigma = 0.25,97.3%,True,99.5%,True
+rainfall is actually driving the prediction,positives lose >= 30% of score under zero rainfall,92.9%,True,95.9%,True
+daily corridor scoring fits the batch window,"< 300 s for 309,042 segments",1.03 s,True,1.06 s,True
+artifact size is deployable,< 50 MB,0.69 MB,True,0.69 MB,True
+reproducible from config + seed,retrain reproduces the recorded test AP,bit-identical,True,bit-identical,True
+rainfall monotonicity enforced end-to-end,0 rank violations with derived flags recomputed,n/a (new gate),,0 violations,True

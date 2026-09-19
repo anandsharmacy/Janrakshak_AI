@@ -1,0 +1,83 @@
+{
+  "config_sha256_16": "5c8ab2326f9c5b5c",
+  "frozen_utc": "2026-09-11T12:54:28.691634+00:00",
+  "git_sha": "nogit",
+  "final_config": {
+    "lgbm": {
+      "objective": "binary",
+      "boosting_type": "gbdt",
+      "learning_rate": 0.03218814577630251,
+      "num_leaves": 4,
+      "max_depth": 11,
+      "min_child_samples": 364,
+      "min_split_gain": 0.8392636293753901,
+      "subsample": 0.6971305573243116,
+      "subsample_freq": 1,
+      "colsample_bytree": 0.8531476828735367,
+      "reg_alpha": 1.9787843500081188,
+      "reg_lambda": 0.23696573020861914,
+      "n_estimators": 1200,
+      "early_stopping_rounds": 80,
+      "max_bin": 255,
+      "verbosity": -1,
+      "auto_scale_pos_weight": true,
+      "monotone_rainfall_features": [
+        "rain_1d_mm",
+        "rain_3d_mm",
+        "rain_7d_mm",
+        "rain_15d_mm",
+        "rain_30d_mm",
+        "rain_max_1d_in_3d_mm",
+        "api_mm",
+        "id_ratio_1d",
+        "id_ratio_3d",
+        "id_ratio_7d"
+      ],
+      "early_stopping_metric": "pr_auc",
+      "scale_pos_weight_mult": 0.1381132349355172
+    },
+    "n_estimators_final": 1200,
+    "cv_mean_best_iter": 944.8,
+    "cv": {
+      "es_split_mode": "event",
+      "drop_buffer_rows": true
+    },
+    "scorer": "composite/passed",
+    "ensemble_weights": null,
+    "calibration": "per_slope_isotonic",
+    "operating_threshold": 0.05667060212514758,
+    "cost_fn_over_fp": 20.0,
+    "composite_steps": [
+      "aug/gaussian_all_s0.1",
+      "aug/smote_k5_f0.5"
+    ]
+  },
+  "dev_estimate": {
+    "scorer": "composite/passed",
+    "spatial_cv_mean_AP": 0.37818023708898574,
+    "spatial_cv_std_AP": 0.1628065815632942,
+    "incumbent_mean_AP": 0.3505504824395985,
+    "note": "This CV number is optimistically biased: it was used to SELECT among ~25 arms. The locked final_test exists to measure that bias."
+  },
+  "metrics_to_report": [
+    "average_precision",
+    "roc_auc",
+    "brier",
+    "ece",
+    "precision@10",
+    "precision@50",
+    "precision@100",
+    "precision@200",
+    "recall@10",
+    "recall@50",
+    "recall@100",
+    "recall@200",
+    "lift@1pct",
+    "lift@5pct",
+    "lift@10pct",
+    "precision/recall/f1 at the frozen threshold",
+    "steep-terrain (slope>=10deg) AP and lift",
+    "per-stratum predicted/observed calibration ratio"
+  ],
+  "rule": "The locked split is opened ONCE, by scripts/open_final_test.py. No configuration, threshold, calibrator or feature may change after this file is written. If the test number disappoints, that is the result \u2014 it is not a reason to re-open the search."
+}

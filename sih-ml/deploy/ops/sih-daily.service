@@ -1,0 +1,16 @@
+[Unit]
+Description=SIH corridor disruption — daily rainfall ingest + corridor scoring
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=sih
+Environment=SIH_HOME=/opt/sih-ml SIH_BUNDLE=/opt/sih-ml/deploy/bundles/current
+Environment=SIH_STORE=/opt/sih-ml/deploy/featurestore SIH_SCORES=/opt/sih-ml/deploy/scores
+# SIH_PUBLISH_DSN=postgresql://sih_publish:…@db.<project>.supabase.co:5432/postgres
+EnvironmentFile=-/etc/sih-ml/publish.env
+ExecStart=/opt/sih-ml/deploy/ops/sih-daily.sh
+# exit 3 = rainfall not published yet: retried by the timer, not treated as a crash
+SuccessExitStatus=0
+RestartPreventExitStatus=3
+TimeoutStartSec=900

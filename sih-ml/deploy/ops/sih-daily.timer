@@ -1,0 +1,11 @@
+[Unit]
+Description=Run SIH daily scoring after the rainfall feed publishes
+
+[Timer]
+# 06:30 IST with hourly retries until 12:30 (feed latency varies)
+OnCalendar=*-*-* 01:00..07:00:00 UTC
+Persistent=true
+RandomizedDelaySec=120
+
+[Install]
+WantedBy=timers.target

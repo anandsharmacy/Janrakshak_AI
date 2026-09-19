@@ -1,0 +1,85 @@
+# Column roles for panel_v1. Consumed by preprocess/transformers.py and tests.
+# role: target | meta | id (exclude from model) | num | cat | cyclic | flag
+
+target: target
+
+meta:            # carried through, never a feature
+  - segment_id
+  - date
+  - label_tier
+  - label_confidence
+  - hazard
+  - sample_weight
+  - label_source
+  - event_id
+  - source_lon
+  - source_lat
+  - persist_day
+  - snap_dist_m
+  - seg_lon
+  - seg_lat
+  - lon
+  - lat
+
+id:              # high-cardinality identifiers — drop from the model
+  - nearest_river_id
+  - hydrobasin_id
+
+leaky_in_spatial_cv:   # event-history counts: ~0 for every row of a held-out block,
+                       # but mark the positives in a training block. Excluded from the
+                       # baseline; revisit as a Stage 4 ablation / for the temporal model.
+  - hist_events_1y_lag30
+  - hist_events_all_lag30
+
+numeric:
+  - elevation_mean
+  - slope_mean_deg
+  - slope_max_deg
+  - aspect_mean_deg
+  - distance_to_nearest_river_m
+  - nearest_river_order
+  - nearest_river_discharge_cms
+  - upslope_basin_area_km2
+  - length_m
+  - maxspeed
+  - cell_dist_m
+  - soil_clay_0_5cm_pct
+  - soil_sand_0_5cm_pct
+  - soil_silt_0_5cm_pct
+  - soil_soc_0_5cm_dg_kg
+  - soil_bdod_0_5cm_cg_cm3
+  - soil_cfvo_0_5cm_cm3_dm3
+  - soil_phh2o_0_5cm_ph10
+  - rain_1d_mm
+  - rain_3d_mm
+  - rain_7d_mm
+  - rain_15d_mm
+  - rain_30d_mm
+  - rain_max_1d_in_3d_mm
+  - api_mm
+  - days_since_rain
+  - id_ratio_1d
+  - id_ratio_3d
+  - id_ratio_7d
+  - month
+
+cyclic:          # already sin/cos encoded in the panel
+  - aspect_sin
+  - aspect_cos
+  - doy_sin
+  - doy_cos
+
+flag:
+  - bridge
+  - tunnel
+  - is_monsoon
+  - soil_is_missing
+  - id_exceed_1d
+  - id_exceed_3d
+  - id_exceed_7d
+
+categorical:
+  - highway
+  - surface
+  - landcover_class
+  - lithology_class

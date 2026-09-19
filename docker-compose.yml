@@ -1,0 +1,152 @@
+# Master Docker Compose configuration for NER Logistics Platform
+# Runs the website, Flutter web app, ML inference API, GeoServer and OSRM.
+#
+# Supabase is NOT in this file: it runs through the Supabase CLI from
+#   web/district,field,contro dashboards/App Development   (supabase start)
+# and listens on the host (API 54321, DB 54322). Settings below come from .env
+# (copy .env.example); a phone or another laptop needs the host's LAN IP there.
+#
+# ML to apps: the sih-ml batch output is published into Supabase, and the apps
+# read it from there (ML_INTEGRATION_PLAN.md). One-off publish:
+#   docker compose --profile tools run --rm sih-publish segments
+#   docker compose --profile tools run --rm sih-publish run --date 2025-08-05 --mode replay
+
+services:
+  # ---------------------------------------------------------------------------
+  # 1. ML INFERENCE API (sih-ml)
+  # ---------------------------------------------------------------------------
+  sih-ml:
+    build:
+      context: ./sih-ml
+      dockerfile: deploy/Dockerfile
+    image: sih-infer:final_v3
+    container_name: ner-sih-ml
+    # Host port for local debugging only. Clients never call this API; in
+    # production keep it on a private network (only the publisher reads its output).
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./sih-ml/deploy/featurestore:/data/featurestore:ro
+      - ./sih-ml/deploy/scores:/data/scores
+    environment:
+      - SIH_BUNDLE=/models/bundle
+      - SIH_STORE=/data/featurestore
+      - SIH_SCORES=/data/scores
+      - SIH_THREADS=1
+      - SIH_WORKERS=4
+    restart: unless-stopped
+
+  # ML publisher: copies a scored day into Supabase. Runs on demand (profile
+  # "tools"); on a VM the daily systemd job does this after scoring.
+  sih-publish:
+    profiles: ["tools"]
+    build:
+      context: ./sih-ml
+      dockerfile: deploy/Dockerfile.publish
+    image: sih-publish:final_v3
+    depends_on: [sih-ml]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - SIH_PUBLISH_DSN=${SIH_PUBLISH_DSN:-postgresql://postgres:postgres@host.docker.internal:54322/postgres}
+      - SIH_STORE=/data/featurestore
+      - SIH_SCORES=/data/scores
+    volumes:
+      - ./sih-ml/deploy/featurestore:/data/featurestore:ro
+      - ./sih-ml/deploy/scores:/data/scores
+      # segment centroids for `segments` until the feature store is rebuilt with lon/lat
+      - ./sih-ml/data/interim:/app/data/interim:ro
+
+  # ---------------------------------------------------------------------------
+  # 2. POSTGIS DATABASE (GeoServer Analytics)
+  # ---------------------------------------------------------------------------
+  postgis:
+    image: postgis/postgis:17-3.5
+    platform: linux/amd64
+    container_name: ner-postgis
+    environment:
+      POSTGRES_DB: ner
+      POSTGRES_USER: ner
+      POSTGRES_PASSWORD: ner
+    volumes:
+      - ./ner_logistics/backend/geoserver/sql:/docker-entrypoint-initdb.d:ro
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ner -d ner"]
+      interval: 5s
+      retries: 20
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # 3. GEOSERVER (Spatial Layers & Heatmaps)
+  # ---------------------------------------------------------------------------
+  geoserver:
+    image: docker.osgeo.org/geoserver:2.28.5
+    platform: linux/amd64
+    container_name: ner-geoserver
+    depends_on:
+      postgis:
+        condition: service_healthy
+    environment:
+      GEOSERVER_ADMIN_USER: admin
+      GEOSERVER_ADMIN_PASSWORD: geoserver
+      SKIP_DEMO_DATA: "true"
+      INSTALL_EXTENSIONS: "true"
+      STABLE_EXTENSIONS: "wps"
+      CORS_ENABLED: "true"
+      CORS_ALLOWED_ORIGINS: "*"
+    ports:
+      - "8081:8080"  # Mapped to 8081 to avoid conflict with ML API on 8080
+    volumes:
+      - gsdata:/opt/geoserver_data
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # 4. OSRM ROUTING ENGINE
+  # ---------------------------------------------------------------------------
+  osrm:
+    image: ghcr.io/project-osrm/osrm-backend:v26.9.0-debian
+    platform: linux/amd64
+    container_name: ner-osrm
+    command: osrm-routed --algorithm mld --max-alternatives 3 /data/north-eastern-zone-latest.osrm
+    volumes:
+      - ./ner_logistics/backend/osrm/data:/data
+    ports:
+      - "5001:5000"  # Mapped host port 5001 -> container 5000 (avoids macOS AirPlay on 5000)
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # 5. WEBSITE (web/NER-Website-Merged: login + officer dashboards)
+  # ---------------------------------------------------------------------------
+  # Built image instead of a bind-mounted dev server: the Vite build bakes in the
+  # Supabase URL (must be reachable from the viewer's browser) and the
+  # publishable key. Rebuild after changing .env: docker compose build web-dashboard
+  web-dashboard:
+    build:
+      context: ./web/NER-Website-Merged
+      args:
+        VITE_SUPABASE_URL: ${NER_PUBLIC_SUPABASE_URL:-http://127.0.0.1:54321}
+        VITE_SUPABASE_PUBLISHABLE_KEY: ${NER_SUPABASE_PUBLISHABLE_KEY:-sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH}
+    image: ner-website:local
+    container_name: ner-web-dashboard
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # 6. FLUTTER WEB APP
+  # ---------------------------------------------------------------------------
+  flutter-web:
+    image: nginx:alpine
+    container_name: ner-flutter-web
+    ports:
+      - "8082:80"
+    volumes:
+      - ./ner_logistics/build/web:/usr/share/nginx/html:ro
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  gsdata:

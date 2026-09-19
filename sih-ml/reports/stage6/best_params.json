@@ -1,0 +1,47 @@
+{
+  "params": {
+    "num_leaves": 4,
+    "max_depth": 11,
+    "min_child_samples": 364,
+    "learning_rate": 0.03218814577630251,
+    "reg_alpha": 1.9787843500081188,
+    "reg_lambda": 0.23696573020861914,
+    "colsample_bytree": 0.8531476828735367,
+    "subsample": 0.6971305573243116,
+    "min_split_gain": 0.8392636293753901,
+    "use_monotone": true,
+    "scale_pos_weight_mult": 0.1381132349355172
+  },
+  "lgbm": {
+    "objective": "binary",
+    "boosting_type": "gbdt",
+    "learning_rate": 0.03218814577630251,
+    "num_leaves": 4,
+    "max_depth": 11,
+    "min_child_samples": 364,
+    "min_split_gain": 0.8392636293753901,
+    "subsample": 0.6971305573243116,
+    "subsample_freq": 1,
+    "colsample_bytree": 0.8531476828735367,
+    "reg_alpha": 1.9787843500081188,
+    "reg_lambda": 0.23696573020861914,
+    "n_estimators": 1200,
+    "early_stopping_rounds": 80,
+    "max_bin": 255,
+    "verbosity": -1,
+    "auto_scale_pos_weight": true,
+    "monotone_rainfall_features": [
+      "rain_1d_mm",
+      "rain_3d_mm",
+      "rain_7d_mm",
+      "rain_15d_mm",
+      "rain_30d_mm",
+      "rain_max_1d_in_3d_mm",
+      "api_mm",
+      "id_ratio_1d",
+      "id_ratio_3d",
+      "id_ratio_7d"
+    ],
+    "early_stopping_metric": "pr_auc"
+  }
+}

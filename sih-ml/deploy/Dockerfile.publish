@@ -1,0 +1,16 @@
+# Publisher image: the inference image plus the Postgres driver. Kept separate so
+# the API image never carries database credentials or a DB client.
+#
+#   docker build -f deploy/Dockerfile.publish -t sih-publish:final_v3 .
+#   docker run --rm -e SIH_PUBLISH_DSN=postgresql://… \
+#     -v $PWD/deploy/featurestore:/data/featurestore:ro -v $PWD/deploy/scores:/data/scores \
+#     sih-publish:final_v3 run --date 2025-08-05 --mode replay
+ARG BASE=sih-infer:final_v3
+FROM ${BASE}
+USER root
+COPY deploy/requirements.txt deploy/requirements-publish.txt /tmp/
+RUN pip install --no-cache-dir -r /tmp/requirements-publish.txt
+# current source, so the publisher never lags an older base image
+COPY src/sih_ml /app/src/sih_ml
+USER 10001
+ENTRYPOINT ["python", "-m", "sih_ml.serve.publish"]

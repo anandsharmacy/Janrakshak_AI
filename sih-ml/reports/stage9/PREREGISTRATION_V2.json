@@ -1,0 +1,70 @@
+{
+  "config_sha256_16": "5aed65f3f8729060",
+  "model_version": "final_v2",
+  "frozen_utc": "2026-09-11T15:32:36.778749+00:00",
+  "final_config": {
+    "lgbm": {
+      "objective": "binary",
+      "boosting_type": "gbdt",
+      "learning_rate": 0.03218814577630251,
+      "num_leaves": 4,
+      "max_depth": 11,
+      "min_child_samples": 364,
+      "min_split_gain": 0.8392636293753901,
+      "subsample": 0.6971305573243116,
+      "subsample_freq": 1,
+      "colsample_bytree": 0.8531476828735367,
+      "reg_alpha": 1.9787843500081188,
+      "reg_lambda": 0.23696573020861914,
+      "n_estimators": 1200,
+      "early_stopping_rounds": 80,
+      "max_bin": 255,
+      "verbosity": -1,
+      "auto_scale_pos_weight": true,
+      "monotone_rainfall_features": [
+        "rain_1d_mm",
+        "rain_3d_mm",
+        "rain_7d_mm",
+        "rain_15d_mm",
+        "rain_30d_mm",
+        "rain_max_1d_in_3d_mm",
+        "api_mm",
+        "id_ratio_1d",
+        "id_ratio_3d",
+        "id_ratio_7d",
+        "id_exceed_1d",
+        "id_exceed_3d",
+        "id_exceed_7d"
+      ],
+      "early_stopping_metric": "pr_auc",
+      "scale_pos_weight_mult": 0.1381132349355172
+    },
+    "cv": {
+      "es_split_mode": "event",
+      "drop_buffer_rows": true
+    },
+    "scorer": "final_v2",
+    "composite_steps": [
+      "aug/gaussian_all_s0.1",
+      "aug/smote_k5_f0.5"
+    ],
+    "scope": "rain_attributable positives + all negatives",
+    "calibration": "per_slope_isotonic, fitted on dev out-of-fold predictions",
+    "calibration_slope_bins": [
+      0.0,
+      2.5,
+      10.0,
+      20.0,
+      90.0
+    ],
+    "operating_threshold": 0.027149321266968326,
+    "cost_fn_over_fp": 20.0,
+    "supersedes": "5c8ab2326f9c5b5c (final_v1 \u2014 known-leaked)"
+  },
+  "supersedes": {
+    "config": "5c8ab2326f9c5b5c",
+    "status": "known-leaked, superseded",
+    "retained_at": "reports/stage7/PREREGISTRATION.json"
+  },
+  "bias_disclosure": "This is NOT an unbiased first read in the way final_v1's was. The remediation was prompted by findings obtained from reading the v1 test set. Every fix rests on dev-side measurement or label metadata, never on a test score, and the test region was deliberately NOT re-drawn \u2014 but the direction of investigation was test-informed and no protocol undoes that. Treat the v2 test number as a strong check, not a virgin estimate."
+}

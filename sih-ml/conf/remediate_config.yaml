@@ -1,0 +1,81 @@
+# Stage 9 — remediation of the four findings against final_v1.
+#
+# final_v1 (config 5c8ab2326f9c5b5c) is NOT overwritten. It is retained as a
+# documented "known-leaked, superseded" reference so the audit trail survives.
+base_config: "conf/optimize_config.yaml"
+
+seed: 42
+model_version: "final_v2"
+
+paths:
+  reports: "reports/stage9"
+  models: "models"
+
+cv:
+  es_split_mode: "event"
+
+lgbm:
+  # ---- FIX C: monotonicity ---------------------------------------------------
+  # `id_exceed_1d/3d/7d` are DERIVED from `id_ratio_1d/3d/7d` (flag = ratio >= 1) but
+  # were not themselves constrained, so raising rainfall could flip a flag the model
+  # had learned a negative relationship with and LOWER the score: 77 rank violations
+  # at 1.25x rain, versus 0 when the flags were held fixed. The constraint machinery
+  # was never broken — the derived features were escaping it.
+  #
+  # A flag that is a monotone step function of an already-monotone feature must carry
+  # the same constraint direction. Adding them here is the minimal fix and keeps the
+  # feature (it encodes the published intensity-duration threshold crossing, which is
+  # the domain rule the whole design rests on); dropping them as redundant with
+  # id_ratio_* is the alternative, and is recorded in the Stage 9 report as the
+  # option not taken.
+  monotone_rainfall_features:
+    - rain_1d_mm
+    - rain_3d_mm
+    - rain_7d_mm
+    - rain_15d_mm
+    - rain_30d_mm
+    - rain_max_1d_in_3d_mm
+    - api_mm
+    - id_ratio_1d
+    - id_ratio_3d
+    - id_ratio_7d
+    - id_exceed_1d
+    - id_exceed_3d
+    - id_exceed_7d
+
+remediate:
+  # The Stage 7 training recipe, carried forward unchanged so the remediation is
+  # attributable to the fixes rather than to a new recipe.
+  composite_steps: ["aug/gaussian_all_s0.1", "aug/smote_k5_f0.5"]
+
+  # ---- FIX B: model scope ----------------------------------------------------
+  # Scope the rainfall model to positives whose DATE can be attributed to a rainfall
+  # trigger. Out-of-scope positives are retained in the panel and reported as their
+  # own slice — they are real closures the model does not claim to cover, not
+  # discarded data. Boundary is PROVENANCE, fixed before any rainfall value is read;
+  # see final/rainfall_probe.py::trigger_class for the four lines of evidence.
+  scope_to_rain_attributable: true
+  # The locked test split is NOT re-drawn. Re-selecting the test region after seeing
+  # it fail would be post-hoc selection; instead every metric is reported broken out
+  # by source so a composition confound cannot hide in an aggregate again.
+  restratify_split: false
+  report_strata: ["all", "coolr_glc", "corridor_landslides", "reliefweb_events",
+                  "rain_attributable", "not_rain_attributable"]
+
+  # ---- validation rigor (matches Stage 7 exactly) ----------------------------
+  eval_folds: [0, 1, 2, 3, 4]
+  seeds: [42, 1337, 2024]
+  n_permutations: 20000
+  min_folds_improved: 4
+  alpha: 0.10
+
+  # ---- FIX D: steep terrain --------------------------------------------------
+  steep:
+    slope_deg: 10.0
+    # Stage 7 calibrated on bins [0, 2.5, 10, 20, 90]. Everything at or above 10 deg
+    # sits in just two bins, so a steep-specific miscalibration could average away
+    # inside them. Test a finer grid before concluding anything about architecture.
+    fine_slope_bins: [0.0, 2.5, 10.0, 15.0, 20.0, 25.0, 30.0, 40.0, 90.0]
+    # Check representation before reaching for model changes: if steep segments are
+    # simply under-sampled, the fix is sampling/weighting, not architecture.
+    upweight_grid: [1.0, 2.0, 4.0]

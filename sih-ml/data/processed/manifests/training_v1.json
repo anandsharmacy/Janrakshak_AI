@@ -1,0 +1,83 @@
+{
+  "_generated_utc": "2026-09-11T02:07:00.008360+00:00",
+  "_git_sha": "nogit",
+  "train_config": {
+    "seed": 42,
+    "model_version": "training_v1",
+    "paths": {
+      "panel": "data/processed/panel_v1.parquet",
+      "folds": "data/processed/folds_v1.parquet",
+      "models": "models",
+      "reports": "reports/stage4",
+      "checkpoints": "checkpoints",
+      "mlruns": "mlruns"
+    },
+    "lgbm": {
+      "objective": "binary",
+      "boosting_type": "gbdt",
+      "learning_rate": 0.025,
+      "num_leaves": 24,
+      "max_depth": 6,
+      "min_child_samples": 40,
+      "min_split_gain": 0.0,
+      "subsample": 0.8,
+      "subsample_freq": 1,
+      "colsample_bytree": 0.8,
+      "reg_alpha": 0.3,
+      "reg_lambda": 1.5,
+      "n_estimators": 1200,
+      "early_stopping_rounds": 80,
+      "max_bin": 255,
+      "verbosity": -1,
+      "auto_scale_pos_weight": true,
+      "monotone_rainfall_features": [
+        "rain_1d_mm",
+        "rain_3d_mm",
+        "rain_7d_mm",
+        "rain_15d_mm",
+        "rain_30d_mm",
+        "rain_max_1d_in_3d_mm",
+        "api_mm",
+        "id_ratio_1d",
+        "id_ratio_3d",
+        "id_ratio_7d"
+      ],
+      "early_stopping_metric": "pr_auc"
+    },
+    "cv": {
+      "n_spatial_folds": 5,
+      "inner_earlystop_block_frac": 0.15,
+      "drop_buffer_rows": true
+    },
+    "calibration": {
+      "method": "isotonic",
+      "apply_prior_correction": true,
+      "true_prior": null
+    },
+    "eval": {
+      "primary_metric": "average_precision",
+      "precision_at_k": [
+        10,
+        50,
+        100,
+        200
+      ],
+      "top_frac_for_lift": [
+        0.01,
+        0.05,
+        0.1
+      ],
+      "cost_fn_over_fp": 20,
+      "fbeta": 3.0
+    },
+    "training": {
+      "checkpoint_every_rounds": 50,
+      "clean_checkpoints_on_success": true,
+      "track_train_curve": true
+    },
+    "determinism": {
+      "note": "see comments above; enforced in models/lgbm_baseline.py _lgb_params()"
+    }
+  },
+  "spatial_mean_AP": 0.3247247702941209
+}

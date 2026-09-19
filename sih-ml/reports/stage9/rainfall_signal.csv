@@ -1,0 +1,5 @@
+stratum,n_seeds,mean_AP_observed,mean_AP_rain_deleted,mean_delta_rain_helps,fold_seed_pairs_rain_helps,fold_seed_pairs,replicated_all_seeds,per_seed_verdicts
+all,3,0.4023149055481486,0.2746507753275707,0.1276641302205779,15,15,True,"['improvement', 'improvement', 'improvement']"
+coolr_glc,3,0.40232454025275843,0.2746240421023071,0.12770049815045129,15,15,True,"['improvement', 'improvement', 'improvement']"
+inventory,3,0.40232454025275843,0.2746240421023071,0.12770049815045129,15,15,True,"['improvement', 'improvement', 'improvement']"
+rain_attributable,3,0.4023149055481486,0.2746507753275707,0.1276641302205779,15,15,True,"['improvement', 'improvement', 'improvement']"

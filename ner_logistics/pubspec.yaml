@@ -1,0 +1,96 @@
+name: ner_logistics
+description: "Janrakshak AI — MDoNER SIH26002. Android-first field & control room app for North Eastern Region logistics management."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # Navigation
+  go_router: ^14.6.2
+
+  # State management
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # Local persistence / offline queue
+  drift: ^2.22.1
+  drift_flutter: ^0.2.4
+  path_provider: ^2.1.5
+
+  # Connectivity & sync
+  connectivity_plus: ^6.1.1
+
+  # Camera & geo-tag for incident reports
+  image_picker: ^1.1.2
+  geolocator: ^13.0.2
+  geocoding: ^3.0.0
+
+  # Maps (Leaflet-style, OpenStreetMap tiles)
+  flutter_map: ^8.3.2
+  latlong2: ^0.10.1
+
+  # Routing (OSRM) and GIS analytics (GeoServer) HTTP APIs
+  http: ^1.6.0
+
+  # Utilities
+  intl: ^0.20.3
+  url_launcher: ^6.3.1
+  shared_preferences: ^2.3.4
+  uuid: ^4.5.1
+  equatable: ^2.0.7
+
+  # UI helpers
+  cupertino_icons: ^1.0.8
+  flutter_svg: ^2.0.17
+  cached_network_image: ^3.4.1
+  shimmer: ^3.0.0
+  percent_indicator: ^4.2.4
+  supabase_flutter: ^2.17.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.4.13
+  riverpod_generator: ^2.6.1
+  drift_dev: ^2.22.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+
+  fonts:
+    # ── Public Sans — UI chrome, headings, buttons, labels ──────────
+    - family: PublicSans
+      fonts:
+        - asset: assets/fonts/PublicSans-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/PublicSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/PublicSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/PublicSans-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/PublicSans-ExtraBold.ttf
+          weight: 800
+    # ── Noto Sans — body text, form fields, multilingual data ────────
+    - family: NotoSans
+      fonts:
+        - asset: assets/fonts/NotoSans-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/NotoSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/NotoSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/NotoSans-Bold.ttf
+          weight: 700

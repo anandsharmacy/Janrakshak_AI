@@ -1,0 +1,31 @@
+cutoff,fault,rain_7d_mm_psi,api_mm_psi,warn
+2025-07-20,clean,0.223,0.633,False
+2025-07-20,scale x0.5,2.434,3.904,True
+2025-07-20,scale x2,0.165,0.367,False
+2025-07-20,inches (/25.4),8.283,7.647,True
+2025-07-20,all zeros,8.283,7.755,True
+2025-07-20,stale: last day repeated,1.875,1.598,True
+2025-08-14,clean,0.131,0.155,False
+2025-08-14,scale x0.5,1.346,3.278,True
+2025-08-14,scale x2,1.399,1.591,True
+2025-08-14,inches (/25.4),8.283,7.526,True
+2025-08-14,all zeros,8.283,7.711,True
+2025-08-14,stale: last day repeated,2.362,2.622,True
+2025-09-10,clean,0.194,0.241,False
+2025-09-10,scale x0.5,1.255,1.366,True
+2025-09-10,scale x2,1.007,1.852,True
+2025-09-10,inches (/25.4),6.814,5.894,True
+2025-09-10,all zeros,8.283,6.256,True
+2025-09-10,stale: last day repeated,1.707,0.611,True
+2025-03-15,clean,3.591,1.104,False
+2025-03-15,scale x0.5,4.772,2.419,True
+2025-03-15,scale x2,3.094,0.833,False
+2025-03-15,inches (/25.4),8.283,7.462,True
+2025-03-15,all zeros,8.283,7.575,True
+2025-03-15,stale: last day repeated,4.579,2.028,True
+2025-11-20,clean,5.057,1.693,False
+2025-11-20,scale x0.5,5.082,1.229,False
+2025-11-20,scale x2,5.142,2.421,False
+2025-11-20,inches (/25.4),6.337,1.597,True
+2025-11-20,all zeros,8.283,2.296,True
+2025-11-20,stale: last day repeated,8.283,2.296,True

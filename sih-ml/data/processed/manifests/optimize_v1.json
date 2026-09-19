@@ -1,0 +1,7 @@
+{
+  "_generated_utc": "2026-09-11T12:54:28.695070+00:00",
+  "_git_sha": "nogit",
+  "selected_scorer": "composite/passed",
+  "calibration": "per_slope_isotonic",
+  "bar_mean_AP": 0.3505504824395985
+}

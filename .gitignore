@@ -1,0 +1,4 @@
+# Root-level secrets for the LAN Docker deployment (see LAN_DEPLOYMENT.md).
+.env
+.env.local
+*.env.local

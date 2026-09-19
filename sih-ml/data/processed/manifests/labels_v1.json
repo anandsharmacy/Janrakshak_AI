@@ -1,0 +1,215 @@
+{
+  "_generated_utc": "2026-09-11T00:16:54.481426+00:00",
+  "_git_sha": "nogit",
+  "sources": {
+    "roads_gpkg": {
+      "path": "/Users/anand/Desktop/SIH/data/data2/training_data/road_network/corridor_roads.gpkg",
+      "exists": true,
+      "bytes": 164356096,
+      "mtime": "2026-09-10T13:18:20.347188+00:00",
+      "sha256": "df93bfa987bb6914354cb6600647cedfe6b3fec36595824fdaaf4284557c0cb4"
+    },
+    "roads_csv": {
+      "path": "/Users/anand/Desktop/SIH/data/data2/training_data/road_network/corridor_roads.csv",
+      "exists": true,
+      "bytes": 18225422,
+      "mtime": "2026-09-10T13:18:20.195965+00:00",
+      "sha256": "a9f45d2b6aa3ab81a54738e32d1f755ea0d2bd0ad2d180ceac375f7ee11460c0"
+    },
+    "static_features": {
+      "path": "/Users/anand/Desktop/SIH/data/data2/training_data/segment_features/segment_static_features.csv",
+      "exists": true,
+      "bytes": 45558120,
+      "mtime": "2026-09-10T22:08:49.671594+00:00",
+      "sha256": "d9abebee1a062d2c788b543383b3fb4f9cea29e30979d5abfc990332fea098ac"
+    },
+    "hydro_features": {
+      "path": "/Users/anand/Desktop/SIH/data/data2/training_data/segment_features/segment_hydrology_features.csv",
+      "exists": true,
+      "bytes": 15615394,
+      "mtime": "2026-09-10T14:21:02.508687+00:00",
+      "sha256": "1a020c5f5b616a17389d6c53310b00cdbf278e91464572f5a59e7845392c8220"
+    },
+    "chirps_csv": {
+      "path": "/Users/anand/Desktop/SIH/data/data2/training_data/rainfall_chirps/corridor_chirps_daily.csv.gz",
+      "exists": true,
+      "bytes": 4815647,
+      "mtime": "2026-09-10T13:18:19.891897+00:00",
+      "sha256": "1a3bba50314e1dd15756d77d13b3e6e28dc01b8721710d4d7aedfe7c992b3dd1"
+    },
+    "glc_bbox": {
+      "path": "/Users/anand/Desktop/SIH/data/data2/training_data/landslide_inventory_coolr/glc_chickens_neck_bbox.csv",
+      "exists": true,
+      "bytes": 161136,
+      "mtime": "2026-09-10T00:21:38.881514+00:00",
+      "sha256": "a216a61566ff84297818811c86fbd5fcf545957fbba56be5b2052a61c972ee99"
+    },
+    "corridor_landslides": {
+      "path": "/Users/anand/Desktop/SIH/data/data2/training_data/disruption_labels_events/corridor_landslides.csv",
+      "exists": true,
+      "bytes": 6324,
+      "mtime": "2026-09-10T14:17:55.529338+00:00",
+      "sha256": "1e518990e77005c35f74e2a32fd46c476f122a72d0f4c79c2afda4b394ba52df"
+    },
+    "disruption_events": {
+      "path": "/Users/anand/Desktop/SIH/data/data2/training_data/disruption_labels_events/corridor_disruption_events.csv",
+      "exists": true,
+      "bytes": 113238,
+      "mtime": "2026-09-10T13:18:20.170322+00:00",
+      "sha256": "f338b8cab6a46b851b2ff106a3f42c3879f918ec1da38d0e4d8f0bd434ac9a82"
+    },
+    "flood_extents": {
+      "path": "/Users/anand/Desktop/SIH/data/data2/training_data/disruption_labels_events/corridor_flood_extents.gpkg",
+      "exists": true,
+      "bytes": 155648,
+      "mtime": "2026-09-10T14:20:08.053446+00:00",
+      "sha256": "c0075d95343296c73ba84b808411a8a6cd037b0f2d37981162ba539ab61c5b8f"
+    },
+    "road_segment_labels": {
+      "path": "/Users/anand/Desktop/SIH/data/data2/training_data/disruption_labels_events/road_segment_disruption_labels.csv",
+      "exists": true,
+      "bytes": 301,
+      "mtime": "2026-09-10T14:17:55.531576+00:00",
+      "sha256": "422e91806e1b4a24b0179065413092d0247cff7de5ff7e899dd52f33a159b94a"
+    }
+  },
+  "config": {
+    "seed": 42,
+    "paths": {
+      "data_root": "../data2/training_data",
+      "roads_gpkg": "../data2/training_data/road_network/corridor_roads.gpkg",
+      "roads_csv": "../data2/training_data/road_network/corridor_roads.csv",
+      "static_features": "../data2/training_data/segment_features/segment_static_features.csv",
+      "hydro_features": "../data2/training_data/segment_features/segment_hydrology_features.csv",
+      "chirps_csv": "../data2/training_data/rainfall_chirps/corridor_chirps_daily.csv.gz",
+      "glc_bbox": "../data2/training_data/landslide_inventory_coolr/glc_chickens_neck_bbox.csv",
+      "corridor_landslides": "../data2/training_data/disruption_labels_events/corridor_landslides.csv",
+      "disruption_events": "../data2/training_data/disruption_labels_events/corridor_disruption_events.csv",
+      "flood_extents": "../data2/training_data/disruption_labels_events/corridor_flood_extents.gpkg",
+      "road_segment_labels": "../data2/training_data/disruption_labels_events/road_segment_disruption_labels.csv",
+      "interim": "data/interim",
+      "processed": "data/processed",
+      "manifests": "data/processed/manifests",
+      "reports": "reports"
+    },
+    "corridor": {
+      "min_lon": 87.0,
+      "max_lon": 90.0,
+      "min_lat": 25.5,
+      "max_lat": 28.2,
+      "metric_crs": "EPSG:32645"
+    },
+    "labels": {
+      "min_event_date": "2005-07-01",
+      "max_event_date": "2026-09-11",
+      "persistence_days": 2,
+      "keep_hazards": [
+        "landslide",
+        "flood",
+        "road",
+        "mudslide",
+        "debris"
+      ],
+      "drop_hazards": [
+        "EQ",
+        "earthquake",
+        "TC",
+        "cyclone"
+      ],
+      "glc_keep_triggers": [
+        "downpour",
+        "rain",
+        "continuous_rain",
+        "monsoon",
+        "flooding",
+        "tropical_cyclone",
+        "unknown"
+      ],
+      "max_location_accuracy_m": 25000,
+      "max_candidate_segments": 20,
+      "min_snap_radius_m": 500,
+      "dedup_days": 2,
+      "dedup_metres": 5000,
+      "tier_prior": {
+        "gold": 1.0,
+        "silver": 0.75,
+        "bronze": 0.4
+      }
+    },
+    "flood_polygons": {
+      "enabled": false,
+      "span_days": 2,
+      "max_segments_per_polygon": 300
+    },
+    "negatives": {
+      "ratio": 10,
+      "hazard_exclusion_m": 2000,
+      "susceptibility_max_quantile": 0.33,
+      "hard_negative_fraction": 0.45,
+      "hard_negative_radius_m": 25000,
+      "monsoon_day_fraction": 0.6,
+      "monsoon_months": [
+        6,
+        7,
+        8,
+        9
+      ]
+    },
+    "split": {
+      "block_deg": 0.25,
+      "n_spatial_folds": 5,
+      "fold_buffer_m": 5000,
+      "temporal_train_end": "2015-12-31",
+      "temporal_val_end": "2018-12-31",
+      "test_min_year": 2019,
+      "cluster_eps_deg": 0.15,
+      "cluster_min_samples": 1,
+      "cluster_time_bucket_days": 30
+    },
+    "schema_version": "v1"
+  },
+  "n_events_after_filter": 178,
+  "n_positive_rows": 9387,
+  "n_negative_rows": 93859,
+  "positive_tier_counts": {
+    "bronze": 5640,
+    "silver": 3744,
+    "gold": 3
+  },
+  "positive_hazard_counts": {
+    "landslide": 7887,
+    "landslide+flood": 660,
+    "mudslide": 540,
+    "flood": 240,
+    "debris_flow": 60
+  },
+  "positive_source_counts": {
+    "coolr_glc": 8004,
+    "corridor_landslides": 1140,
+    "reliefweb_events": 240,
+    "verified_segment_label": 3
+  },
+  "positive_year_counts": {
+    "2007": 900,
+    "2008": 420,
+    "2009": 1359,
+    "2010": 1083,
+    "2011": 672,
+    "2012": 729,
+    "2013": 540,
+    "2014": 180,
+    "2015": 822,
+    "2016": 963,
+    "2017": 519,
+    "2018": 120,
+    "2019": 120,
+    "2020": 60,
+    "2023": 300,
+    "2024": 300,
+    "2025": 240,
+    "2026": 60
+  },
+  "n_positive_segments": 2011,
+  "neg_pos_ratio": 10.0,
+  "mean_positive_confidence": 0.5538
+}

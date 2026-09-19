@@ -1,0 +1,28 @@
+{
+ "date": "2025-08-15",
+ "naive": {
+  "load_sources_s": 3.358199665999564,
+  "rainfall_features_s": 0.7355932499995106,
+  "assemble_frame_s": 0.10747279199858895,
+  "predict_s": 0.7918830839989823,
+  "calibrate_s": 0.03664816600212362,
+  "total_s": 5.029809624997142
+ },
+ "optimized_cold_start_s": 0.036033749995112885,
+ "optimized": {
+  "features_s": 0.1946452499978477,
+  "predict_s": 0.7741893750062445,
+  "postprocess_s": 0.0768439160019625,
+  "write_s": 0.1740359579998767,
+  "total_s": 1.2197200000009616
+ },
+ "naive_vs_optimized": {
+  "max_abs_raw_diff": 0.0,
+  "max_abs_prob_diff": 0.0
+ },
+ "backfill": {
+  "days": 30,
+  "total_s": 32.42737958300131,
+  "per_day_s": 1.0809126666666997
+ }
+}

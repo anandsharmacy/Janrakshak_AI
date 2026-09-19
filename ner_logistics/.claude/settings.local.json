@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker --version)",
+      "Bash(docker info *)",
+      "Bash(cat)",
+      "Bash(python3 -)",
+      "Bash(python3 -c ' *)",
+      "Bash(chmod +x geoserver/publish.sh osrm/prepare.sh)",
+      "Bash(printf \"osrm/data/\\\\n\")",
+      "Bash(bash -n geoserver/publish.sh)",
+      "Bash(bash -n osrm/prepare.sh)",
+      "Bash(command -v shellcheck)"
+    ]
+  }
+}

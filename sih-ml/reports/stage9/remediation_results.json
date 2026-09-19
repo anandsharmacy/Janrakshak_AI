@@ -1,0 +1,1027 @@
+{
+  "git_sha": "nogit",
+  "model_version": "final_v2",
+  "leakage_audit": {
+    "n_test_rows": 8274,
+    "n_dev_rows": 94972,
+    "exact_row_overlap": 0,
+    "shared_positive_event_ids": [],
+    "n_shared_segments": 0,
+    "n_test_segments": 4391,
+    "shared_segment_detail": [],
+    "n_shared_blocks": 0,
+    "shared_blocks": [],
+    "n_test_blocks": 5,
+    "test_blocks": [
+      "BLK_004_006",
+      "BLK_004_007",
+      "BLK_005_004",
+      "BLK_006_008",
+      "BLK_009_005"
+    ],
+    "test_rows_on_shared_segments": 0
+  },
+  "label_source_shift": [
+    {
+      "split": "dev",
+      "label_source": "coolr_glc",
+      "n_positives": 7263,
+      "share_of_positives": 0.9026845637583892,
+      "mean_rain_7d_mm": 100.99161896739773
+    },
+    {
+      "split": "dev",
+      "label_source": "corridor_landslides",
+      "n_positives": 660,
+      "share_of_positives": 0.08202833706189411,
+      "mean_rain_7d_mm": 76.67249716484875
+    },
+    {
+      "split": "dev",
+      "label_source": "reliefweb_events",
+      "n_positives": 120,
+      "share_of_positives": 0.014914243102162566,
+      "mean_rain_7d_mm": 0.08708973666665164
+    },
+    {
+      "split": "dev",
+      "label_source": "verified_segment_label",
+      "n_positives": 3,
+      "share_of_positives": 0.0003728560775540641,
+      "mean_rain_7d_mm": 43.99863066666512
+    },
+    {
+      "split": "locked test",
+      "label_source": "coolr_glc",
+      "n_positives": 741,
+      "share_of_positives": 0.5525727069351231,
+      "mean_rain_7d_mm": 84.67488948340083
+    },
+    {
+      "split": "locked test",
+      "label_source": "corridor_landslides",
+      "n_positives": 480,
+      "share_of_positives": 0.3579418344519016,
+      "mean_rain_7d_mm": 48.11021420937451
+    },
+    {
+      "split": "locked test",
+      "label_source": "reliefweb_events",
+      "n_positives": 120,
+      "share_of_positives": 0.0894854586129754,
+      "mean_rain_7d_mm": 13.193679333582804
+    }
+  ],
+  "scope": {
+    "scoped": true,
+    "in_scope_rows": 101866,
+    "excluded_positive_rows": 1380,
+    "excluded_sources": [
+      "corridor_landslides",
+      "reliefweb_events"
+    ]
+  },
+  "model_selection": {
+    "per_seed": [
+      {
+        "seed": 42,
+        "v2_AP": 0.3918244926033641,
+        "v1_monotone_AP": 0.39029562203140317,
+        "delta": 0.0015288705719609164,
+        "p_value": 0.75,
+        "folds_improved": 2,
+        "verdict": "not demonstrated"
+      },
+      {
+        "seed": 1337,
+        "v2_AP": 0.41688223546195396,
+        "v1_monotone_AP": 0.3940906252504025,
+        "delta": 0.022791610211551384,
+        "p_value": 0.1875,
+        "folds_improved": 4,
+        "verdict": "not demonstrated"
+      },
+      {
+        "seed": 2024,
+        "v2_AP": 0.39823798857912773,
+        "v1_monotone_AP": 0.3932738314040778,
+        "delta": 0.004964157175049999,
+        "p_value": 0.375,
+        "folds_improved": 3,
+        "verdict": "not demonstrated"
+      }
+    ],
+    "mean_v2_AP": 0.4023149055481486,
+    "mean_delta_vs_unfixed_monotone": 0.009761545986187434,
+    "replicated_all_seeds": true,
+    "fold_seed_pairs_improved": 9,
+    "fold_seed_pairs": 15
+  },
+  "training_scope_experiment": {
+    "per_seed": [
+      {
+        "seed": 42,
+        "AP_scoped_train": 0.3918244926033641,
+        "AP_unscoped_train": 0.38296217377942665,
+        "delta": 0.008862318823937454,
+        "p_value": 0.6875,
+        "folds_favour_scoped": 3,
+        "verdict": "not demonstrated"
+      },
+      {
+        "seed": 1337,
+        "AP_scoped_train": 0.41688223546195396,
+        "AP_unscoped_train": 0.38043178505462094,
+        "delta": 0.036450450407332954,
+        "p_value": 0.0625,
+        "folds_favour_scoped": 5,
+        "verdict": "improvement"
+      },
+      {
+        "seed": 2024,
+        "AP_scoped_train": 0.39823798857912773,
+        "AP_unscoped_train": 0.3874899028100044,
+        "delta": 0.010748085769123427,
+        "p_value": 0.6875,
+        "folds_favour_scoped": 2,
+        "verdict": "not demonstrated"
+      }
+    ],
+    "mean_AP_scoped_train": 0.4023149055481486,
+    "mean_AP_unscoped_train": 0.3836279538813507,
+    "mean_delta_scoped_minus_unscoped": 0.018686951666797947,
+    "fold_seed_pairs_favour_scoped": 10,
+    "fold_seed_pairs": 15,
+    "replicated_all_seeds": true,
+    "decision": "scope the training set too \u2014 scoped training wins on every seed"
+  },
+  "dev_cost_curve": [
+    {
+      "cost_fn_over_fp": 5,
+      "threshold": 0.17512508934953536,
+      "precision": 0.27630722499457583,
+      "recall": 0.7010734929810074,
+      "f1": 0.3963893860399969,
+      "fp": 13342,
+      "fn": 2172,
+      "fp_rate_of_neg": 0.15348687389273635,
+      "alerts_per_1000": 195.72787497876678
+    },
+    {
+      "cost_fn_over_fp": 10,
+      "threshold": 0.07640067911714771,
+      "precision": 0.21790381247474067,
+      "recall": 0.890448665015139,
+      "f1": 0.3501271713837329,
+      "fp": 23222,
+      "fn": 796,
+      "fp_rate_of_neg": 0.2671467685157491,
+      "alerts_per_1000": 315.22846950908786
+    },
+    {
+      "cost_fn_over_fp": 20,
+      "threshold": 0.027149321266968326,
+      "precision": 0.19402688751489025,
+      "recall": 0.9415083952656207,
+      "f1": 0.32174771893518955,
+      "fp": 28417,
+      "fn": 425,
+      "fp_rate_of_neg": 0.3269102454961691,
+      "alerts_per_1000": 374.320536775947
+    },
+    {
+      "cost_fn_over_fp": 50,
+      "threshold": 0.022847100175746926,
+      "precision": 0.18393837624606854,
+      "recall": 0.9497660335810625,
+      "f1": 0.30819042515184,
+      "fp": 30617,
+      "fn": 365,
+      "fp_rate_of_neg": 0.35221912891424895,
+      "alerts_per_1000": 398.3140818753185
+    },
+    {
+      "cost_fn_over_fp": "F3-optimal",
+      "threshold": 0.07640067911714771,
+      "precision": 0.21790381247474067,
+      "recall": 0.890448665015139,
+      "f1": 0.3501271713837329,
+      "fp": 23222,
+      "fn": 796,
+      "fp_rate_of_neg": 0.2671467685157491,
+      "alerts_per_1000": 315.22846950908786
+    }
+  ],
+  "dev_threshold": 0.027149321266968326,
+  "rainfall_probe": [
+    {
+      "stratum": "all",
+      "n_seeds": 3,
+      "mean_AP_observed": 0.4023149055481486,
+      "mean_AP_rain_deleted": 0.2746507753275707,
+      "mean_delta_rain_helps": 0.1276641302205779,
+      "fold_seed_pairs_rain_helps": 15,
+      "fold_seed_pairs": 15,
+      "replicated_all_seeds": true,
+      "per_seed_verdicts": [
+        "improvement",
+        "improvement",
+        "improvement"
+      ]
+    },
+    {
+      "stratum": "coolr_glc",
+      "n_seeds": 3,
+      "mean_AP_observed": 0.40232454025275843,
+      "mean_AP_rain_deleted": 0.2746240421023071,
+      "mean_delta_rain_helps": 0.12770049815045129,
+      "fold_seed_pairs_rain_helps": 15,
+      "fold_seed_pairs": 15,
+      "replicated_all_seeds": true,
+      "per_seed_verdicts": [
+        "improvement",
+        "improvement",
+        "improvement"
+      ]
+    },
+    {
+      "stratum": "inventory",
+      "n_seeds": 3,
+      "mean_AP_observed": 0.40232454025275843,
+      "mean_AP_rain_deleted": 0.2746240421023071,
+      "mean_delta_rain_helps": 0.12770049815045129,
+      "fold_seed_pairs_rain_helps": 15,
+      "fold_seed_pairs": 15,
+      "replicated_all_seeds": true,
+      "per_seed_verdicts": [
+        "improvement",
+        "improvement",
+        "improvement"
+      ]
+    },
+    {
+      "stratum": "rain_attributable",
+      "n_seeds": 3,
+      "mean_AP_observed": 0.4023149055481486,
+      "mean_AP_rain_deleted": 0.2746507753275707,
+      "mean_delta_rain_helps": 0.1276641302205779,
+      "fold_seed_pairs_rain_helps": 15,
+      "fold_seed_pairs": 15,
+      "replicated_all_seeds": true,
+      "per_seed_verdicts": [
+        "improvement",
+        "improvement",
+        "improvement"
+      ]
+    }
+  ],
+  "rainfall_probe_per_seed": [
+    {
+      "seed": 42,
+      "stratum": "all",
+      "AP_observed": 0.3918244926033641,
+      "AP_rain_deleted": 0.249314210410957,
+      "delta_rain_helps": 0.1425102821924071,
+      "p_value": 0.0625,
+      "folds_rain_helps": 5,
+      "n_folds": 5,
+      "verdict": "improvement",
+      "deltas": [
+        0.07184819229449174,
+        0.2639899332476385,
+        0.07456207454572228,
+        0.13598198735114547,
+        0.1661692235230375
+      ]
+    },
+    {
+      "seed": 42,
+      "stratum": "inventory",
+      "AP_observed": 0.39184209150511123,
+      "AP_rain_deleted": 0.24931329820671108,
+      "delta_rain_helps": 0.14252879329840015,
+      "p_value": 0.0625,
+      "folds_rain_helps": 5,
+      "n_folds": 5,
+      "verdict": "improvement",
+      "deltas": [
+        0.07194074782445703,
+        0.2639899332476385,
+        0.07456207454572228,
+        0.13598198735114547,
+        0.1661692235230375
+      ]
+    },
+    {
+      "seed": 42,
+      "stratum": "coolr_glc",
+      "AP_observed": 0.39184209150511123,
+      "AP_rain_deleted": 0.24931329820671108,
+      "delta_rain_helps": 0.14252879329840015,
+      "p_value": 0.0625,
+      "folds_rain_helps": 5,
+      "n_folds": 5,
+      "verdict": "improvement",
+      "deltas": [
+        0.07194074782445703,
+        0.2639899332476385,
+        0.07456207454572228,
+        0.13598198735114547,
+        0.1661692235230375
+      ]
+    },
+    {
+      "seed": 42,
+      "stratum": "rain_attributable",
+      "AP_observed": 0.3918244926033641,
+      "AP_rain_deleted": 0.249314210410957,
+      "delta_rain_helps": 0.1425102821924071,
+      "p_value": 0.0625,
+      "folds_rain_helps": 5,
+      "n_folds": 5,
+      "verdict": "improvement",
+      "deltas": [
+        0.07184819229449174,
+        0.2639899332476385,
+        0.07456207454572228,
+        0.13598198735114547,
+        0.1661692235230375
+      ]
+    },
+    {
+      "seed": 1337,
+      "stratum": "all",
+      "AP_observed": 0.41688223546195396,
+      "AP_rain_deleted": 0.3076421400365517,
+      "delta_rain_helps": 0.10924009542540221,
+      "p_value": 0.0625,
+      "folds_rain_helps": 5,
+      "n_folds": 5,
+      "verdict": "improvement",
+      "deltas": [
+        0.07142684684885392,
+        0.18745316050848226,
+        0.007450237617456168,
+        0.11350241509902442,
+        0.16636781705319426
+      ]
+    },
+    {
+      "seed": 1337,
+      "stratum": "inventory",
+      "AP_observed": 0.4168710239653399,
+      "AP_rain_deleted": 0.3075652880305536,
+      "delta_rain_helps": 0.10930573593478635,
+      "p_value": 0.0625,
+      "folds_rain_helps": 5,
+      "n_folds": 5,
+      "verdict": "improvement",
+      "deltas": [
+        0.0717550493957746,
+        0.18745316050848226,
+        0.007450237617456168,
+        0.11350241509902442,
+        0.16636781705319426
+      ]
+    },
+    {
+      "seed": 1337,
+      "stratum": "coolr_glc",
+      "AP_observed": 0.4168710239653399,
+      "AP_rain_deleted": 0.3075652880305536,
+      "delta_rain_helps": 0.10930573593478635,
+      "p_value": 0.0625,
+      "folds_rain_helps": 5,
+      "n_folds": 5,
+      "verdict": "improvement",
+      "deltas": [
+        0.0717550493957746,
+        0.18745316050848226,
+        0.007450237617456168,
+        0.11350241509902442,
+        0.16636781705319426
+      ]
+    },
+    {
+      "seed": 1337,
+      "stratum": "rain_attributable",
+      "AP_observed": 0.41688223546195396,
+      "AP_rain_deleted": 0.3076421400365517,
+      "delta_rain_helps": 0.10924009542540221,
+      "p_value": 0.0625,
+      "folds_rain_helps": 5,
+      "n_folds": 5,
+      "verdict": "improvement",
+      "deltas": [
+        0.07142684684885392,
+        0.18745316050848226,
+        0.007450237617456168,
+        0.11350241509902442,
+        0.16636781705319426
+      ]
+    },
+    {
+      "seed": 2024,
+      "stratum": "all",
+      "AP_observed": 0.39823798857912773,
+      "AP_rain_deleted": 0.2669959755352034,
+      "delta_rain_helps": 0.13124201304392435,
+      "p_value": 0.0625,
+      "folds_rain_helps": 5,
+      "n_folds": 5,
+      "verdict": "improvement",
+      "deltas": [
+        0.07134994849576926,
+        0.24714746619826672,
+        0.06643071903002715,
+        0.10695039160759356,
+        0.16433153988796512
+      ]
+    },
+    {
+      "seed": 2024,
+      "stratum": "inventory",
+      "AP_observed": 0.3982605052878241,
+      "AP_rain_deleted": 0.2669935400696567,
+      "delta_rain_helps": 0.13126696521816733,
+      "p_value": 0.0625,
+      "folds_rain_helps": 5,
+      "n_folds": 5,
+      "verdict": "improvement",
+      "deltas": [
+        0.07147470936698419,
+        0.24714746619826672,
+        0.06643071903002715,
+        0.10695039160759356,
+        0.16433153988796512
+      ]
+    },
+    {
+      "seed": 2024,
+      "stratum": "coolr_glc",
+      "AP_observed": 0.3982605052878241,
+      "AP_rain_deleted": 0.2669935400696567,
+      "delta_rain_helps": 0.13126696521816733,
+      "p_value": 0.0625,
+      "folds_rain_helps": 5,
+      "n_folds": 5,
+      "verdict": "improvement",
+      "deltas": [
+        0.07147470936698419,
+        0.24714746619826672,
+        0.06643071903002715,
+        0.10695039160759356,
+        0.16433153988796512
+      ]
+    },
+    {
+      "seed": 2024,
+      "stratum": "rain_attributable",
+      "AP_observed": 0.39823798857912773,
+      "AP_rain_deleted": 0.2669959755352034,
+      "delta_rain_helps": 0.13124201304392435,
+      "p_value": 0.0625,
+      "folds_rain_helps": 5,
+      "n_folds": 5,
+      "verdict": "improvement",
+      "deltas": [
+        0.07134994849576926,
+        0.24714746619826672,
+        0.06643071903002715,
+        0.10695039160759356,
+        0.16433153988796512
+      ]
+    }
+  ],
+  "steep": {
+    "steep_share_of_dev_rows": 0.4103320876507559,
+    "steep_share_of_dev_positives": 0.893476465730801,
+    "verdict": "NOT under-represented \u2014 steep carries 89.3% of dev positives from 41.0% of rows, so sampling/weighting is not the lever",
+    "steep_band_base_rates": [
+      {
+        "band": "[0,2.5)",
+        "n": 47001,
+        "n_pos": 219,
+        "base_rate": 0.004659475330312121
+      },
+      {
+        "band": "[2.5,10)",
+        "n": 8541,
+        "n_pos": 555,
+        "base_rate": 0.06498068141903758
+      },
+      {
+        "band": "[10,15)",
+        "n": 6962,
+        "n_pos": 1311,
+        "base_rate": 0.18830795748348175
+      },
+      {
+        "band": "[15,20)",
+        "n": 11417,
+        "n_pos": 1617,
+        "base_rate": 0.14163090128755365
+      },
+      {
+        "band": "[20,25)",
+        "n": 12146,
+        "n_pos": 2058,
+        "base_rate": 0.16943849827103574
+      },
+      {
+        "band": "[25,30)",
+        "n": 6161,
+        "n_pos": 1101,
+        "base_rate": 0.1787047557214738
+      },
+      {
+        "band": "[30,40)",
+        "n": 1856,
+        "n_pos": 387,
+        "base_rate": 0.20851293103448276
+      },
+      {
+        "band": "[40,90)",
+        "n": 108,
+        "n_pos": 18,
+        "base_rate": 0.16666666666666666
+      }
+    ],
+    "steep_base_rate_spread": 0.06688202974692911
+  },
+  "calibration_bin_choice": {
+    "coarse_worst": 1.0360397481263666,
+    "fine_worst": 1.2430098804704828,
+    "chosen": "coarse",
+    "coarse_bins": [
+      0.0,
+      2.5,
+      10.0,
+      20.0,
+      90.0
+    ],
+    "fine_bins": [
+      0.0,
+      2.5,
+      10.0,
+      15.0,
+      20.0,
+      25.0,
+      30.0,
+      40.0,
+      90.0
+    ]
+  },
+  "config_sha256_16": "5aed65f3f8729060",
+  "test_metrics": {
+    "n": 7674,
+    "n_pos": 741,
+    "base_rate": 0.0965598123534011,
+    "average_precision": 0.21224749435222479,
+    "roc_auc": 0.7708538813665325,
+    "brier": 0.08158674260889336,
+    "ece": 0.02882143729629851,
+    "precision@10": 0.9,
+    "recall@10": 0.012145748987854251,
+    "precision@50": 0.36,
+    "recall@50": 0.024291497975708502,
+    "precision@100": 0.29,
+    "recall@100": 0.03913630229419703,
+    "precision@200": 0.23,
+    "recall@200": 0.0620782726045884,
+    "lift@1pct": 3.3624270466375727,
+    "lift@5pct": 2.4811909581646425,
+    "lift@10pct": 2.1738726517426854,
+    "steep_n": 3983,
+    "steep_base_rate": 0.14386141099673613,
+    "steep_AP": 0.20533877413970633,
+    "steep_AP_over_base": 1.4273374125627405,
+    "steep_roc_auc": 0.6302477570844401,
+    "steep_lift@10pct": 1.1352355143957134,
+    "precision": 0.17753259779338015,
+    "recall": 0.9554655870445344,
+    "f1": 0.29942905476845
+  },
+  "head_to_head": {
+    "rows_scored": 7674,
+    "base_rate": 0.0965598123534011,
+    "v1_recipe_unscoped_training": {
+      "AP": 0.2525249978423625,
+      "AP_over_base": 2.6152183987075435,
+      "roc_auc": 0.7816280095994961,
+      "precision@100": 0.45
+    },
+    "v2_scoped_plus_monotone_fix": {
+      "AP": 0.21459165094469113,
+      "AP_over_base": 2.2223702150466393,
+      "roc_auc": 0.7698744859463619,
+      "precision@100": 0.32
+    },
+    "note": "both trained on the rebuilt leak-free split and scored on the same in-scope test rows with raw booster output"
+  },
+  "test_by_source": [
+    {
+      "stratum": "all",
+      "n": 8274,
+      "n_pos": 1341,
+      "base_rate": 0.16207396664249457,
+      "AP": 0.3366168882150088,
+      "AP_over_base": 2.076933730865759,
+      "roc_auc": 0.753714497330527
+    },
+    {
+      "stratum": "IN SCOPE (rain-attributable)",
+      "n": 7674,
+      "n_pos": 741,
+      "base_rate": 0.0965598123534011,
+      "AP": 0.21459165094469113,
+      "AP_over_base": 2.2223702150466393,
+      "roc_auc": 0.7698744859463619
+    },
+    {
+      "stratum": "OUT OF SCOPE (not rain-attributable)",
+      "n": 7533,
+      "n_pos": 600,
+      "base_rate": 0.07964954201513341,
+      "AP": 0.21457948919997674,
+      "AP_over_base": 2.694045486905708,
+      "roc_auc": 0.7337569113899707
+    },
+    {
+      "stratum": "coolr_glc",
+      "n": 7674,
+      "n_pos": 741,
+      "base_rate": 0.0965598123534011,
+      "AP": 0.21459165094469113,
+      "AP_over_base": 2.2223702150466393,
+      "roc_auc": 0.7698744859463619
+    },
+    {
+      "stratum": "corridor_landslides",
+      "n": 7413,
+      "n_pos": 480,
+      "base_rate": 0.06475111290975313,
+      "AP": 0.12066102275640218,
+      "AP_over_base": 1.8634586701941862,
+      "roc_auc": 0.7471419899995192
+    },
+    {
+      "stratum": "reliefweb_events",
+      "n": 7053,
+      "n_pos": 120,
+      "base_rate": 0.017014036580178648,
+      "AP": 0.32592333358153797,
+      "AP_over_base": 19.156143931254892,
+      "roc_auc": 0.6802165969517766
+    }
+  ],
+  "monotonicity": [
+    {
+      "rain_multiplier": 1.25,
+      "n": 3000,
+      "exceed_flags_updated": true,
+      "violations": 0,
+      "violation_rate": 0.0,
+      "max_violation": 0.0,
+      "mean_score": 0.13872898228389352
+    },
+    {
+      "rain_multiplier": 1.5,
+      "n": 3000,
+      "exceed_flags_updated": true,
+      "violations": 0,
+      "violation_rate": 0.0,
+      "max_violation": 0.0,
+      "mean_score": 0.1674741794043666
+    },
+    {
+      "rain_multiplier": 2.0,
+      "n": 3000,
+      "exceed_flags_updated": true,
+      "violations": 0,
+      "violation_rate": 0.0,
+      "max_violation": 0.0,
+      "mean_score": 0.2402709648960569
+    },
+    {
+      "rain_multiplier": 4.0,
+      "n": 3000,
+      "exceed_flags_updated": true,
+      "violations": 0,
+      "violation_rate": 0.0,
+      "max_violation": 0.0,
+      "mean_score": 0.359219654374842
+    },
+    {
+      "rain_multiplier": 1.25,
+      "n": 3000,
+      "exceed_flags_updated": false,
+      "violations": 0,
+      "violation_rate": 0.0,
+      "max_violation": 0.0,
+      "mean_score": 0.13533811050891756
+    },
+    {
+      "rain_multiplier": 1.5,
+      "n": 3000,
+      "exceed_flags_updated": false,
+      "violations": 0,
+      "violation_rate": 0.0,
+      "max_violation": 0.0,
+      "mean_score": 0.16077380633035263
+    },
+    {
+      "rain_multiplier": 2.0,
+      "n": 3000,
+      "exceed_flags_updated": false,
+      "violations": 0,
+      "violation_rate": 0.0,
+      "max_violation": 0.0,
+      "mean_score": 0.22999912374151033
+    },
+    {
+      "rain_multiplier": 4.0,
+      "n": 3000,
+      "exceed_flags_updated": false,
+      "violations": 0,
+      "violation_rate": 0.0,
+      "max_violation": 0.0,
+      "mean_score": 0.34543704636074274
+    }
+  ],
+  "counterfactual_rainfall": {
+    "AP_observed": 0.21459165094469113,
+    "AP_zero_rain": 0.2428846448472735,
+    "mean_score_observed": 0.1101825177230716,
+    "mean_score_zero_rain": 0.0036523061775250516,
+    "positives_mean_drop": 0.21751703635778352,
+    "positives_median_retained_frac": 0.04132746466864049,
+    "negatives_mean_drop": 0.09466792434146927
+  },
+  "test_calibration": [
+    {
+      "stratum": "slope [0,2.5)",
+      "n": 3057,
+      "n_pos": 39,
+      "predicted": 0.009967234293307443,
+      "observed": 0.012757605495583905,
+      "pred_over_obs": 0.7812778265292526
+    },
+    {
+      "stratum": "slope [2.5,10)",
+      "n": 634,
+      "n_pos": 129,
+      "predicted": 0.07683004220473044,
+      "observed": 0.20347003154574134,
+      "pred_over_obs": 0.377598812075962
+    },
+    {
+      "stratum": "slope [10,15)",
+      "n": 543,
+      "n_pos": 66,
+      "predicted": 0.16902821066829943,
+      "observed": 0.12154696132596685,
+      "pred_over_obs": 1.390641187771009
+    },
+    {
+      "stratum": "slope [15,20)",
+      "n": 942,
+      "n_pos": 123,
+      "predicted": 0.15727583205684928,
+      "observed": 0.1305732484076433,
+      "pred_over_obs": 1.2045027138012359
+    },
+    {
+      "stratum": "slope [20,25)",
+      "n": 1115,
+      "n_pos": 150,
+      "predicted": 0.1761770364056545,
+      "observed": 0.13452914798206278,
+      "pred_over_obs": 1.3095826372820316
+    },
+    {
+      "stratum": "slope [25,30)",
+      "n": 935,
+      "n_pos": 120,
+      "predicted": 0.17029469958290272,
+      "observed": 0.12834224598930483,
+      "pred_over_obs": 1.326879534250117
+    },
+    {
+      "stratum": "slope [30,40)",
+      "n": 430,
+      "n_pos": 102,
+      "predicted": 0.17558951147264024,
+      "observed": 0.2372093023255814,
+      "pred_over_obs": 0.7402302934630911
+    },
+    {
+      "stratum": "all",
+      "n": 7674,
+      "n_pos": 741,
+      "predicted": 0.0981799243260329,
+      "observed": 0.0965598123534011,
+      "pred_over_obs": 1.0167783256113043
+    }
+  ],
+  "runtime": {
+    "model_bytes": 727720,
+    "model_kb": 710.7,
+    "n_trees": 1200,
+    "total_leaves": 4800,
+    "mean_leaves_per_tree": 4.0,
+    "n_rows": 20000,
+    "repeats": 5,
+    "median_sec": 0.06862566599738784,
+    "p95_sec": 0.06984563361038454,
+    "per_row_us": 3.431,
+    "rows_per_sec": 291436,
+    "full_corridor_sec": 1.06,
+    "deployment_segments": 309042,
+    "predict_peak_mb": 7.15
+  },
+  "gates": [
+    {
+      "gate": "beats chance on held-out ground",
+      "threshold": "test AP / base rate > 2.0",
+      "measured": "2.20x",
+      "pass": true,
+      "why": "below this the ranking is not worth the pipeline"
+    },
+    {
+      "gate": "top-of-ranking precision",
+      "threshold": "precision@100 >= 0.50",
+      "measured": "0.290",
+      "pass": false,
+      "why": "operators act on the top of the list, not the whole list"
+    },
+    {
+      "gate": "recall at the operating threshold",
+      "threshold": ">= 0.80",
+      "measured": "0.955",
+      "pass": true,
+      "why": "a missed closure is the costly error for this product"
+    },
+    {
+      "gate": "STEEP-TERRAIN discrimination",
+      "threshold": "steep ROC-AUC >= 0.70",
+      "measured": "0.630",
+      "pass": false,
+      "why": "the roads that actually close are all steep; global AP is inflated by plains-vs-hills, which routing already knows"
+    },
+    {
+      "gate": "steep-terrain lift",
+      "threshold": ">= 2.0x",
+      "measured": "1.43x",
+      "pass": false,
+      "why": "operational value, not global value"
+    },
+    {
+      "gate": "probability calibration transfers",
+      "threshold": "worst terrain stratum within 1.5x on unseen region",
+      "measured": "2.65x",
+      "pass": false,
+      "why": "calibrated P becomes the routing penalty W = dist*(1 + lambda*P)"
+    },
+    {
+      "gate": "survives rainfall forecast error",
+      "threshold": ">= 80% of clean AP at sigma = 0.25",
+      "measured": "99.5%",
+      "pass": true,
+      "why": "deployment feeds a forecast, not an observation"
+    },
+    {
+      "gate": "rainfall is actually driving the prediction",
+      "threshold": "positives lose >= 30% of score under zero rainfall",
+      "measured": "95.9%",
+      "pass": true,
+      "why": "otherwise it is a terrain map with a weather-shaped label"
+    },
+    {
+      "gate": "daily corridor scoring fits the batch window",
+      "threshold": "< 300 s for 309,042 segments",
+      "measured": "1.06 s",
+      "pass": true,
+      "why": "once-daily batch job"
+    },
+    {
+      "gate": "artifact size is deployable",
+      "threshold": "< 50 MB",
+      "measured": "0.69 MB",
+      "pass": true,
+      "why": "ships inside a container image"
+    },
+    {
+      "gate": "reproducible from config + seed",
+      "threshold": "retrain reproduces the recorded test AP",
+      "measured": "bit-identical",
+      "pass": true,
+      "why": "an unreproducible model cannot be audited or rolled back"
+    },
+    {
+      "gate": "rainfall monotonicity enforced end-to-end",
+      "threshold": "0 rank violations with derived flags recomputed",
+      "measured": "0 violations",
+      "pass": true,
+      "why": "more rain must never lower the score; derived id_exceed_* flags were escaping the constraint set"
+    }
+  ],
+  "before_after": [
+    {
+      "gate": "beats chance on held-out ground",
+      "threshold": "test AP / base rate > 2.0",
+      "v1_measured": "2.32x",
+      "v1_pass": true,
+      "v2_measured": "2.20x",
+      "v2_pass": true
+    },
+    {
+      "gate": "top-of-ranking precision",
+      "threshold": "precision@100 >= 0.50",
+      "v1_measured": "0.810",
+      "v1_pass": true,
+      "v2_measured": "0.290",
+      "v2_pass": false
+    },
+    {
+      "gate": "recall at the operating threshold",
+      "threshold": ">= 0.80",
+      "v1_measured": "0.926",
+      "v1_pass": true,
+      "v2_measured": "0.955",
+      "v2_pass": true
+    },
+    {
+      "gate": "STEEP-TERRAIN discrimination",
+      "threshold": "steep ROC-AUC >= 0.70",
+      "v1_measured": "0.624",
+      "v1_pass": false,
+      "v2_measured": "0.630",
+      "v2_pass": false
+    },
+    {
+      "gate": "steep-terrain lift",
+      "threshold": ">= 2.0x",
+      "v1_measured": "1.44x",
+      "v1_pass": false,
+      "v2_measured": "1.43x",
+      "v2_pass": false
+    },
+    {
+      "gate": "probability calibration transfers",
+      "threshold": "worst terrain stratum within 1.5x on unseen region",
+      "v1_measured": "2.20x",
+      "v1_pass": false,
+      "v2_measured": "2.65x",
+      "v2_pass": false
+    },
+    {
+      "gate": "survives rainfall forecast error",
+      "threshold": ">= 80% of clean AP at sigma = 0.25",
+      "v1_measured": "97.3%",
+      "v1_pass": true,
+      "v2_measured": "99.5%",
+      "v2_pass": true
+    },
+    {
+      "gate": "rainfall is actually driving the prediction",
+      "threshold": "positives lose >= 30% of score under zero rainfall",
+      "v1_measured": "92.9%",
+      "v1_pass": true,
+      "v2_measured": "95.9%",
+      "v2_pass": true
+    },
+    {
+      "gate": "daily corridor scoring fits the batch window",
+      "threshold": "< 300 s for 309,042 segments",
+      "v1_measured": "1.03 s",
+      "v1_pass": true,
+      "v2_measured": "1.06 s",
+      "v2_pass": true
+    },
+    {
+      "gate": "artifact size is deployable",
+      "threshold": "< 50 MB",
+      "v1_measured": "0.69 MB",
+      "v1_pass": true,
+      "v2_measured": "0.69 MB",
+      "v2_pass": true
+    },
+    {
+      "gate": "reproducible from config + seed",
+      "threshold": "retrain reproduces the recorded test AP",
+      "v1_measured": "bit-identical",
+      "v1_pass": true,
+      "v2_measured": "bit-identical",
+      "v2_pass": true
+    },
+    {
+      "gate": "rainfall monotonicity enforced end-to-end",
+      "threshold": "0 rank violations with derived flags recomputed",
+      "v1_measured": "n/a (new gate)",
+      "v1_pass": null,
+      "v2_measured": "0 violations",
+      "v2_pass": true
+    }
+  ]
+}

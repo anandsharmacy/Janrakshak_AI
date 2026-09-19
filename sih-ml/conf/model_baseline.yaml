@@ -1,0 +1,78 @@
+# Stage 3 — baseline model configuration.
+# The model is LightGBM (gradient-boosted decision trees). See BASELINE_REPORT.md
+# for the model-selection rationale.
+
+seed: 42
+model_version: "baseline_v1"
+
+paths:
+  panel: "data/processed/panel_v1.parquet"
+  folds: "data/processed/folds_v1.parquet"
+  models: "models"
+  reports: "reports/stage3"
+
+# ---- LightGBM hyper-parameters (deliberately conservative; tuned in Stage 4) ----
+lgbm:
+  objective: "binary"
+  boosting_type: "gbdt"
+  # Deliberately moderate, not maximally tuned: with only ~2,000 distinct positive
+  # segments and several exact repeat-offenders (same segment, several events),
+  # letting the model run thousands of rounds lets it memorize a segment's static
+  # terrain fingerprint instead of the rain-trigger relationship — caught via the
+  # LOECO/spatial-CV gap, see BASELINE_ANALYSIS.md. Stage 4 HPO tunes this properly
+  # with the leak-safe LOECO grouping now in place.
+  learning_rate: 0.025
+  num_leaves: 24
+  max_depth: 6
+  min_child_samples: 40
+  min_split_gain: 0.0
+  subsample: 0.8            # bagging_fraction — the GBDT analogue of a mini-batch
+  subsample_freq: 1
+  colsample_bytree: 0.8     # feature_fraction
+  reg_alpha: 0.3            # lambda_l1
+  reg_lambda: 1.5           # lambda_l2
+  n_estimators: 1200        # upper bound; early stopping picks the real count
+  early_stopping_rounds: 80
+  max_bin: 255
+  verbosity: -1
+  # class imbalance: scale_pos_weight is set per-fold to (n_neg / n_pos) of that
+  # fold's training set. sample_weight (label confidence) is applied on top.
+  auto_scale_pos_weight: true
+  # rainfall can only raise risk — monotone increasing constraint
+  monotone_rainfall_features:
+    - rain_1d_mm
+    - rain_3d_mm
+    - rain_7d_mm
+    - rain_15d_mm
+    - rain_30d_mm
+    - rain_max_1d_in_3d_mm
+    - api_mm
+    - id_ratio_1d
+    - id_ratio_3d
+    - id_ratio_7d
+
+# ---- cross-validation ----
+cv:
+  n_spatial_folds: 5
+  # Fraction of TRAINING rows (stratified by target, random — not a block holdout)
+  # held out to pick the boosting-round count. A block holdout here made the ES
+  # signal too small/noisy (3/5 outer folds stopped after <10 rounds); this only
+  # chooses n_estimators, it never touches the outer (honest) evaluation.
+  inner_earlystop_block_frac: 0.15
+  drop_buffer_rows: true            # honour the 5 km buffer zone from Stage 2
+
+# ---- calibration ----
+calibration:
+  method: "isotonic"                # isotonic | sigmoid
+  apply_prior_correction: true      # rescale from the 10:1 training base rate...
+  true_prior: null                  # ...to this. null => estimate from data (see notes)
+
+# ---- evaluation ----
+eval:
+  primary_metric: "average_precision"     # PR-AUC on spatial-block CV
+  precision_at_k: [10, 50, 100, 200]
+  top_frac_for_lift: [0.01, 0.05, 0.10]
+  # cost-sensitive threshold: a missed real closure is this many times worse than
+  # a false alarm. Threshold is chosen on pooled OOF predictions.
+  cost_fn_over_fp: 20
+  fbeta: 3.0

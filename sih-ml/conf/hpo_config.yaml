@@ -1,0 +1,74 @@
+# Stage 6 — fine-tuning + hyperparameter optimization.
+base_config: "conf/train_config.yaml"
+
+seed: 42
+model_version: "hpo_v1"
+
+paths:
+  reports: "reports/stage6"
+  studies: "studies"          # Optuna SQLite storage (resumable)
+
+cv:
+  # Stage 5 P0 FIX, now mandatory. HPO against the old "row" split is meaningless:
+  # the early-stopping set scored AP 0.999 (100% event overlap with train), so every
+  # hyperparameter configuration would look identical. See reports/stage5/ERROR_ANALYSIS.md §2.
+  es_split_mode: "event"
+
+hpo:
+  # ---- selection / reporting separation -------------------------------------
+  # HPO maximises mean held-out AP over SELECTION_FOLDS only. REPORT_FOLDS are never
+  # seen by the search, so their score is an honest estimate of the tuned config.
+  # The locked `final_test` stays shut until Stage 8 regardless.
+  selection_folds: [0, 1, 2]
+  report_folds: [3, 4]
+
+  n_trials: 40
+  timeout_sec: 5400
+  sampler: "tpe"              # Bayesian (Tree-structured Parzen Estimator)
+  pruner: "median"            # kill clearly-bad trials after the first fold
+  study_name: "lgbm_spatial_ap"
+
+  # Round budget during search is capped for speed; the winning config is refit at
+  # the full budget afterwards. Early stopping (now a real signal) decides the rest.
+  search_n_estimators: 1200
+  search_early_stopping_rounds: 80
+
+  # ---- search space ---------------------------------------------------------
+  # Chosen from Stage 5 evidence: in-sample AP 0.9999 says capacity is unconstrained,
+  # so capacity + regularization dominate. Sampling/leaf params are secondary.
+  space:
+    num_leaves:        {type: int,   low: 4,     high: 64,   log: true}
+    max_depth:         {type: int,   low: 3,     high: 12}
+    min_child_samples: {type: int,   low: 10,    high: 400,  log: true}
+    learning_rate:     {type: float, low: 0.005, high: 0.15, log: true}
+    reg_alpha:         {type: float, low: 1.0e-3, high: 20.0, log: true}
+    reg_lambda:        {type: float, low: 1.0e-3, high: 50.0, log: true}
+    colsample_bytree:  {type: float, low: 0.4,   high: 1.0}
+    subsample:         {type: float, low: 0.5,   high: 1.0}
+    min_split_gain:    {type: float, low: 0.0,   high: 1.0}
+    # Stage 3 flagged the 10 monotone rainfall constraints as possibly too rigid
+    # given label noise — make it a searchable decision rather than an assumption.
+    use_monotone:      {type: categorical, choices: [true, false]}
+    # multiplies the per-fold n_neg/n_pos; 1.0 = current behaviour
+    scale_pos_weight_mult: {type: float, low: 0.1, high: 3.0, log: true}
+
+  # ---- deliberately NOT searched --------------------------------------------
+  # max_bin          : histogram resolution, negligible effect at this data size
+  # boosting_type    : 'dart'/'goss' are slower and less stable here
+  # objective        : binary logloss is correct for the task
+  # n_estimators     : governed by early stopping, not searched directly
+  # "batch size"     : no minibatches in GBDT — subsample IS the analogue (searched)
+  # "dropout"        : no dropout in GBDT — colsample_bytree IS the analogue (searched)
+  # "optimizer"/"LR scheduler": GBDT has neither; learning_rate is shrinkage (searched)
+
+finetune:
+  # GBDT has no layers to freeze. The honest analogues, in increasing "unfreeze" order:
+  #   stage 1 "frozen backbone, tune head" -> Booster.refit(): keep tree STRUCTURE,
+  #                                           recompute LEAF VALUES on target data
+  #   stage 2 "partial unfreeze"           -> continue boosting (init_model) at a
+  #                                           reduced learning rate
+  #   stage 3 "full unfreeze"              -> retrain from scratch
+  enabled: true
+  refit_decay: 0.9            # Booster.refit leaf blending toward new data
+  continue_rounds: 200        # extra boosting rounds for stage 2
+  continue_lr_scale: 0.3      # LR multiplier when continuing (lower = gentler)

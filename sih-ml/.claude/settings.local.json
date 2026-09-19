@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(export PYTHONPATH=src PYTHONWARNINGS=ignore DYLD_LIBRARY_PATH=/opt/homebrew/opt/libomp/lib)",
+      "Bash(time ../data2/other_files/venv/bin/python -c ' *)",
+      "Bash(../data2/other_files/venv/bin/pip list *)"
+    ]
+  }
+}

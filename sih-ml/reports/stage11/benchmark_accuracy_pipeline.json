@@ -1,0 +1,134 @@
+{
+ "accuracy": {
+  "champion": "final_v3",
+  "noise": {
+   "delta_floor": 0.012350794139781842,
+   "worst_fold_floor": 0.03957091387411784,
+   "steep_roc_floor": 0.008636364888197611,
+   "cal_ratio_floor": 0.014959236624093774,
+   "campaign_id": "c20260912T022646Z"
+  },
+  "original_mean_AP": 0.40110043951208507,
+  "original_guard": {
+   "steep_roc": 0.7445299385454934,
+   "worst_terrain_cal_ratio": 1.0443844558124595,
+   "monotonicity_violations": 0,
+   "corridor_sec": 0.0,
+   "model_mb": 0.0
+  },
+  "variants": [
+   {
+    "variant": "trunc_0.1",
+    "mean_AP": 0.3887438551022957,
+    "delta_AP": -0.012356584409789378,
+    "worst_fold_delta": -0.06374892944221673,
+    "folds_worse": 3,
+    "seeds_negative": 3,
+    "steep_roc_delta": -0.012683345419102765,
+    "cal_ratio": 1.0998998959926967,
+    "monotonicity_violations": 0,
+    "non_inferior": false,
+    "decision": "REJECT",
+    "reason": "removal breaks a guardrail: region: worst fold -0.0637 AP, beyond the A/A worst-fold floor -0.0396; steep terrain: ROC -0.0127 (tolerance -0.0100)"
+   },
+   {
+    "variant": "trunc_0.25",
+    "mean_AP": 0.3981346171735247,
+    "delta_AP": -0.0029658223385603476,
+    "worst_fold_delta": -0.0330496102451446,
+    "folds_worse": 3,
+    "seeds_negative": 1,
+    "steep_roc_delta": 0.0018785658230088265,
+    "cal_ratio": 1.0407635785335836,
+    "monotonicity_violations": 0,
+    "non_inferior": true,
+    "decision": "ACCEPT",
+    "reason": "non-inferior (-0.0030 AP, margin 0.0100, 3/5 folds worse) \u2014 fewer moving parts for the same accuracy"
+   },
+   {
+    "variant": "trunc_0.5",
+    "mean_AP": 0.39869970051187875,
+    "delta_AP": -0.002400739000206333,
+    "worst_fold_delta": -0.016727421975786323,
+    "folds_worse": 3,
+    "seeds_negative": 2,
+    "steep_roc_delta": 0.0014250035295753083,
+    "cal_ratio": 1.030169945985031,
+    "monotonicity_violations": 0,
+    "non_inferior": true,
+    "decision": "ACCEPT",
+    "reason": "non-inferior (-0.0024 AP, margin 0.0100, 3/5 folds worse) \u2014 fewer moving parts for the same accuracy"
+   },
+   {
+    "variant": "fp32",
+    "mean_AP": 0.40110043454721234,
+    "delta_AP": -4.964872712953649e-09,
+    "worst_fold_delta": -2.4824363564768248e-08,
+    "folds_worse": 1,
+    "seeds_negative": 1,
+    "steep_roc_delta": -1.0100372982435601e-08,
+    "cal_ratio": 1.0443844574581265,
+    "monotonicity_violations": 0,
+    "non_inferior": true,
+    "decision": "ACCEPT",
+    "reason": "non-inferior (-0.0000 AP, margin 0.0100, 1/5 folds worse) \u2014 fewer moving parts for the same accuracy"
+   },
+   {
+    "variant": "fp16",
+    "mean_AP": 0.40120662893938347,
+    "delta_AP": 0.0001061894272983995,
+    "worst_fold_delta": -0.00021770521348364139,
+    "folds_worse": 1,
+    "seeds_negative": 0,
+    "steep_roc_delta": 6.253645855824885e-05,
+    "cal_ratio": 1.0441886566244394,
+    "monotonicity_violations": 0,
+    "non_inferior": true,
+    "decision": "ACCEPT",
+    "reason": "non-inferior (+0.0001 AP, margin 0.0100, 1/5 folds worse) \u2014 fewer moving parts for the same accuracy"
+   },
+   {
+    "variant": "distill_300",
+    "mean_AP": 0.3964796791141868,
+    "delta_AP": -0.004620760397898314,
+    "worst_fold_delta": -0.017374387158487898,
+    "folds_worse": 3,
+    "seeds_negative": 2,
+    "steep_roc_delta": -0.0016853078138121536,
+    "cal_ratio": 1.0423354828582327,
+    "monotonicity_violations": 0,
+    "non_inferior": true,
+    "decision": "ACCEPT",
+    "reason": "non-inferior (-0.0046 AP, margin 0.0100, 3/5 folds worse) \u2014 fewer moving parts for the same accuracy"
+   }
+  ]
+ },
+ "pipeline": {
+  "date": "2025-08-15",
+  "naive": {
+   "load_sources_s": 3.358199665999564,
+   "rainfall_features_s": 0.7355932499995106,
+   "assemble_frame_s": 0.10747279199858895,
+   "predict_s": 0.7918830839989823,
+   "calibrate_s": 0.03664816600212362,
+   "total_s": 5.029809624997142
+  },
+  "optimized_cold_start_s": 0.036033749995112885,
+  "optimized": {
+   "features_s": 0.1946452499978477,
+   "predict_s": 0.7741893750062445,
+   "postprocess_s": 0.0768439160019625,
+   "write_s": 0.1740359579998767,
+   "total_s": 1.2197200000009616
+  },
+  "naive_vs_optimized": {
+   "max_abs_raw_diff": 0.0,
+   "max_abs_prob_diff": 0.0
+  },
+  "backfill": {
+   "days": 30,
+   "total_s": 32.42737958300131,
+   "per_day_s": 1.0809126666666997
+  }
+ }
+}

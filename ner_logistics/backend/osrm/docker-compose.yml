@@ -1,0 +1,10 @@
+# Self-hosted OSRM routing engine. Run ./prepare.sh first.
+services:
+  osrm:
+    image: ghcr.io/project-osrm/osrm-backend:v26.9.0-debian
+    command: osrm-routed --algorithm mld --max-alternatives 3 /data/north-eastern-zone-latest.osrm
+    volumes:
+      - ./data:/data
+    ports:
+      - "5000:5000"
+    restart: unless-stopped

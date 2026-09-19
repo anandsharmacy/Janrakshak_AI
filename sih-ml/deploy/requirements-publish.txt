@@ -1,0 +1,4 @@
+# Publisher runtime: the serving deps plus the Postgres driver. Kept out of the API
+# image — the API never writes to the database.
+-r requirements.txt
+psycopg[binary]==3.2.13

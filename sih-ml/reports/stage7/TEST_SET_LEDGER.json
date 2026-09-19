@@ -1,0 +1,56 @@
+{
+  "openings": [
+    {
+      "utc": "2026-09-11T12:55:17.179165+00:00",
+      "config_sha256_16": "5c8ab2326f9c5b5c",
+      "git_sha": "nogit",
+      "average_precision": 0.37600301127272495,
+      "n_rows": 8277
+    },
+    {
+      "utc": "2026-09-11T13:38:40.434166+00:00",
+      "kind": "report",
+      "config_sha256_16": "5c8ab2326f9c5b5c",
+      "git_sha": "nogit",
+      "average_precision": 0.37600301127272495,
+      "n_rows": 8277,
+      "note": "Stage 8 reporting/robustness read \u2014 no selection, config unchanged"
+    },
+    {
+      "utc": "2026-09-11T13:40:31.551609+00:00",
+      "kind": "report",
+      "config_sha256_16": "5c8ab2326f9c5b5c",
+      "git_sha": "nogit",
+      "average_precision": 0.37600301127272495,
+      "n_rows": 8277,
+      "note": "Stage 8 reporting/robustness read \u2014 no selection, config unchanged"
+    },
+    {
+      "utc": "2026-09-11T13:47:32.212159+00:00",
+      "kind": "report",
+      "config_sha256_16": "5c8ab2326f9c5b5c",
+      "git_sha": "nogit",
+      "average_precision": 0.37600301127272495,
+      "n_rows": 8277,
+      "note": "Stage 8 reporting/robustness read \u2014 no selection, config unchanged"
+    },
+    {
+      "utc": "2026-09-11T13:49:26.217368+00:00",
+      "kind": "report",
+      "config_sha256_16": "5c8ab2326f9c5b5c",
+      "git_sha": "nogit",
+      "average_precision": 0.37600301127272495,
+      "n_rows": 8277,
+      "note": "Stage 8 reporting/robustness read \u2014 no selection, config unchanged"
+    },
+    {
+      "utc": "2026-09-11T13:51:25.555243+00:00",
+      "kind": "report",
+      "config_sha256_16": "5c8ab2326f9c5b5c",
+      "git_sha": "nogit",
+      "average_precision": 0.37600301127272495,
+      "n_rows": 8277,
+      "note": "Stage 8 reporting/robustness read \u2014 no selection, config unchanged"
+    }
+  ]
+}

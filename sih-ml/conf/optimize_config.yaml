@@ -1,0 +1,154 @@
+# Stage 7 — accuracy optimization.
+#
+# Inherits the Stage 6 chain (hpo -> train -> model_baseline) and pins the WINNING
+# Stage 6 hyperparameters as the starting point, so every Stage 7 arm is a delta
+# against a fixed, documented bar rather than against a moving target.
+base_config: "conf/hpo_config.yaml"
+
+seed: 42
+model_version: "optimized_v1"
+
+paths:
+  reports: "reports/stage7"
+  models: "models"
+  studies: "studies"
+
+cv:
+  es_split_mode: "event"       # Stage 5 P0 fix — mandatory from Stage 6 onward
+
+# ---- the bar: Stage 6's selected configuration -------------------------------
+# Copied verbatim from reports/stage6/best_params.json. Stage 6 selected this on
+# SIZE + STABILITY at statistical parity, NOT on accuracy (margin +0.0025 vs a
+# noise floor of 0.0313). Stage 7 therefore starts from an explicitly unproven
+# accuracy position, which is why every arm below is measured against it directly.
+lgbm:
+  learning_rate: 0.03218814577630251
+  num_leaves: 4
+  max_depth: 11
+  min_child_samples: 364
+  min_split_gain: 0.8392636293753901
+  subsample: 0.6971305573243116
+  subsample_freq: 1
+  colsample_bytree: 0.8531476828735367
+  reg_alpha: 1.9787843500081188
+  reg_lambda: 0.23696573020861914
+  n_estimators: 1200
+  early_stopping_rounds: 80
+  early_stopping_metric: "pr_auc"
+  auto_scale_pos_weight: true
+  scale_pos_weight_mult: 0.1381132349355172
+
+optimize:
+  # ---- evaluation protocol --------------------------------------------------
+  # Stage 6 used selection{0,1,2} / report{3,4}. With only 2 report folds it could
+  # not resolve anything below ~0.03 AP (its own stated limit). Stage 7 has ~20
+  # candidate arms, so it needs a more sensitive comparison:
+  #
+  #   PRIMARY  = PAIRED per-fold deltas over ALL 5 spatial folds against the bar.
+  #              Every arm sees identical folds, identical seeds and identical
+  #              early-stopping splits, so the fold-to-fold variance that dominates
+  #              the absolute AP cancels in the difference.
+  #   SECONDARY= the Stage 6 report-fold {3,4} read, kept for continuity.
+  #
+  # The cost of using all 5 folds for selection is that the winner's CV score is
+  # optimistically biased by the selection itself. That bias is exactly what the
+  # locked `final_test` is held back to measure, and it is opened ONCE, after the
+  # configuration is frozen and pre-registered. See §"Final validation" below.
+  eval_folds: [0, 1, 2, 3, 4]
+  report_folds: [3, 4]
+  n_permutations: 20000        # paired sign-flip permutation test on 5 fold deltas
+
+  # A paired delta is only called an improvement when it clears BOTH:
+  #   (a) mean delta > 0 on a majority of folds (>= 4 of 5 same-signed), and
+  #   (b) permutation p < 0.10  (5 folds gives at most p = 1/32 = 0.031, so this
+  #       is a weak test by construction and is reported as such).
+  min_folds_improved: 4
+  alpha: 0.10
+
+  # ---- arms -----------------------------------------------------------------
+  data:
+    dedup: true                       # Stage 5 §8 measured 430 dup rows / 215 groups, 0 conflicting
+    confidence_floors: [0.25, 0.35]   # Stage 5 §4: ROC 0.688 in the [0, 0.25) bucket
+    weight_schemes: ["uniform", "sqrt", "square"]
+    mining:
+      enabled: true
+      inner_folds: 2                  # prospector CV *inside* each training fold (no leakage)
+      hard_negative_alpha: [1.0, 3.0] # upweight top-ranked negatives: w *= 1 + a*rank_pct
+      easy_negative_drop: [0.30]      # drop this fraction of lowest-ranked negatives
+      hard_positive_alpha: [1.0]      # upweight lowest-ranked positives
+
+  augment:
+    # Every augmentation is applied to TRAINING ROWS ONLY. The early-stopping rows
+    # and the held-out fold are never touched — augmenting them would manufacture
+    # the validation signal.
+    rainfall_jitter_sigma: [0.10, 0.25, 0.50]   # multiplicative lognormal, strength sweep
+    # Contrast arm: independent noise on EVERY numeric column, terrain included.
+    # Written as the arm expected to lose; it won by the largest consistent margin,
+    # so it gets a full strength sweep and a column-subset decomposition instead of
+    # a single point. See augment.py "MEASURED OUTCOME".
+    gaussian_all_sigma: [0.05, 0.10, 0.20, 0.40]
+    gaussian_decompose_sigma: 0.10              # terrain-only vs rainfall-only split
+    smote_k: [5]                                # within-spatial-block positive interpolation
+    smote_frac: [0.5]
+
+  loss:
+    focal_gamma: [1.0, 1.5, 2.0, 3.0]
+    focal_alpha: 0.25
+
+  # ---- confirmation ---------------------------------------------------------
+  # With 5 folds the sign-flip test bottoms out at p = 2/2^5 = 0.0625, so a
+  # Bonferroni correction across ~20 arms (alpha 0.005) is UNREACHABLE BY
+  # CONSTRUCTION — no arm can be certified family-wise at this fold count. The
+  # honest remedy is replication: re-run the leading arms under fresh seeds (which
+  # redraw the early-stopping split and the bagging RNG) and check the effect
+  # survives. This separates a real effect from a lucky split; it does not turn a
+  # within-noise result into a significant one.
+  confirm:
+    enabled: true
+    top_k: 4
+    seeds: [1337, 2024, 7]
+
+  ensemble:
+    # Stage 3 measured logistic regression at AP 0.318 vs LightGBM 0.247 — different
+    # inductive bias, competitive score, so a blend is the one model-side change with
+    # a measured reason to work. Blend weights are chosen LEAVE-ONE-FOLD-OUT so the
+    # reported 5-fold score never contains a weight fitted on the fold it scores.
+    enabled: true
+    members: ["lgbm", "logistic", "rain_x_terrain"]
+    weight_grid_step: 0.1
+
+  stratified_model:
+    # Stage 5 §1: global AP is carried by separating plains from hills; within the
+    # steepest quartile lift is only 1.63x. Test whether a dedicated steep-terrain
+    # model beats the global model ON STEEP TERRAIN.
+    enabled: true
+    slope_split_deg: 10.0
+
+  calibration:
+    # Stage 5 §6 (P2): one global isotonic calibrator is wrong by up to 3x by region
+    # and terrain. Calibrators are cross-fitted (fit on other folds, applied to the
+    # held-out fold) so the reported ECE is not self-scored.
+    strata: ["slope_bin", "spatial_fold"]
+    slope_bins: [0.0, 2.5, 10.0, 20.0, 90.0]
+
+  threshold:
+    # Stage 5 §5: the 39% FP rate is a POLICY consequence of an unvalidated
+    # FN:FP = 20:1 placeholder, not a model defect. Publish the sensitivity instead
+    # of silently keeping 20.
+    cost_ratios: [5, 10, 20, 50]
+    fbeta: 3.0
+
+  runtime:
+    # Brief §6 asks for latency / memory / model size alongside accuracy.
+    n_latency_rows: 20000
+    repeats: 5
+    deployment_segments: 309042      # corridor segments scored per day
+
+# ---- final validation ---------------------------------------------------------
+final_test:
+  # The locked split is opened EXACTLY ONCE, by scripts/open_final_test.py, and only
+  # after reports/stage7/PREREGISTRATION.json exists. That file pins the config hash
+  # and the exact metric list BEFORE any test row is read, and the opening is
+  # recorded in reports/stage7/TEST_SET_LEDGER.json so a second look is visible.
+  require_preregistration: true
+  ledger: "reports/stage7/TEST_SET_LEDGER.json"
