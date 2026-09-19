@@ -125,38 +125,51 @@ export default function IdentityPanel({
         </div>
       </div>
 
-      {/* Bottom: credibility line */}
-      <div className="relative z-10 flex items-center justify-center gap-2.5 px-6 pb-3">
-        <span style={{ color: "#0E2A47" }}>
-          <ChakraMark size={16} />
+      {/* Bottom: credibility line and the PMO entry point, on one footer row */}
+      <footer className="relative z-10 flex flex-wrap items-center justify-center gap-x-4 gap-y-3 px-6 pb-8">
+        <span className="flex items-center gap-2.5">
+          <span style={{ color: "#0E2A47" }}>
+            <ChakraMark size={16} />
+          </span>
+          <span
+            className="text-xs text-center"
+            style={{
+              fontFamily: "'Noto Sans', sans-serif",
+              color: "rgba(14,42,71,0.64)",
+            }}
+          >
+            Ministry of Development of North Eastern Region · Government of India
+          </span>
         </span>
-        <span
-          className="text-xs text-center"
-          style={{
-            fontFamily: "'Noto Sans', sans-serif",
-            color: "rgba(14,42,71,0.64)",
-          }}
-        >
-          Ministry of Development of North Eastern Region · Government of India
-        </span>
-      </div>
 
-      {/* Footer links */}
-      <nav aria-label="Footer" className="relative z-10 flex items-center justify-center pb-6">
+        <span
+          aria-hidden="true"
+          className="hidden sm:block"
+          style={{ width: 1, height: 16, backgroundColor: "rgba(14,42,71,0.28)" }}
+        />
+
         <button
           onClick={onPmo}
-          className="text-xs font-semibold cursor-pointer underline underline-offset-2"
+          aria-label="PMO sign-in"
+          className="px-4 py-1.5 text-xs font-semibold transition-colors cursor-pointer"
           style={{
             fontFamily: "'Public Sans', sans-serif",
+            backgroundColor: "transparent",
             color: "#0E2A47",
-            background: "none",
-            border: "none",
+            border: "1px solid #0E2A47",
+            borderRadius: "5px",
             letterSpacing: "0.08em",
           }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.backgroundColor = "rgba(14,42,71,0.06)")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.backgroundColor = "transparent")
+          }
         >
           PMO
         </button>
-      </nav>
+      </footer>
     </div>
   );
 }
