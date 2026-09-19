@@ -1,6 +1,7 @@
+import '../core/demo/demo_mode.dart';
 import 'models.dart';
 
-const List<Shipment> mockShipments = [
+const List<Shipment> _demoShipments = [
   Shipment(
     id: 'LOG-4471',
     vehicleId: 'MG-01-TR-2241',
@@ -51,3 +52,6 @@ const List<Shipment> mockShipments = [
     eta: '13:10',
   ),
 ];
+
+/// The sample data while demo mode is on, otherwise empty.
+List<Shipment> get mockShipments => DemoMode.enabled ? _demoShipments : const [];

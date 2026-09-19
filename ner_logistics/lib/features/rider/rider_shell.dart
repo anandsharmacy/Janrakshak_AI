@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/network/connectivity_provider.dart';
+import '../../core/demo/demo_mode.dart';
 import '../../mock_data/mock_officers.dart';
 import '../../mock_data/mock_repository.dart';
 import '../../mock_data/models.dart';
@@ -61,6 +62,7 @@ class _RiderShellState extends ConsumerState<RiderShell> {
   /// header matches the trip panel; the old static copy is the fallback.
   String _tripSubtitle(RiderTrackingState tracking) {
     final rider = ref.watch(riderLogisticsProvider).rider;
+    if (rider == null && !DemoMode.enabled) return 'No active trip';
     final trip = rider?.routeId == null ? 'TRP-R-4821' : 'Route ${rider!.routeId}';
     if (tracking.isSharing) return '$trip · sharing live location';
     return '$trip · ${rider?.destination == null ? 'medicines to Nongpoh' : 'to ${rider!.destination}'}';

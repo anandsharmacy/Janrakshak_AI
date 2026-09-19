@@ -1,6 +1,10 @@
+import '../core/demo/demo_mode.dart';
 import 'models.dart';
 
-List<FieldTask> buildMockTasks() => [
+/// The sample tasks while demo mode is on, otherwise none.
+List<FieldTask> buildMockTasks() => DemoMode.enabled ? _buildDemoTasks() : <FieldTask>[];
+
+List<FieldTask> _buildDemoTasks() => [
       FieldTask(
         id: 'TSK-001',
         title: 'Inspect NH-6 Km 22–26 slope damage',

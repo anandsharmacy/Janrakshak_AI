@@ -5,8 +5,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../../../core/demo/demo_mode.dart';
 import '../../../../services/geo/geo_math.dart';
 import '../../../auth/application/auth_controller.dart';
+import '../data/empty_rider_data_source.dart';
 import '../data/mock_rider_data_source.dart';
 import '../domain/rider.dart';
 import '../domain/rider_data_repository.dart';
@@ -183,6 +185,7 @@ class RiderLogisticsService extends Notifier<RiderLogisticsState> {
   List<Rider> _allRiders = const [];
   Map<String, RiderRoute> _otherRoutes = const {};
   String? _loadedUserId;
+  bool? _loadedDemo;
 
   RiderDataRepository get _repo => ref.read(riderDataRepositoryProvider);
 
@@ -190,12 +193,16 @@ class RiderLogisticsService extends Notifier<RiderLogisticsState> {
   RiderLogisticsState build() {
     ref.onDispose(_stop);
     final profile = ref.watch(currentProfileProvider);
+    final demo = ref.watch(demoModeProvider);
     if (profile == null) {
       _stop();
       return const RiderLogisticsState(loading: false);
     }
-    if (profile.userId != _loadedUserId) {
+    if (profile.userId != _loadedUserId || demo != _loadedDemo) {
+      // Also reloads when demo data is switched, so the sample riders come or go.
+      _stop();
       _loadedUserId = profile.userId;
+      _loadedDemo = demo;
       unawaited(_load(profile.userId, officerId: profile.officerId, email: profile.email));
     }
     return const RiderLogisticsState();
@@ -443,8 +450,10 @@ class _TrackProgress {
 // ── Providers ───────────────────────────────────────────────────────────────
 
 /// Swap the implementation here to move off demo data; nothing else changes.
-final riderDataRepositoryProvider =
-    Provider<RiderDataRepository>((ref) => const MockRiderDataSource());
+final riderDataRepositoryProvider = Provider<RiderDataRepository>((ref) =>
+    ref.watch(demoModeProvider)
+        ? const MockRiderDataSource()
+        : const EmptyRiderDataSource());
 
 /// Override with `false` in tests to drive [RiderLogisticsService.tick] manually.
 final riderLogisticsAutoTickProvider = Provider<bool>((_) => true);

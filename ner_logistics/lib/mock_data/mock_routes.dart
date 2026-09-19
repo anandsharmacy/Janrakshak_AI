@@ -1,6 +1,7 @@
+import '../core/demo/demo_mode.dart';
 import 'models.dart';
 
-const List<RouteInfo> mockRoutes = [
+const List<RouteInfo> _demoRoutes = [
   RouteInfo(
     id: 'NH-6',
     name: 'NH-6 Lumding–Sabroom',
@@ -71,7 +72,10 @@ const List<RouteInfo> mockRoutes = [
   ),
 ];
 
-const List<NearbyIncident> mockNearbyIncidents = [
+/// The sample data while demo mode is on, otherwise empty.
+List<RouteInfo> get mockRoutes => DemoMode.enabled ? _demoRoutes : const [];
+
+const List<NearbyIncident> _demoNearbyIncidents = [
   NearbyIncident(
     title: 'Landslide predicted, NH-6',
     place: 'Km 31–34 · 5 km ahead',
@@ -91,3 +95,6 @@ const List<NearbyIncident> mockNearbyIncidents = [
     level: RiskLevel.clear,
   ),
 ];
+
+/// The sample data while demo mode is on, otherwise empty.
+List<NearbyIncident> get mockNearbyIncidents => DemoMode.enabled ? _demoNearbyIncidents : const [];

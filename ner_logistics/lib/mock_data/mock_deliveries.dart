@@ -1,6 +1,7 @@
+import '../core/demo/demo_mode.dart';
 import 'models.dart';
 
-const mockRiderDeliveries = [
+const _demoRiderDeliveries = [
   DeliveryAssignment(
     id: 'ASN-4821',
     tripId: 'TRP-R-4821',
@@ -38,3 +39,6 @@ const mockRiderDeliveries = [
     decision: AssignmentDecision.pending,
   ),
 ];
+
+/// The sample data while demo mode is on, otherwise empty.
+List<DeliveryAssignment> get mockRiderDeliveries => DemoMode.enabled ? _demoRiderDeliveries : const [];

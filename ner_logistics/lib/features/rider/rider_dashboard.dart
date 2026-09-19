@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/demo/demo_mode.dart';
 import '../../mock_data/mock_repository.dart';
 import '../../mock_data/models.dart';
 import '../ml/presentation/ml_widgets.dart';
@@ -147,84 +148,92 @@ class _DashboardHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final assignment = state.activeRiderAssignment!;
+    final assignment = state.activeRiderAssignment;
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-              'Good morning, ${(riderContext?.fullName ?? state.activeRider.name).split(' ').last}',
+              'Good morning, ${(riderContext?.fullName ?? (DemoMode.enabled ? state.activeRider.name : 'Rider')).split(' ').last}',
               style: AppTextStyles.pageHeading),
           const SizedBox(height: 4),
           Text('Your next action is ready below.', style: AppTextStyles.bodySmall),
           const SizedBox(height: 16),
-          SectionTitle(
-            title: 'Active delivery',
-            action: TextButton(
-                onPressed: () => onNavigate(RiderNav.trip),
-                child: const Text('Open trip')),
-          ),
-          CardSurface(
-            padding: const EdgeInsets.all(16),
-            borderColor: assignment.risk == RiskLevel.critical
-                ? AppColors.signalRed700.withOpacity(0.5)
-                : AppColors.hairline,
-            leftAccentColor: assignment.risk == RiskLevel.critical
-                ? AppColors.signalRed700
-                : AppColors.saffron600,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text('${assignment.tripId} · ${assignment.cargo}',
-                          style: AppTextStyles.cardTitle),
-                    ),
-                    RiskBadge(level: assignment.risk),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                _RoutePair(from: assignment.origin, to: assignment.destination),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    _Metric(label: 'ETA', value: assignment.eta),
-                    _Metric(label: 'Remaining', value: assignment.distanceRemaining),
-                    _Metric(label: 'Window', value: assignment.window),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: assignment.progress / 100,
-                    minHeight: 8,
-                    backgroundColor: AppColors.navyTint,
-                    valueColor: const AlwaysStoppedAnimation(AppColors.deepGreen700),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text('${assignment.progress}% complete · Recipient: ${assignment.recipient}',
-                    style: AppTextStyles.caption),
-                const SizedBox(height: 14),
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton.icon(
-                    onPressed: onStartTrip,
-                    icon: Icon(assignment.status == RiderTripStatus.enRoute
-                        ? Icons.navigation_outlined
-                        : Icons.play_arrow_outlined),
-                    label: Text(assignment.status == RiderTripStatus.enRoute
-                        ? 'Continue trip'
-                        : 'Start trip'),
-                  ),
-                ),
-              ],
+          if (assignment == null) ...[
+            SectionTitle(title: 'Active delivery'),
+            const CardSurface(
+              padding: EdgeInsets.all(16),
+              child: Text('No active delivery. Assigned deliveries will show here.'),
             ),
-          ),
+          ] else ...[
+            SectionTitle(
+              title: 'Active delivery',
+              action: TextButton(
+                  onPressed: () => onNavigate(RiderNav.trip),
+                  child: const Text('Open trip')),
+            ),
+            CardSurface(
+              padding: const EdgeInsets.all(16),
+              borderColor: assignment.risk == RiskLevel.critical
+                  ? AppColors.signalRed700.withOpacity(0.5)
+                  : AppColors.hairline,
+              leftAccentColor: assignment.risk == RiskLevel.critical
+                  ? AppColors.signalRed700
+                  : AppColors.saffron600,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text('${assignment.tripId} · ${assignment.cargo}',
+                            style: AppTextStyles.cardTitle),
+                      ),
+                      RiskBadge(level: assignment.risk),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  _RoutePair(from: assignment.origin, to: assignment.destination),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      _Metric(label: 'ETA', value: assignment.eta),
+                      _Metric(label: 'Remaining', value: assignment.distanceRemaining),
+                      _Metric(label: 'Window', value: assignment.window),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: assignment.progress / 100,
+                      minHeight: 8,
+                      backgroundColor: AppColors.navyTint,
+                      valueColor: const AlwaysStoppedAnimation(AppColors.deepGreen700),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text('${assignment.progress}% complete · Recipient: ${assignment.recipient}',
+                      style: AppTextStyles.caption),
+                  const SizedBox(height: 14),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton.icon(
+                      onPressed: onStartTrip,
+                      icon: Icon(assignment.status == RiderTripStatus.enRoute
+                          ? Icons.navigation_outlined
+                          : Icons.play_arrow_outlined),
+                      label: Text(assignment.status == RiderTripStatus.enRoute
+                          ? 'Continue trip'
+                          : 'Start trip'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
           SectionTitle(
             title: 'Live location sharing',
             action: TextButton(
@@ -446,7 +455,11 @@ class _ActiveTripView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final item = state.activeRiderAssignment!;
+    final item = state.activeRiderAssignment;
+    if (item == null) {
+      return const DemoEmptyState(
+          title: 'No active trip', icon: Icons.route_outlined);
+    }
     final paused = item.status == RiderTripStatus.paused;
     return ListView(
       padding: const EdgeInsets.all(16),

@@ -6,6 +6,7 @@ export 'ai_card.dart';
 export 'alert_banner.dart';
 export 'app_header.dart';
 export 'card_surface.dart';
+export 'demo_empty_state.dart';
 export 'demo_tag.dart';
 export 'form_atoms.dart';
 export 'kpi_tile.dart';

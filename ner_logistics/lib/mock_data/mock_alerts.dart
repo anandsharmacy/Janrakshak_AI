@@ -1,6 +1,7 @@
+import '../core/demo/demo_mode.dart';
 import 'models.dart';
 
-final List<AppAlert> mockAlerts = [
+final List<AppAlert> _demoAlerts = [
   const AppAlert(
     id: 'ALT-001',
     severity: AlertSeverity.critical,
@@ -86,3 +87,6 @@ final List<AppAlert> mockAlerts = [
     recommendedAction: 'Heighten vigilance on NH-6 and SH-5 hill sections.',
   ),
 ];
+
+/// The sample data while demo mode is on, otherwise empty.
+List<AppAlert> get mockAlerts => DemoMode.enabled ? _demoAlerts : const [];

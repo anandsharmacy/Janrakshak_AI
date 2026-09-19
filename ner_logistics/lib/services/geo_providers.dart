@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../core/demo/demo_mode.dart';
 import '../mock_data/mock_route_scenarios.dart';
 import 'geo_config.dart';
 import 'gis/geoserver_client.dart';
@@ -42,9 +43,17 @@ final spatialAnalyticsProvider = Provider<SpatialAnalyticsService>((ref) {
 
 // ── Trips ────────────────────────────────────────────────────────────────────
 
+/// The two trips are demo scenarios; with demo data off there is no trip to
+/// route, so the providers fail instead of calling the routing engine.
+void _requireDemoTrip(Ref ref) {
+  if (!ref.watch(demoModeProvider)) throw StateError('No active trip');
+}
+
 /// Field officer trip TRP-2291, routed live.
-final fieldTripPlanProvider = FutureProvider<TripRoutePlan>(
-    (ref) => ref.watch(tripPlannerProvider).plan(fieldTripScenario));
+final fieldTripPlanProvider = FutureProvider<TripRoutePlan>((ref) {
+  _requireDemoTrip(ref);
+  return ref.watch(tripPlannerProvider).plan(fieldTripScenario);
+});
 
 /// Safer route around the trip's hazard. Kicked off as soon as the plan is
 /// known so it's usually ready by the time the officer asks for it.
@@ -54,8 +63,10 @@ final fieldTripDetourProvider = FutureProvider<TripDetourPlan>((ref) async {
 });
 
 /// Rider's active delivery ASN-4821, routed live.
-final riderTripPlanProvider = FutureProvider<TripRoutePlan>(
-    (ref) => ref.watch(tripPlannerProvider).plan(riderTripScenario));
+final riderTripPlanProvider = FutureProvider<TripRoutePlan>((ref) {
+  _requireDemoTrip(ref);
+  return ref.watch(tripPlannerProvider).plan(riderTripScenario);
+});
 
 /// Hazards on the rider's remaining route (GeoServer or local estimate).
 /// `alongM` values are relative to the vehicle's current position.

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/demo/demo_mode.dart';
 import '../../mock_data/mock_alerts.dart';
 import '../ml/presentation/ml_widgets.dart';
 import '../../mock_data/mock_districts.dart';
@@ -240,6 +241,12 @@ class _DistrictOfficerShellState extends ConsumerState<DistrictOfficerShell> {
   // ═══════════════════════════════════════════════════════════════════════════
 
   Widget _buildOverview() {
+    if (!DemoMode.enabled) {
+      return DemoOffPage(
+        title: 'District Operations',
+        subtitle: 'Real-time operations overview for ${_officer.region}',
+      );
+    }
     final criticalAlerts = mockAlerts.where((a) => a.severity == AlertSeverity.critical).take(3).toList();
     final queue = mockIncidents.take(5).toList();
 
@@ -350,7 +357,7 @@ class _DistrictOfficerShellState extends ConsumerState<DistrictOfficerShell> {
   // ═══════════════════════════════════════════════════════════════════════════
 
   Widget _buildMap() {
-    const routes = _kDistrictRoutes;
+    final routes = demoOnly(_kDistrictRoutes);
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text('District Map', style: AppTextStyles.pageHeading),
@@ -603,6 +610,13 @@ class _DistrictOfficerShellState extends ConsumerState<DistrictOfficerShell> {
   // ═══════════════════════════════════════════════════════════════════════════
 
   Widget _buildRoutes() {
+    if (!DemoMode.enabled) {
+      return const DemoOffPage(
+        title: 'Routes',
+        subtitle: 'Corridor status, access scores and route-level risk details',
+        live: [MlRoutesBoard()],
+      );
+    }
     final routes = [
       (info: RouteInfo(id: 'NH-2', name: 'NH-2 · Dimapur-Kohima', score: 82, risk: RiskLevel.caution, condition: 'Partial blockage', incidentCount: 3, weather: 'Heavy rain', updatedAt: '10 min ago',
         detail: const RouteDetail(floodRisk: 'High', landslideRisk: 'Medium', blockage: 'Km 44 · fallen debris', history: '3 blockages in last 30 days', recommendedAction: 'Divert via NH-39')), status: RouteStatus.blocked),
@@ -672,6 +686,12 @@ class _DistrictOfficerShellState extends ConsumerState<DistrictOfficerShell> {
   // ═══════════════════════════════════════════════════════════════════════════
 
   Widget _buildLogistics() {
+    if (!DemoMode.enabled) {
+      return const DemoOffPage(
+        title: 'Logistics',
+        subtitle: 'Active convoys, at-risk shipments and fleet status',
+      );
+    }
     final atRisk = mockFleet.where((v) => v.risk == Priority.high || v.risk == Priority.critical).toList();
     final all = mockFleet;
 
@@ -820,6 +840,16 @@ class _DistrictOfficerShellState extends ConsumerState<DistrictOfficerShell> {
   // ═══════════════════════════════════════════════════════════════════════════
 
   Widget _buildAi() {
+    if (!DemoMode.enabled) {
+      return DemoOffPage(
+        title: 'AI Insights',
+        subtitle: 'Road disruption risk from the NER model.',
+        live: [
+          SectionTitle(title: 'Highest-risk segments · your district'),
+          const MlTopAlertsCard(canPromote: true),
+        ],
+      );
+    }
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text('AI Insights', style: AppTextStyles.pageHeading),
       const SizedBox(height: 4),
@@ -966,6 +996,12 @@ class _DistrictOfficerShellState extends ConsumerState<DistrictOfficerShell> {
   // ═══════════════════════════════════════════════════════════════════════════
 
   Widget _buildReports() {
+    if (!DemoMode.enabled) {
+      return DemoOffPage(
+        title: 'Reports',
+        subtitle: 'District reports · ${_officer.region}',
+      );
+    }
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text('Reports', style: AppTextStyles.pageHeading),
       const SizedBox(height: 4),
@@ -998,7 +1034,14 @@ class _DistrictOfficerShellState extends ConsumerState<DistrictOfficerShell> {
   // ═══════════════════════════════════════════════════════════════════════════
 
   Widget _buildAnalytics() {
-    final topDistricts = mockDistricts.sublist(0, 6);
+    if (!DemoMode.enabled) {
+      return const DemoOffPage(
+        title: 'Analytics',
+        subtitle: 'District-level performance, trends and distribution',
+        live: [SpatialAnalyticsPanel()],
+      );
+    }
+    final topDistricts = mockDistricts.take(6).toList();
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text('Analytics', style: AppTextStyles.pageHeading),
       const SizedBox(height: 4),
@@ -1168,7 +1211,7 @@ class _DistrictOfficerShellState extends ConsumerState<DistrictOfficerShell> {
   MapLineTone _mapTone(String route) {
     final id = NerGeo.routeIdOf(route);
     if (_simulationShown && id == 'NH-29') return MapLineTone.critical;
-    for (final r in _kDistrictRoutes) {
+    for (final r in demoOnly(_kDistrictRoutes)) {
       if (r.id != id) continue;
       return switch (r.tone) {
         ChipTone.critical => MapLineTone.critical,
@@ -1226,7 +1269,7 @@ class _DistrictOfficerShellState extends ConsumerState<DistrictOfficerShell> {
     bool showIncidents = true,
   }) {
     bool on(String layer) => !applyFilters || (_mapLayers[layer] ?? false);
-    final routes = NerGeo.routes({for (final r in _kDistrictRoutes) r.id: _mapTone(r.id)});
+    final routes = NerGeo.routes({for (final r in demoOnly(_kDistrictRoutes)) r.id: _mapTone(r.id)});
     final gs = ref.watch(geoServerClientProvider);
     return CardSurface(
       child: SizedBox(

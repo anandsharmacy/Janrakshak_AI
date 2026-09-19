@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/demo/demo_mode.dart';
 import '../ml/presentation/ml_widgets.dart';
 import '../../mock_data/mock_officers.dart';
 import '../../mock_data/models.dart';
@@ -396,10 +397,10 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
                             child: ListView.separated(
                               shrinkWrap: true,
                               padding: const EdgeInsets.all(12),
-                              itemCount: _kRoutes.length,
+                              itemCount: demoOnly(_kRoutes).length,
                               separatorBuilder: (_, __) => const SizedBox(height: 8),
                               itemBuilder: (_, i) {
-                                final r = _kRoutes[i];
+                                final r = demoOnly(_kRoutes)[i];
                                 return CardSurface(
                                   onTap: () {
                                     setState(() {
@@ -453,7 +454,7 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
     if (_simulating && _simulatedRoute != null && NerGeo.routeIdOf(_simulatedRoute!) == id) {
       return MapLineTone.critical;
     }
-    for (final r in _kRoutes) {
+    for (final r in demoOnly(_kRoutes)) {
       if (r.id == id) return NerGeo.toneForStatus(r.status);
     }
     return MapLineTone.clear;
@@ -468,7 +469,7 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
       };
 
   void _openIncidentById(String id) {
-    final i = _kIncidents.indexWhere((e) => e.id == id);
+    final i = demoOnly(_kIncidents).indexWhere((e) => e.id == id);
     if (i >= 0) _openIncidentSheet(i);
   }
 
@@ -476,7 +477,7 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
   ClosureQuery? get _closureQuery => _simulating && _simulatedRoute != null
       ? ClosureQuery(
           routeId: NerGeo.routeIdOf(_simulatedRoute!),
-          convoys: ConvoyTrip.fromFleet(_kFleet),
+          convoys: ConvoyTrip.fromFleet(demoOnly(_kFleet)),
         )
       : null;
 
@@ -491,7 +492,7 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
     VoidCallback? onExpand,
   }) {
     bool on(String layer) => !applyFilters || (_layers[layer] ?? false);
-    final routes = NerGeo.routes({for (final r in _kRoutes) r.id: _mapTone(r.id)});
+    final routes = NerGeo.routes({for (final r in demoOnly(_kRoutes)) r.id: _mapTone(r.id)});
     final gs = ref.watch(geoServerClientProvider);
     return SizedBox(
       height: height,
@@ -522,13 +523,13 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
         // Demo fleet + every live rider from the mobile app (Supabase Realtime).
         vehicles: on('Logistics')
             ? [
-                ...NerGeo.vehicles(_kFleet),
+                ...NerGeo.vehicles(demoOnly(_kFleet)),
                 ...liveRiderVehicles(ref.watch(liveRidersProvider).valueOrNull),
               ]
             : const [],
         incidents: [
           if (showIncidents && on('Incidents'))
-            for (final inc in _kIncidents)
+            for (final inc in demoOnly(_kIncidents))
               if (!applyFilters || inc.severity.index <= _riskFloor.index)
                 MapIncident(
                   id: inc.id,
@@ -545,7 +546,7 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
 
   /// Static location preview centred on one incident.
   Widget _incidentMap(int i, double height) {
-    final inc = _kIncidents[i];
+    final inc = demoOnly(_kIncidents)[i];
     final point = NerGeo.locate(inc.location, inc.route);
     final line = NerGeo.highway(inc.route);
     return SizedBox(
@@ -598,6 +599,16 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
   // 1. COMMAND CENTER
   // ═══════════════════════════════════════════════════════════════
   Widget _buildCommand() {
+    if (!DemoMode.enabled) {
+      return DemoOffPage(
+        title: "What's happening across NER",
+        subtitle: 'Command center',
+        live: [
+          SectionTitle(title: 'Highest-risk segments today'),
+          const MlTopAlertsCard(canPromote: true, limit: 3),
+        ],
+      );
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -824,7 +835,7 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
           action: TextButton(onPressed: () {}, child: Text('All districts', style: AppTextStyles.buttonSmall.copyWith(color: AppColors.navy900))),
         ),
         ...List.generate(3, (i) {
-          final d = _kDistricts[i];
+          final d = demoOnly(_kDistricts)[i];
           return Padding(
             padding: EdgeInsets.only(bottom: i == 2 ? 0 : 10),
             child: CardSurface(
@@ -880,7 +891,7 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
         Text('Last updated 10 sec ago', style: AppTextStyles.caption),
         const SizedBox(height: 10),
         ...List.generate(3, (i) {
-          final f = _kFleet[i];
+          final f = demoOnly(_kFleet)[i];
           return Padding(
             padding: EdgeInsets.only(bottom: i == 2 ? 12 : 10),
             child: _fleetCard(f),
@@ -1168,7 +1179,7 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
         const SizedBox(height: 16),
         SectionTitle(title: 'Route Status'),
         ...List.generate(7, (i) {
-          final r = _kRoutes[i];
+          final r = demoOnly(_kRoutes)[i];
           return Padding(
             padding: EdgeInsets.only(bottom: i == 6 ? 0 : 10),
             child: CardSurface(
@@ -1251,6 +1262,12 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
   // 3. LOGISTICS
   // ═══════════════════════════════════════════════════════════════
   Widget _buildLogistics() {
+    if (!DemoMode.enabled) {
+      return const DemoOffPage(
+        title: 'Live Logistics',
+        subtitle: 'Fleet positions, route adherence, at-risk shipments, and delays across the NER corridor.',
+      );
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1314,7 +1331,7 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
         ),
         SectionTitle(title: 'At-Risk Convoys'),
         ...List.generate(3, (i) {
-          final f = [_kFleet[1], _kFleet[3], _kFleet[4]][i];
+          final f = [demoOnly(_kFleet)[1], demoOnly(_kFleet)[3], demoOnly(_kFleet)[4]][i];
           return Padding(
             padding: EdgeInsets.only(bottom: i == 2 ? 0 : 10),
             child: CardSurface(
@@ -1464,13 +1481,13 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
   // ═══════════════════════════════════════════════════════════════
   Widget _buildIncidents() {
     final tabCounts = {
-      IncTab.all: _kIncidents.length,
-      IncTab.pending: _kIncidents.where((e) => e.statusLabel == 'Pending').length,
-      IncTab.active: _kIncidents.where((e) => e.statusLabel == 'Active').length,
-      IncTab.escalated: _kIncidents.where((e) => e.statusLabel == 'Escalated').length,
-      IncTab.resolved: _kIncidents.where((e) => e.statusLabel == 'Resolved').length,
+      IncTab.all: demoOnly(_kIncidents).length,
+      IncTab.pending: demoOnly(_kIncidents).where((e) => e.statusLabel == 'Pending').length,
+      IncTab.active: demoOnly(_kIncidents).where((e) => e.statusLabel == 'Active').length,
+      IncTab.escalated: demoOnly(_kIncidents).where((e) => e.statusLabel == 'Escalated').length,
+      IncTab.resolved: demoOnly(_kIncidents).where((e) => e.statusLabel == 'Resolved').length,
     };
-    final filtered = _incTab == IncTab.all ? _kIncidents : _kIncidents.where((e) {
+    final filtered = _incTab == IncTab.all ? demoOnly(_kIncidents) : demoOnly(_kIncidents).where((e) {
       final m = {IncTab.pending: 'Pending', IncTab.active: 'Active', IncTab.escalated: 'Escalated', IncTab.resolved: 'Resolved'};
       return e.statusLabel == m[_incTab];
     }).toList();
@@ -1502,7 +1519,7 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
         const SizedBox(height: 16),
         ...List.generate(filtered.length, (i) {
           final inc = filtered[i];
-          final idx = _kIncidents.indexOf(inc);
+          final idx = demoOnly(_kIncidents).indexOf(inc);
           final expanded = _detailIncident == idx;
           return Padding(
             padding: EdgeInsets.only(bottom: i == filtered.length - 1 ? 0 : 12),
@@ -1540,7 +1557,7 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
   }
 
   Widget _incidentCard(int i) {
-    final inc = _kIncidents[i];
+    final inc = demoOnly(_kIncidents)[i];
     return CardSurface(
       leftAccentColor: _leftAccent(inc.severity),
       onTap: () => setState(() => _detailIncident = i),
@@ -1619,7 +1636,7 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
   }
 
   Widget _incidentDetail(int i) {
-    final inc = _kIncidents[i];
+    final inc = demoOnly(_kIncidents)[i];
     return CardSurface(
       leftAccentColor: _leftAccent(inc.severity),
       padding: EdgeInsets.zero,
@@ -1728,14 +1745,20 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
   // 5. ROUTES
   // ═══════════════════════════════════════════════════════════════
   Widget _buildRoutes() {
+    if (!DemoMode.enabled) {
+      return const DemoOffPage(
+        title: 'Routes',
+        subtitle: 'National Highways across NER corridor · live access, conditions, and ETA impact.',
+      );
+    }
     final tabCounts = {
-      RouteTab.all: _kRoutes.length,
-      RouteTab.open: _kRoutes.where((e) => e.status == RouteStatus.open).length,
-      RouteTab.restricted: _kRoutes.where((e) => e.status == RouteStatus.restricted).length,
-      RouteTab.blocked: _kRoutes.where((e) => e.status == RouteStatus.blocked).length,
-      RouteTab.closed: _kRoutes.where((e) => e.status == RouteStatus.closed).length,
+      RouteTab.all: demoOnly(_kRoutes).length,
+      RouteTab.open: demoOnly(_kRoutes).where((e) => e.status == RouteStatus.open).length,
+      RouteTab.restricted: demoOnly(_kRoutes).where((e) => e.status == RouteStatus.restricted).length,
+      RouteTab.blocked: demoOnly(_kRoutes).where((e) => e.status == RouteStatus.blocked).length,
+      RouteTab.closed: demoOnly(_kRoutes).where((e) => e.status == RouteStatus.closed).length,
     };
-    final filtered = _routeTab == RouteTab.all ? _kRoutes : _kRoutes.where((e) {
+    final filtered = _routeTab == RouteTab.all ? demoOnly(_kRoutes) : demoOnly(_kRoutes).where((e) {
       final m = {RouteTab.open: RouteStatus.open, RouteTab.restricted: RouteStatus.restricted, RouteTab.blocked: RouteStatus.blocked, RouteTab.closed: RouteStatus.closed};
       return e.status == m[_routeTab];
     }).toList();
@@ -1847,6 +1870,18 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
   // 6. AI PREDICTIONS
   // ═══════════════════════════════════════════════════════════════
   Widget _buildAI() {
+    if (!DemoMode.enabled) {
+      return DemoOffPage(
+        title: 'AI Predictions',
+        subtitle: 'Road disruption risk from the NER model.',
+        live: [
+          SectionTitle(title: 'Highest-risk segments today'),
+          const MlTopAlertsCard(canPromote: true),
+          SectionTitle(title: 'Risk on planned routes'),
+          const MlRoutesBoard(),
+        ],
+      );
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1963,13 +1998,13 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
   // ═══════════════════════════════════════════════════════════════
   Widget _buildAlerts() {
     final counts = {
-      AlertTab.all: _kAlerts.length,
-      AlertTab.critical: _kAlerts.where((e) => e.severity == AlertSeverity.critical).length,
-      AlertTab.high: _kAlerts.where((e) => e.severity == AlertSeverity.high).length,
-      AlertTab.moderate: _kAlerts.where((e) => e.severity == AlertSeverity.moderate).length,
-      AlertTab.info: _kAlerts.where((e) => e.severity == AlertSeverity.info).length,
+      AlertTab.all: demoOnly(_kAlerts).length,
+      AlertTab.critical: demoOnly(_kAlerts).where((e) => e.severity == AlertSeverity.critical).length,
+      AlertTab.high: demoOnly(_kAlerts).where((e) => e.severity == AlertSeverity.high).length,
+      AlertTab.moderate: demoOnly(_kAlerts).where((e) => e.severity == AlertSeverity.moderate).length,
+      AlertTab.info: demoOnly(_kAlerts).where((e) => e.severity == AlertSeverity.info).length,
     };
-    final filtered = _alertTab == AlertTab.all ? _kAlerts : _kAlerts.where((e) {
+    final filtered = _alertTab == AlertTab.all ? demoOnly(_kAlerts) : demoOnly(_kAlerts).where((e) {
       final m = {AlertTab.critical: AlertSeverity.critical, AlertTab.high: AlertSeverity.high, AlertTab.moderate: AlertSeverity.moderate, AlertTab.info: AlertSeverity.info};
       return e.severity == m[_alertTab];
     }).toList();
@@ -2141,6 +2176,13 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
   // 8. ANALYTICS
   // ═══════════════════════════════════════════════════════════════
   Widget _buildAnalytics() {
+    if (!DemoMode.enabled) {
+      return const DemoOffPage(
+        title: 'Analytics',
+        subtitle: 'Regional performance snapshot · incidents, risk, districts, logistics.',
+        live: [SpatialAnalyticsPanel()],
+      );
+    }
     final weekBars = [
       ('Mon', [2, 1, 0], AppColors.saffron600),
       ('Tue', [3, 2, 1], AppColors.signalRed700),
@@ -2405,7 +2447,7 @@ class _ControlRoomShellState extends ConsumerState<ControlRoomShell> {
   }
 
   void _openIncidentSheet(int i) {
-    final inc = _kIncidents[i];
+    final inc = demoOnly(_kIncidents)[i];
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,

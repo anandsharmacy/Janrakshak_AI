@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/demo/demo_mode.dart';
 import '../../mock_data/mock_officers.dart';
 import '../auth/application/auth_controller.dart';
 import '../tracking/presentation/live_riders_screen.dart';
 import '../../shared/widgets/app_header.dart';
+import '../../shared/widgets/demo_empty_state.dart';
 import '../../shared/widgets/offline_banner.dart';
 import '../../features/profile/profile_sheet.dart';
 import '../../mock_data/models.dart';
@@ -93,6 +95,7 @@ class _FieldOfficerShellState extends ConsumerState<FieldOfficerShell> {
       case FieldNav.dashboard:
         return '${_officer.name} · ${_officer.region}';
       case FieldNav.trip:
+        if (!DemoMode.enabled) return 'No active trip';
         if (_tripPhase == TripPhase.interrupt ||
             _tripPhase == TripPhase.calculating) {
           return 'TRP-2291 · risk update received';
@@ -181,6 +184,10 @@ class _FieldOfficerShellState extends ConsumerState<FieldOfficerShell> {
           },
         );
       case FieldNav.trip:
+        if (!DemoMode.enabled) {
+          return const DemoEmptyState(
+              title: 'No active trip', icon: Icons.route_outlined);
+        }
         return RouteScreen(
           phase: _tripPhase,
           postReroute: _postReroute,

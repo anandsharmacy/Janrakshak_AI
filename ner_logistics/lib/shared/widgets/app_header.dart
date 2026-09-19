@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/colors.dart';
 import '../../theme/text_styles.dart';
+import 'demo_toggle.dart';
 
 /// AppHeader — navy chrome top bar used across all three role tracks.
 /// Mirrors the React FieldHeader / DistrictOfficerApp / ControlRoomApp top bar.
@@ -52,6 +53,8 @@ class AppHeader extends StatelessWidget {
               Row(
                 children: [
                   Text(time, style: AppTextStyles.statusBarTime),
+                  const SizedBox(width: 10),
+                  const DemoToggle(),
                   const Spacer(),
                   _SignalIcon(),
                   const SizedBox(width: 6),

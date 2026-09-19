@@ -1,6 +1,7 @@
+import '../core/demo/demo_mode.dart';
 import 'models.dart';
 
-const mockOfflineMapRegions = [
+const _demoOfflineMapRegions = [
   OfflineMapRegion(
     id: 'map-ri-bhoi',
     name: 'Ri Bhoi · NH-6 corridor',
@@ -19,3 +20,6 @@ const mockOfflineMapRegions = [
     status: OfflineMapRegionStatus.updateAvailable,
   ),
 ];
+
+/// The sample data while demo mode is on, otherwise empty.
+List<OfflineMapRegion> get mockOfflineMapRegions => DemoMode.enabled ? _demoOfflineMapRegions : const [];

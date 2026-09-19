@@ -1,6 +1,7 @@
+import '../core/demo/demo_mode.dart';
 import 'models.dart';
 
-const List<Incident> mockIncidents = [
+const List<Incident> _demoIncidents = [
   Incident(
     id: 'INC-2026-041',
     type: IncidentType.flood,
@@ -94,7 +95,10 @@ const List<Incident> mockIncidents = [
   ),
 ];
 
-const List<DistrictSummary> mockDistricts = [
+/// The sample data while demo mode is on, otherwise empty.
+List<Incident> get mockIncidents => DemoMode.enabled ? _demoIncidents : const [];
+
+const List<DistrictSummary> _demoDistricts = [
   DistrictSummary(
     name: 'Dimapur',
     state: 'Nagaland',
@@ -163,7 +167,10 @@ const List<DistrictSummary> mockDistricts = [
   ),
 ];
 
-const List<FleetVehicle> mockFleet = [
+/// The sample data while demo mode is on, otherwise empty.
+List<DistrictSummary> get mockDistricts => DemoMode.enabled ? _demoDistricts : const [];
+
+const List<FleetVehicle> _demoFleet = [
   FleetVehicle(
     id: 'TRK-1042',
     route: 'NH-29',
@@ -197,3 +204,6 @@ const List<FleetVehicle> mockFleet = [
     eta: '11:20',
   ),
 ];
+
+/// The sample data while demo mode is on, otherwise empty.
+List<FleetVehicle> get mockFleet => DemoMode.enabled ? _demoFleet : const [];

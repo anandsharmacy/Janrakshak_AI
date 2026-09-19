@@ -20,7 +20,7 @@ class _RouteStatusScreenState extends State<RouteStatusScreen> {
   RouteInfo? get _selectedRoute =>
       _selectedId == null
           ? null
-          : mockRoutes.firstWhere((r) => r.id == _selectedId, orElse: () => mockRoutes.first);
+          : mockRoutes.where((r) => r.id == _selectedId).firstOrNull;
 
   Color _scoreColor(int score) {
     if (score >= 80) return AppColors.deepGreen700;

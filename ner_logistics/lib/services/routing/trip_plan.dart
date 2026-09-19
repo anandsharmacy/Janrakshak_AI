@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:latlong2/latlong.dart';
 
+import '../../core/demo/demo_mode.dart';
 import '../../mock_data/mock_route_scenarios.dart';
 import '../../shared/map/generated/geo_snapshot.g.dart';
 import 'osrm_client.dart';
@@ -148,7 +149,7 @@ class TripSnapshots {
       _plan(riderTripScenario, kRiderTripRouteJson);
 
   static TripDetourPlan? fieldDetour() {
-    if (kFieldTripDetourJson.isEmpty) return null;
+    if (!DemoMode.enabled || kFieldTripDetourJson.isEmpty) return null;
     return TripDetourPlan(
       detourFromJson(jsonDecode(kFieldTripDetourJson) as Map<String, dynamic>),
       live: false,
@@ -156,7 +157,8 @@ class TripSnapshots {
     );
   }
 
-  static TripRoutePlan? _plan(RouteScenario s, String json) => json.isEmpty
+  static TripRoutePlan? _plan(RouteScenario s, String json) =>
+      !DemoMode.enabled || json.isEmpty
       ? null
       : TripRoutePlan.fromRoute(
           s, OsrmRoute.fromJson(jsonDecode(json) as Map<String, dynamic>),

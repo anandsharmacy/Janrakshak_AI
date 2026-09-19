@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app.dart';
 import 'core/config/supabase_config.dart';
+import 'core/demo/demo_mode.dart';
 import 'core/supabase/supabase_providers.dart';
 import 'theme/app_theme.dart';
 
@@ -29,6 +30,8 @@ Future<void> main() async {
 
   // Same Supabase project as the web dashboards. Sessions persist on-device
   // (SDK secure storage) and refresh automatically; PKCE for any email links.
+  await DemoMode.load();
+
   final config = SupabaseConfig.fromEnvironment();
   try {
     await Supabase.initialize(

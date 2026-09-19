@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/demo/demo_mode.dart';
 import 'mock_alerts.dart';
 import 'mock_deliveries.dart';
 import 'mock_officers.dart' as officer_mocks;
@@ -269,7 +270,10 @@ class MockRepository extends StateNotifier<MockAppState> {
   }
 }
 
+/// Rebuilt from scratch whenever demo mode flips, so the sample deliveries,
+/// alerts and offline maps appear or disappear with it.
 final mockRepositoryProvider =
-    StateNotifierProvider<MockRepository, MockAppState>(
-  (ref) => MockRepository(),
-);
+    StateNotifierProvider<MockRepository, MockAppState>((ref) {
+  ref.watch(demoModeProvider);
+  return MockRepository();
+});

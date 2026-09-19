@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/demo/demo_mode.dart';
 import '../../../mock_data/mock_officers.dart';
 import '../../../mock_data/mock_routes.dart';
 import '../../../mock_data/mock_tasks.dart';
@@ -63,296 +64,305 @@ class FieldDashboard extends StatelessWidget {
             children: [
               KpiTile(
                 label: 'Assigned Tasks',
-                value: '8',
+                value: DemoMode.enabled ? '8' : '0',
                 tone: KpiTone.navy,
                 onTap: onOpenTasks,
               ),
               KpiTile(
                 label: 'Pending Tasks',
-                value: '3',
+                value: DemoMode.enabled ? '3' : '0',
                 tone: KpiTone.saffron,
                 onTap: onOpenTasks,
               ),
               KpiTile(
                 label: 'Active Incidents',
-                value: '2',
+                value: DemoMode.enabled ? '2' : '0',
                 tone: KpiTone.navy,
                 onTap: onViewIncidents,
               ),
               KpiTile(
                 label: 'Critical Alerts',
-                value: '1',
+                value: DemoMode.enabled ? '1' : '0',
                 tone: KpiTone.critical,
                 onTap: onViewIncidents,
               ),
             ],
           ),
 
-          // ── Current Area Situation ────────────────────────────
-          SectionTitle(title: 'Current Area Situation'),
-          CardSurface(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.location_on_outlined,
-                                  size: 15,
-                                  color: AppColors.slate500),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  (officer ?? fieldOfficer).region,
-                                  style: AppTextStyles.cardTitle,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'Monitored sector · ${(officer ?? fieldOfficer).officerId}',
-                            style: AppTextStyles.caption,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const RiskBadge(level: RiskLevel.critical),
-                  ],
-                ),
-                const SizedBox(height: 14),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Accessibility Score',
-                        style: AppTextStyles.captionSemibold.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.navy900,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      '72/100 · Fair',
-                      style: AppTextStyles.captionSemibold.copyWith(
-                        color: AppColors.saffron600,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: 0.72,
-                    backgroundColor:
-                        AppColors.slate500.withOpacity(0.1),
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                        AppColors.saffron600),
-                    minHeight: 8,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Divider(color: AppColors.hairline, height: 1),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Risk level',
-                              style: AppTextStyles.caption),
-                          Text('High',
-                              style: AppTextStyles.cardTitle.copyWith(
-                                  color: AppColors.signalRed700,
-                                  fontWeight: FontWeight.w700)),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Nearby incidents',
-                              style: AppTextStyles.caption),
-                          Text('2 within 5 km',
-                              style: AppTextStyles.cardTitle),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Last updated 2 min ago · DEMO DATA',
-                  style: AppTextStyles.disclaimer,
-                ),
-              ],
-            ),
-          ),
-
-          // ── My Priority Tasks ─────────────────────────────────
-          SectionTitle(
-            title: 'My Priority Tasks',
-            action: TextButton(
-              onPressed: onOpenTasks,
-              child: const Text('View all'),
-            ),
-          ),
-          Column(
-            children: tasks.map((t) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: CardSurface(
-                  padding: const EdgeInsets.all(14),
-                  child: Column(
+          if (DemoMode.enabled) ...[
+            // ── Current Area Situation ────────────────────────────
+            SectionTitle(title: 'Current Area Situation'),
+            CardSurface(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              children: [
-                                Text(t.id,
-                                    style: AppTextStyles.caption
-                                        .copyWith(
-                                            color: AppColors.slate500
-                                                .withOpacity(0.7))),
-                                const SizedBox(height: 2),
-                                Text(t.title,
-                                    style: AppTextStyles.cardTitle
-                                        .copyWith(
-                                            fontWeight:
-                                                FontWeight.w700)),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          PriorityBadge(level: t.priority),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          Icon(Icons.location_on_outlined,
-                              size: 14,
-                              color: AppColors.slate500
-                                  .withOpacity(0.7)),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(t.location,
-                                style: AppTextStyles.bodySmall),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          StatusChip(
-                            tone: ChipTone.muted,
-                            label: 'Due ${t.dueTime}',
-                          ),
-                          const Spacer(),
-                          ElevatedButton(
-                            onPressed: onStartTask,
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
-                              minimumSize: Size.zero,
-                              textStyle: AppTextStyles.buttonSmall,
-                            ),
-                            child: const Text('Start Task'),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-
-          // ── Nearby Incidents ──────────────────────────────────
-          SectionTitle(
-            title: 'Nearby Incidents',
-            action: TextButton(
-              onPressed: onViewIncidents,
-              child: const Text('View All Incidents'),
-            ),
-          ),
-          CardSurface(
-            child: Column(
-              children: mockNearbyIncidents
-                  .asMap()
-                  .entries
-                  .map((e) {
-                final n = e.value;
-                final isFirst = e.key == 0;
-                return Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    border: isFirst
-                        ? null
-                        : Border(
-                            top: BorderSide(
-                                color: AppColors.hairline)),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(
-                        n.level == RiskLevel.clear
-                            ? Icons.check_circle_outline
-                            : Icons.warning_outlined,
-                        size: 18,
-                        color: n.level == RiskLevel.clear
-                            ? AppColors.deepGreen700
-                            : n.level == RiskLevel.caution
-                                ? AppColors.saffron600
-                                : AppColors.signalRed700,
-                      ),
-                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(n.title,
-                                style:
-                                    AppTextStyles.cardTitle),
+                            Row(
+                              children: [
+                                Icon(Icons.location_on_outlined,
+                                    size: 15,
+                                    color: AppColors.slate500),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    (officer ?? fieldOfficer).region,
+                                    style: AppTextStyles.cardTitle,
+                                  ),
+                                ),
+                              ],
+                            ),
                             const SizedBox(height: 2),
-                            Text(n.place,
-                                style:
-                                    AppTextStyles.bodySmall),
+                            Text(
+                              'Monitored sector · ${(officer ?? fieldOfficer).officerId}',
+                              style: AppTextStyles.caption,
+                            ),
                           ],
                         ),
                       ),
+                      const RiskBadge(level: RiskLevel.critical),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Accessibility Score',
+                          style: AppTextStyles.captionSemibold.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.navy900,
+                          ),
+                        ),
+                      ),
                       Text(
-                        n.distance,
-                        style: AppTextStyles.captionSemibold
-                            .copyWith(
-                                color: AppColors.slate500
-                                    .withOpacity(0.7),
-                                fontWeight: FontWeight.w700),
+                        '72/100 · Fair',
+                        style: AppTextStyles.captionSemibold.copyWith(
+                          color: AppColors.saffron600,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 6),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: 0.72,
+                      backgroundColor:
+                          AppColors.slate500.withOpacity(0.1),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                          AppColors.saffron600),
+                      minHeight: 8,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Divider(color: AppColors.hairline, height: 1),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Risk level',
+                                style: AppTextStyles.caption),
+                            Text('High',
+                                style: AppTextStyles.cardTitle.copyWith(
+                                    color: AppColors.signalRed700,
+                                    fontWeight: FontWeight.w700)),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Nearby incidents',
+                                style: AppTextStyles.caption),
+                            Text('2 within 5 km',
+                                style: AppTextStyles.cardTitle),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Last updated 2 min ago · DEMO DATA',
+                    style: AppTextStyles.disclaimer,
+                  ),
+                ],
+              ),
+            ),
+
+            // ── My Priority Tasks ─────────────────────────────────
+            SectionTitle(
+              title: 'My Priority Tasks',
+              action: TextButton(
+                onPressed: onOpenTasks,
+                child: const Text('View all'),
+              ),
+            ),
+            Column(
+              children: tasks.map((t) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: CardSurface(
+                    padding: const EdgeInsets.all(14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                children: [
+                                  Text(t.id,
+                                      style: AppTextStyles.caption
+                                          .copyWith(
+                                              color: AppColors.slate500
+                                                  .withOpacity(0.7))),
+                                  const SizedBox(height: 2),
+                                  Text(t.title,
+                                      style: AppTextStyles.cardTitle
+                                          .copyWith(
+                                              fontWeight:
+                                                  FontWeight.w700)),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            PriorityBadge(level: t.priority),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Icon(Icons.location_on_outlined,
+                                size: 14,
+                                color: AppColors.slate500
+                                    .withOpacity(0.7)),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(t.location,
+                                  style: AppTextStyles.bodySmall),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            StatusChip(
+                              tone: ChipTone.muted,
+                              label: 'Due ${t.dueTime}',
+                            ),
+                            const Spacer(),
+                            ElevatedButton(
+                              onPressed: onStartTask,
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                                minimumSize: Size.zero,
+                                textStyle: AppTextStyles.buttonSmall,
+                              ),
+                              child: const Text('Start Task'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 );
               }).toList(),
             ),
-          ),
+
+            // ── Nearby Incidents ──────────────────────────────────
+            SectionTitle(
+              title: 'Nearby Incidents',
+              action: TextButton(
+                onPressed: onViewIncidents,
+                child: const Text('View All Incidents'),
+              ),
+            ),
+            CardSurface(
+              child: Column(
+                children: mockNearbyIncidents
+                    .asMap()
+                    .entries
+                    .map((e) {
+                  final n = e.value;
+                  final isFirst = e.key == 0;
+                  return Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      border: isFirst
+                          ? null
+                          : Border(
+                              top: BorderSide(
+                                  color: AppColors.hairline)),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          n.level == RiskLevel.clear
+                              ? Icons.check_circle_outline
+                              : Icons.warning_outlined,
+                          size: 18,
+                          color: n.level == RiskLevel.clear
+                              ? AppColors.deepGreen700
+                              : n.level == RiskLevel.caution
+                                  ? AppColors.saffron600
+                                  : AppColors.signalRed700,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            children: [
+                              Text(n.title,
+                                  style:
+                                      AppTextStyles.cardTitle),
+                              const SizedBox(height: 2),
+                              Text(n.place,
+                                  style:
+                                      AppTextStyles.bodySmall),
+                            ],
+                          ),
+                        ),
+                        Text(
+                          n.distance,
+                          style: AppTextStyles.captionSemibold
+                              .copyWith(
+                                  color: AppColors.slate500
+                                      .withOpacity(0.7),
+                                  fontWeight: FontWeight.w700),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ] else ...[
+            SectionTitle(title: 'Current Area Situation'),
+            const CardSurface(
+              padding: EdgeInsets.all(16),
+              child: Text('No area data yet. Tasks, incidents and risk for your area will show here.'),
+            ),
+            const SizedBox(height: 16),
+          ],
 
           // ── Quick Actions ─────────────────────────────────────
           const SectionTitle(title: 'Quick Actions'),

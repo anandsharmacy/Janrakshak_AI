@@ -1,5 +1,7 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'core/demo/demo_mode.dart';
 import 'mock_data/models.dart';
 import 'features/auth/application/auth_controller.dart';
 import 'features/onboarding/splash_screen.dart';
@@ -93,12 +95,17 @@ List<RouteBase> _buildRoutes() {
       },
     ),
 
+    // Each shell is keyed on demo mode so switching it rebuilds the screens
+    // from the (now empty or populated) sample data.
     // ── Field Officer shell ─────────────────────────────────────
     GoRoute(
       path: AppRoutes.fieldDashboard,
       builder: (context, state) => Consumer(
-        builder: (ctx, ref, _) => FieldOfficerShell(
-          onSignOut: () => ref.read(authControllerProvider.notifier).signOut(),
+        builder: (ctx, ref, _) => KeyedSubtree(
+          key: ValueKey(ref.watch(demoModeProvider)),
+          child: FieldOfficerShell(
+            onSignOut: () => ref.read(authControllerProvider.notifier).signOut(),
+          ),
         ),
       ),
     ),
@@ -107,8 +114,11 @@ List<RouteBase> _buildRoutes() {
     GoRoute(
       path: AppRoutes.districtDashboard,
       builder: (context, state) => Consumer(
-        builder: (ctx, ref, _) => DistrictOfficerShell(
-          onSignOut: () => ref.read(authControllerProvider.notifier).signOut(),
+        builder: (ctx, ref, _) => KeyedSubtree(
+          key: ValueKey(ref.watch(demoModeProvider)),
+          child: DistrictOfficerShell(
+            onSignOut: () => ref.read(authControllerProvider.notifier).signOut(),
+          ),
         ),
       ),
     ),
@@ -117,8 +127,11 @@ List<RouteBase> _buildRoutes() {
     GoRoute(
       path: AppRoutes.controlDashboard,
       builder: (context, state) => Consumer(
-        builder: (ctx, ref, _) => ControlRoomShell(
-          onSignOut: () => ref.read(authControllerProvider.notifier).signOut(),
+        builder: (ctx, ref, _) => KeyedSubtree(
+          key: ValueKey(ref.watch(demoModeProvider)),
+          child: ControlRoomShell(
+            onSignOut: () => ref.read(authControllerProvider.notifier).signOut(),
+          ),
         ),
       ),
     ),
@@ -127,8 +140,11 @@ List<RouteBase> _buildRoutes() {
     GoRoute(
       path: AppRoutes.riderDashboard,
       builder: (context, state) => Consumer(
-        builder: (ctx, ref, _) => RiderShell(
-          onSignOut: () => ref.read(authControllerProvider.notifier).signOut(),
+        builder: (ctx, ref, _) => KeyedSubtree(
+          key: ValueKey(ref.watch(demoModeProvider)),
+          child: RiderShell(
+            onSignOut: () => ref.read(authControllerProvider.notifier).signOut(),
+          ),
         ),
       ),
     ),
