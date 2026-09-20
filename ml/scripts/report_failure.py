@@ -23,7 +23,7 @@ def main(argv=None) -> int:
     ap.add_argument("--run-url", default=None)
     a = ap.parse_args(argv)
 
-    dsn = os.environ.get("SIH_PUBLISH_DSN")
+    dsn = (os.environ.get("SIH_PUBLISH_DSN") or "").strip()  # a pasted secret often carries a trailing newline
     if not dsn:
         print("report_failure: SIH_PUBLISH_DSN is not set", file=sys.stderr)
         return 1

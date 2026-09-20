@@ -223,7 +223,7 @@ def main(argv=None) -> int:
     p_cur.add_argument("--date", required=True)
     a = ap.parse_args(argv)
 
-    dsn = os.environ.get("SIH_PUBLISH_DSN")
+    dsn = (os.environ.get("SIH_PUBLISH_DSN") or "").strip()  # a pasted secret often carries a trailing newline
     if not dsn:
         log.error(json.dumps({"event": "publish_refused", "code": "no_dsn",
                               "detail": "set SIH_PUBLISH_DSN"}))

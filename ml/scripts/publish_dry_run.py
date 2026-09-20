@@ -25,7 +25,7 @@ def main(argv=None) -> int:
     ap.add_argument("--centroids", type=Path, default=None)
     a = ap.parse_args(argv)
 
-    dsn = os.environ.get("SIH_PUBLISH_DSN")
+    dsn = (os.environ.get("SIH_PUBLISH_DSN") or "").strip()  # a pasted secret often carries a trailing newline
     if not dsn:
         print("set SIH_PUBLISH_DSN", file=sys.stderr)
         return 2
