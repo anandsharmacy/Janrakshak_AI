@@ -18,6 +18,7 @@
 | D5 | **10 ML alerts per day** for officers. | `ml_settings.alert_capacity_region = 10`, `alert_capacity_district = 10`. No push notifications while in replay. |
 | D6 | **Pipeline failure alerts go to a new PMO "Alerts" section.** | New table + PMO RPCs + PMO UI (section 5, Phase 1 and 3). GitHub failure email stays as the fallback channel. |
 | D7 | **Live-mode approval belongs to the PMO, enforced in the database.** | `ml_begin_run` refuses `mode = live` until a PMO user has approved the exact bundle hash. |
+| D8 | **The GitHub repo is public and the replay assets stay unencrypted** (owner's decision, 2026-09-20). | Anyone can download the model bundle, road-segment centroids and the scored day from the release, and Actions logs are public. Logs print only counts; the DSN is a masked secret. Revisit if any of the source data turns out to be licence-restricted. |
 
 ## 2. Current state (verified 2026-09-20)
 
@@ -51,12 +52,12 @@ Supabase: ml_* tables, RPCs (officer + citizen-safe), ml_pipeline_events, ml_set
 
 | Asset | Size | Source |
 |---|---|---|
-| Bundle (`manifest.json`, `policy.json`, model files) | about 0.75 MB | private release asset |
-| Feature store `segments.parquet` + `manifest.json` (for `publish segments`) | about 3.6 MB | private release asset |
-| `segment_centroids.parquet` (the store's `segments.parquet` has **no lon/lat**, so `publish segments` reads this fallback file from `data/interim/`) | about 7 MB | private release asset |
-| Chosen day's `scores.parquet` + `run.json` | about 8.6 MB per day | private release asset |
+| Bundle (`manifest.json`, `policy.json`, model files) | about 0.75 MB | release asset |
+| Feature store `segments.parquet` + `manifest.json` (for `publish segments`) | about 3.6 MB | release asset |
+| `segment_centroids.parquet` (the store's `segments.parquet` has **no lon/lat**, so `publish segments` reads this fallback file from `data/interim/`) | about 7 MB | release asset |
+| Chosen day's `scores.parquet` + `run.json` | about 8.6 MB per day | release asset |
 
-One tarball (`ml-replay-assets.tar.gz`, about 21 MB for one day) attached to a private GitHub Release, unpacked so the centroids land at `ml/data/interim/`. The workflow downloads it with `GITHUB_TOKEN`.
+One tarball (`ml-replay-assets.tar.gz`, about 21 MB for one day) attached to a GitHub Release, unpacked so the centroids land at `ml/data/interim/`. The workflow downloads it with `GITHUB_TOKEN`.
 
 ---
 
@@ -105,7 +106,7 @@ One tarball (`ml-replay-assets.tar.gz`, about 21 MB for one day) attached to a p
 |---|---|
 | 1.1 Publisher login | `alter role ml_publisher login password '<generated>'`. Store the **pooler session-mode** DSN as GitHub secret `SIH_PUBLISH_DSN` (user `ml_publisher.<project_ref>`, port 5432). The direct DB host is IPv6-only and GitHub runners are IPv4. |
 | 1.2 Grants dry-run | In a transaction that is rolled back, run `ml_begin_run`, `COPY` into the run partition, and `ml_finish_run` as `ml_publisher`. Fix any missing grants in the Phase 2 migration. |
-| 1.3 Assets release | Create the private release and tarball from Phase 0 artifacts (section 3). |
+| 1.3 Assets release | Create the release and tarball from Phase 0 artifacts (section 3). The repo is public, so the release is public and the tarball is unencrypted (owner's decision D8). |
 | 1.4 Workflow | `.github/workflows/ml-publish-replay.yml`: `workflow_dispatch` with inputs `date` (default the chosen day) and `load_segments` (bool). Steps: checkout, setup Python, `pip install -r ml/deploy/requirements-publish.txt`, download assets, set `SIH_BUNDLE`/`SIH_STORE`/`SIH_SCORES`, run `python -m sih_ml.serve.publish segments` (when requested) then `run --date $DATE --mode replay`. Concurrency group so two runs never overlap. |
 | 1.5 Failure reporting | `if: failure()` step runs `ml/scripts/report_failure.py`, which calls `ml_report_pipeline_failure(stage, message, run_url)`. Messages are length-capped and never include the DSN or paths. Exit codes map to stages: 2 = bad input, 4 = database refused. |
 | 1.6 First load | Run with `load_segments = true` once (309,042 segments + coverage), then publish the replay day. Publishing the same (date, bundle) again is a no-op by design. |
@@ -131,7 +132,7 @@ One tarball (`ml-replay-assets.tar.gz`, about 21 MB for one day) attached to a p
 1. ~~Publisher login~~ done.
 2. The session-pooler host is already found (no dashboard visit needed): `aws-0-ap-south-1.pooler.supabase.com`, port 5432 (checked with a placeholder password: this host recognises the project, `aws-1-ap-south-1` does not). The DSN is `postgresql://ml_publisher.sjcqwxthimfuxmrodsbs:<password>@aws-0-ap-south-1.pooler.supabase.com:5432/postgres`.
 3. Put that line into the git-ignored file `ml/publish.env.local` as `SIH_PUBLISH_DSN=...`, then tell me. I run the rollback dry-run (1.2) from it, or you can run: `set -a; . ml/publish.env.local; set +a; PYTHONPATH=ml/src python ml/scripts/publish_dry_run.py --date 2025-07-28`.
-4. GitHub: commit and push the new files to `main`; create a **private release** with tag `ml-replay-assets` and upload `ml/deploy/dist/ml-replay-assets.tar.gz`; add repository secret `SIH_PUBLISH_DSN` with the same DSN.
+4. GitHub: commit and push the new files to `main`; create a release with tag `ml-replay-assets` and upload `ml/deploy/dist/ml-replay-assets.tar.gz`; add repository secret `SIH_PUBLISH_DSN` with the same DSN.
 5. GitHub, Actions, **Publish ML replay day**, Run workflow with `load_segments` ticked.
 
 ## 6. Phase 2: Supabase migration (M, about 4 days)
