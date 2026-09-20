@@ -3,7 +3,7 @@
 **Date:** 2026-09-20
 **Goal:** the `sih-ml` road-disruption model is visible, online, in `janrakshak_user` (citizen app) and `web/NER-Website-Merged` (officer + PMO dashboards). Nothing is scored on a phone or in a browser: a cloud job publishes results to Supabase, and both apps only read them through RPCs.
 **Supersedes for this scope:** the phasing in `ML_INTEGRATION_PLAN.md` (its data contract and UI rules still apply).
-**Status:** plan only, no work started.
+**Status:** Phases 0 and 1 are complete (2026-09-20). Phases 2 to 5 are pending.
 
 ---
 
@@ -20,7 +20,7 @@
 | D7 | **Live-mode approval belongs to the PMO, enforced in the database.** | `ml_begin_run` refuses `mode = live` until a PMO user has approved the exact bundle hash. |
 | D8 | **The GitHub repo is public and the replay assets stay unencrypted** (owner's decision, 2026-09-20). | Anyone can download the model bundle, road-segment centroids and the scored day from the release, and Actions logs are public. Logs print only counts; the DSN is a masked secret. Revisit if any of the source data turns out to be licence-restricted. |
 
-## 2. Current state (verified 2026-09-20)
+## 2. Starting state (verified 2026-09-20, before Phase 0; see the Phase 0 and Phase 1 results for what changed)
 
 | Area | State |
 |---|---|
@@ -114,26 +114,23 @@ One tarball (`ml-replay-assets.tar.gz`, about 21 MB for one day) attached to a G
 
 **Exit:** `select ml_status()` returns state `replay`, the chosen date, model `final_v3`; a deliberately broken run produces one PMO-visible event (verified in Phase 3) and a GitHub failure email.
 
-### Phase 1 progress (2026-09-20, in progress)
+### Phase 1 result (completed 2026-09-20)
 
 | Task | Status |
 |---|---|
 | Pulled forward from Phase 2 (2.2, 2.3) | **Done and applied to cloud.** Migration `ml_pipeline_events` (file: `supabase/migrations/20260920000001_ml_pipeline_events.sql`): table `ml_pipeline_events` (RLS on, no policies or grants), `ml_report_pipeline_failure` (executable by `ml_publisher` only), `pmo_list_pipeline_events` and `pmo_ack_pipeline_event` (PMO only). Grants verified against `pg_proc`: `anon` and `authenticated` cannot run the reporter, `authenticated` can only run the two PMO functions (which check the role inside). |
 | Existing grants of `ml_publisher` | Verified: can truncate/insert `ml_segments`, insert `ml_coverage`, use `ml_private`, execute `ml_begin_run`, `ml_finish_run`, `ml_set_current`; cannot read `ml_pipeline_events`. |
 | 1.3 Assets | **Done.** `ml/scripts/make_replay_assets.sh` builds `ml/deploy/dist/ml-replay-assets.tar.gz` (13 MB, SHA-256 `946fab32f0e5720a7dc22dfdb3152279a3a9eab8e8d60f233b6214cc3a45a52b`). Extracted into a clean folder, the publisher's validators accept it (309,042 score rows, 309,042 located segments). |
-| 1.4 Workflow | **Written, not yet run.** `.github/workflows/ml-publish-replay.yml` (manual dispatch; inputs `date`, `load_segments`, `asset_tag`; concurrency lock; replay mode hard-coded). YAML parses. Runs only after it is on the default branch. |
-| 1.5 Failure reporting | **Written.** `ml/scripts/report_failure.py`; the workflow's last step calls it with the failed stage and the run URL. Not yet exercised against the database. |
+| 1.4 Workflow | **Done, works.** `.github/workflows/ml-publish-replay.yml` (manual dispatch; inputs `date`, `load_segments`, `asset_tag`; concurrency lock; replay mode hard-coded). Run #2 (commit `ec0bd75`) succeeded. Two first attempts failed: the secret held a trailing newline, so Postgres looked for a database named `postgres\n`; the publisher now strips whitespace from the DSN. Note: GitHub's "Re-run" reuses the old commit and old inputs; start a fresh **Run workflow** after any fix. |
+| 1.5 Failure reporting | **Written; the database function is verified, the workflow path is not.** `ml/scripts/report_failure.py` is called by the workflow's last step. In the two failed runs it could not record an event because of the same newline fault. Rehearse it with a deliberate failure in Phase 5.3. |
 | 1.1 Publisher login | **Done (2026-09-20).** `ml_publisher` has login and a connection limit of 3, with a password set by the owner. The session-pooler DSN is saved in the git-ignored `ml/publish.env.local`. The password appeared in the working transcript: rotate it to a random value before real use (it must then also go into the GitHub secret). |
 | 1.2 Grants dry-run | **Done, passes.** `ml/scripts/publish_dry_run.py` ran as `ml_publisher` through the pooler, everything inside a transaction that is always rolled back: segments load (309,042 rows, 119 coverage cells, 7 s), run publish (309,042 score rows, tiers 283,350 / 22,196 / 3,496, 3 s), visibility check, failure report. Afterwards every ML table was verified empty. It found two missing grants, now applied and recorded in `supabase/migrations/20260920000002_ml_publisher_grants.sql`: `BYPASSRLS` on the role (COPY is refused on tables with row-level security; the role only has privileges on `ml_*` tables) and `USAGE` on schema `extensions` (PostGIS functions in the coverage load). |
-| 1.6 First load, 1.7 size measurement | Waiting on the GitHub steps below. |
+| 1.6 First load | **Done.** Cloud now holds 309,042 segments, coverage of 119 cells, and one run: 2025-07-28, `replay`, `final_v3`, hash `bf4ff57518c571e9`, tiers 283,350 none / 22,196 human_review / 3,496 alert, marked current. No pipeline events. |
+| 1.7 Size measurement | **Done.** Database 130 MB in total (26% of the 500 MB Free limit): `ml_segments` 57 MB, one run partition 50 MB, baseline about 22 MB. With `retention_runs = 2` (current plus one rollback run) expect about 180 MB. Fits the Free plan without publishing fewer rows. |
+| Read-path check | `ml_status()` as a control-room user returns state `replay`, date 2025-07-28, model `final_v3`, coverage bbox 87 to 90 E, 25.5 to 28.25 N. `get_route_ml_risk` on a rough Siliguri to Gangtok line: 132 segments matched, 7 alert, 29 human review, worst segment `SEG247696` at km 42 (99.99th percentile, steep), coverage 100%. Note: the route response has no top-level `status` key; check what `web/.../lib/ml.ts` expects in Phase 3. `alert_capacity` still reads 25 until Phase 2.1. |
 
-**Remaining steps (need you, GitHub side):**
+**Phase 1 exit criteria met:** `ml_status()` returns `replay` with the chosen date. The PMO-visible failure event is verified in Phase 3 and rehearsed in Phase 5.
 
-1. ~~Publisher login~~ done.
-2. The session-pooler host is already found (no dashboard visit needed): `aws-0-ap-south-1.pooler.supabase.com`, port 5432 (checked with a placeholder password: this host recognises the project, `aws-1-ap-south-1` does not). The DSN is `postgresql://ml_publisher.sjcqwxthimfuxmrodsbs:<password>@aws-0-ap-south-1.pooler.supabase.com:5432/postgres`.
-3. Put that line into the git-ignored file `ml/publish.env.local` as `SIH_PUBLISH_DSN=...`, then tell me. I run the rollback dry-run (1.2) from it, or you can run: `set -a; . ml/publish.env.local; set +a; PYTHONPATH=ml/src python ml/scripts/publish_dry_run.py --date 2025-07-28`.
-4. GitHub: commit and push the new files to `main`; create a release with tag `ml-replay-assets` and upload `ml/deploy/dist/ml-replay-assets.tar.gz`; add repository secret `SIH_PUBLISH_DSN` with the same DSN.
-5. GitHub, Actions, **Publish ML replay day**, Run workflow with `load_segments` ticked.
 
 ## 6. Phase 2: Supabase migration (M, about 4 days)
 
